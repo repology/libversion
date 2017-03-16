@@ -1,5 +1,7 @@
 # libversion
 
+[![Build Status](https://travis-ci.org/AMDmi3/libversion.svg?branch=master)](https://travis-ci.org/AMDmi3/libversion)
+
 Advanced version string comparison library.
 
 Need to compare software, package or whatever versions? Comparing
