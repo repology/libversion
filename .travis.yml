@@ -12,4 +12,4 @@ script:
   - make
   - make test
   - sudo make install
-  - $CC `pkg-config --libs --cflags libversion` version_compare/version_compare.c -o test-installation
+  - $CC version_compare/version_compare.c `pkg-config --libs --cflags libversion` -o test-installation
