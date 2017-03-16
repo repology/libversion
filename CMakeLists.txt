@@ -9,44 +9,16 @@ SET(VERSION_PATCH 0)
 
 SET(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
-# variables
 SET(PKGCONFIGDIR lib/pkgconfig CACHE STRING "directory where to install pkg-config files")
 IF(CMAKE_SYSTEM_NAME MATCHES "FreeBSD" OR CMAKE_SYSTEM_NAME MATCHES "DragonFly")
 	SET(PKGCONFIGDIR libdata/pkgconfig)
 ENDIF(CMAKE_SYSTEM_NAME MATCHES "FreeBSD" OR CMAKE_SYSTEM_NAME MATCHES "DragonFly")
 
-# library
-SET(LIBVERSION_SOURCES
-	libversion/compare.c
-)
-
-SET(LIBVERSION_HEADERS
-	libversion/compare.h
-)
-
 INCLUDE_DIRECTORIES(BEFORE ${PROJECT_SOURCE_DIR})
 
-ADD_LIBRARY(version STATIC ${LIBVERSION_SOURCES} ${LIBVERSION_HEADERS})
-
-CONFIGURE_FILE(libversion.pc.in libversion.pc @ONLY)
-
-# utils
-SET(VERSION_COMPARE_SOURCES
-	version_compare/version_compare.c
-)
-
-ADD_EXECUTABLE(version_compare ${VERSION_COMPARE_SOURCES})
-TARGET_LINK_LIBRARIES(version_compare version)
-
-# installation
-INSTALL(FILES ${LIBVERSION_HEADERS} DESTINATION include/libversion)
-INSTALL(FILES ${PROJECT_BINARY_DIR}/libversion.pc DESTINATION ${PKGCONFIGDIR})
-INSTALL(TARGETS version version_compare
-	RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-)
-
-# testing
 ENABLE_TESTING()
+
+# subdirs
+ADD_SUBDIRECTORY(libversion)
 ADD_SUBDIRECTORY(tests)
+ADD_SUBDIRECTORY(version_compare)
