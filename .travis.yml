@@ -4,8 +4,11 @@ dist: trusty
 compiler:
   - gcc
   - clang
+env:
+  - ARCHFLAGS=""
+  - ARCHFLAGS="-m32"
 script:
-  - cmake . -DCMAKE_VERBOSE_MAKEFILE=yes -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_FLAGS="-Werror -Wall -Wextra -pedantic"
+  - cmake . -DCMAKE_VERBOSE_MAKEFILE=yes -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_FLAGS="${ARCHFLAGS} -Werror -Wall -Wextra -pedantic"
   - make
   - make test
   - sudo make install
