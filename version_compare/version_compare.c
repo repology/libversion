@@ -25,20 +25,20 @@
 #include <libversion/compare.h>
 
 int main(int argc, char** argv) {
-    int result;
+	int result;
 
-    if (argc != 3) {
-        fprintf(stderr, "Usage: %s version1 version2\n", argv[0]);
-        return 1;
-    }
+	if (argc != 3) {
+		fprintf(stderr, "Usage: %s version1 version2\n", argv[0]);
+		return 1;
+	}
 
-    result = version_compare_simple(argv[1], argv[2]);
-    if (result < 0)
-        printf("<\n");
-    else if (result > 0)
-        printf(">\n");
-    else
-        printf("=\n");
+	result = version_compare_simple(argv[1], argv[2]);
+	if (result < 0)
+		printf("<\n");
+	else if (result > 0)
+		printf(">\n");
+	else
+		printf("=\n");
 
-    return 0;
+	return 0;
 }

@@ -30,14 +30,14 @@
 #define MY_MAX(a, b) ((a) > (b) ? (a) : (b))
 
 #if defined(INT64_MAX)
-    typedef int64_t version_component_t;
-    #define VERSION_COMPONENT_MAX ((INT64_MAX - 9) / 10)
+	typedef int64_t version_component_t;
+	#define VERSION_COMPONENT_MAX ((INT64_MAX - 9) / 10)
 #elif defined(LLONG_MAX)
-    typedef long long version_component_t;
-    #define VERSION_COMPONENT_MAX ((LLONG_MAX - 9) / 10)
+	typedef long long version_component_t;
+	#define VERSION_COMPONENT_MAX ((LLONG_MAX - 9) / 10)
 #else
-    typedef long version_component_t;
-    #define VERSION_COMPONENT_MAX ((LONG_MAX - 9) / 10)
+	typedef long version_component_t;
+	#define VERSION_COMPONENT_MAX ((LONG_MAX - 9) / 10)
 #endif
 
 static int is_version_char(char c) {
@@ -81,8 +81,8 @@ static version_component_t parse_alpha(const char** str) {
 }
 
 static size_t get_next_version_component(const char** str, version_component_t* target) {
-    const char* end;
-    version_component_t number, alpha, extranumber;
+	const char* end;
+	version_component_t number, alpha, extranumber;
 
 	/* skip separators */
 	while (**str != '\0' && !is_version_char(**str))
@@ -129,7 +129,7 @@ static size_t get_next_version_component(const char** str, version_component_t* 
 int version_compare_simple(const char* v1, const char* v2) {
 	version_component_t v1_comps[6], v2_comps[6];
 	size_t v1_len = 0, v2_len = 0;
-    size_t shift, i;
+	size_t shift, i;
 
 	while (*v1 != '\0' || *v2 != '\0' || v1_len || v2_len) {
 		if (v1_len == 0)

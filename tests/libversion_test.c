@@ -26,139 +26,139 @@
 #include <string.h>
 
 char comparison_to_char(int comp) {
-    if (comp < 0)
-        return '<';
-    if (comp > 0)
-        return '>';
-    return '=';
+	if (comp < 0)
+		return '<';
+	if (comp > 0)
+		return '>';
+	return '=';
 }
 
 int version_test(const char* v1, const char* v2, int expected) {
-    int result = version_compare_simple(v1, v2);
+	int result = version_compare_simple(v1, v2);
 
-    if (result != expected) {
-        fprintf(stderr, "[FAIL] \"%s\" %c \"%s\": got %c\n", v1, comparison_to_char(expected), v2, comparison_to_char(result));
-        return 1;
-    } else {
-        fprintf(stderr, "[ OK ] \"%s\" %c \"%s\"\n", v1, comparison_to_char(expected), v2);
-        return 0;
-    }
+	if (result != expected) {
+		fprintf(stderr, "[FAIL] \"%s\" %c \"%s\": got %c\n", v1, comparison_to_char(expected), v2, comparison_to_char(result));
+		return 1;
+	} else {
+		fprintf(stderr, "[ OK ] \"%s\" %c \"%s\"\n", v1, comparison_to_char(expected), v2);
+		return 0;
+	}
 }
 
 int version_test_symmetrical(const char* v1, const char* v2, int expected) {
-    if (expected == 0 && strcmp(v1, v2) == 0)
-        return version_test(v1, v2, 0);
+	if (expected == 0 && strcmp(v1, v2) == 0)
+		return version_test(v1, v2, 0);
 
-    return version_test(v1, v2, expected) + version_test(v2, v1, -expected);
+	return version_test(v1, v2, expected) + version_test(v2, v1, -expected);
 }
 
 int main() {
-    int errors = 0;
+	int errors = 0;
 
-    fprintf(stderr, "Test group: equality\n");
-    errors += version_test_symmetrical("0", "0", 0);
-    errors += version_test_symmetrical("0a", "0a", 0);
-    errors += version_test_symmetrical("a", "a", 0);
-    errors += version_test_symmetrical("a0", "a0", 0);
-    errors += version_test_symmetrical("0a1", "0a1", 0);
-    errors += version_test_symmetrical("0a1b2", "0a1b2", 0);
-    errors += version_test_symmetrical("1alpha1", "1alpha1", 0);
-    errors += version_test_symmetrical("foo", "foo", 0);
-    errors += version_test_symmetrical("1.2.3", "1.2.3", 0);
-    errors += version_test_symmetrical("hello.world", "hello.world", 0);
+	fprintf(stderr, "Test group: equality\n");
+	errors += version_test_symmetrical("0", "0", 0);
+	errors += version_test_symmetrical("0a", "0a", 0);
+	errors += version_test_symmetrical("a", "a", 0);
+	errors += version_test_symmetrical("a0", "a0", 0);
+	errors += version_test_symmetrical("0a1", "0a1", 0);
+	errors += version_test_symmetrical("0a1b2", "0a1b2", 0);
+	errors += version_test_symmetrical("1alpha1", "1alpha1", 0);
+	errors += version_test_symmetrical("foo", "foo", 0);
+	errors += version_test_symmetrical("1.2.3", "1.2.3", 0);
+	errors += version_test_symmetrical("hello.world", "hello.world", 0);
 
-    fprintf(stderr, "\nTest group: different number of components\n");
-    errors += version_test_symmetrical("1", "1.0", 0);
-    errors += version_test_symmetrical("1", "1.0.0", 0);
-    errors += version_test_symmetrical("1.0", "1.0.0", 0);
-    errors += version_test_symmetrical("1.0", "1.0.0.0.0.0.0.0", 0);
+	fprintf(stderr, "\nTest group: different number of components\n");
+	errors += version_test_symmetrical("1", "1.0", 0);
+	errors += version_test_symmetrical("1", "1.0.0", 0);
+	errors += version_test_symmetrical("1.0", "1.0.0", 0);
+	errors += version_test_symmetrical("1.0", "1.0.0.0.0.0.0.0", 0);
 
-    fprintf(stderr, "\nTest group: leading zeroes\n");
-    errors += version_test_symmetrical("00100.00100", "100.100", 0);
-    errors += version_test_symmetrical("0", "00000000000000000", 0);
+	fprintf(stderr, "\nTest group: leading zeroes\n");
+	errors += version_test_symmetrical("00100.00100", "100.100", 0);
+	errors += version_test_symmetrical("0", "00000000000000000", 0);
 
-    fprintf(stderr, "\nTest group: simple comparisons\n");
-    errors += version_test_symmetrical("0.0.0", "0.0.1", -1);
-    errors += version_test_symmetrical("0.0.1", "0.0.2", -1);
-    errors += version_test_symmetrical("0.0.2", "0.0.10", -1);
-    errors += version_test_symmetrical("0.0.2", "0.1.0", -1);
-    errors += version_test_symmetrical("0.0.10", "0.1.0", -1);
-    errors += version_test_symmetrical("0.1.0", "0.1.1", -1);
-    errors += version_test_symmetrical("0.1.1", "1.0.0", -1);
-    errors += version_test_symmetrical("1.0.0", "10.0.0", -1);
-    errors += version_test_symmetrical("10.0.0", "100.0.0", -1);
-    errors += version_test_symmetrical("10.10000.10000", "11.0.0", -1);
+	fprintf(stderr, "\nTest group: simple comparisons\n");
+	errors += version_test_symmetrical("0.0.0", "0.0.1", -1);
+	errors += version_test_symmetrical("0.0.1", "0.0.2", -1);
+	errors += version_test_symmetrical("0.0.2", "0.0.10", -1);
+	errors += version_test_symmetrical("0.0.2", "0.1.0", -1);
+	errors += version_test_symmetrical("0.0.10", "0.1.0", -1);
+	errors += version_test_symmetrical("0.1.0", "0.1.1", -1);
+	errors += version_test_symmetrical("0.1.1", "1.0.0", -1);
+	errors += version_test_symmetrical("1.0.0", "10.0.0", -1);
+	errors += version_test_symmetrical("10.0.0", "100.0.0", -1);
+	errors += version_test_symmetrical("10.10000.10000", "11.0.0", -1);
 
-    fprintf(stderr, "\nTest group: long numbers comparisons\n");
-    errors += version_test_symmetrical("20160101", "20160102", -1);
-    errors += version_test_symmetrical("9999999999999999", "10000000000000000", -1);
+	fprintf(stderr, "\nTest group: long numbers comparisons\n");
+	errors += version_test_symmetrical("20160101", "20160102", -1);
+	errors += version_test_symmetrical("9999999999999999", "10000000000000000", -1);
 
-    fprintf(stderr, "\nTest group: letter addendum\n");
-    errors += version_test_symmetrical("1.0", "1.0a", -1);
-    errors += version_test_symmetrical("1.0a", "1.0b", -1);
-    errors += version_test_symmetrical("1.0b", "1.1", -1);
+	fprintf(stderr, "\nTest group: letter addendum\n");
+	errors += version_test_symmetrical("1.0", "1.0a", -1);
+	errors += version_test_symmetrical("1.0a", "1.0b", -1);
+	errors += version_test_symmetrical("1.0b", "1.1", -1);
 
-    fprintf(stderr, "\nTest group: letter vs. number\n");
-    errors += version_test_symmetrical("a", "0", -1);
-    errors += version_test_symmetrical("1.a", "1.0", -1);
+	fprintf(stderr, "\nTest group: letter vs. number\n");
+	errors += version_test_symmetrical("a", "0", -1);
+	errors += version_test_symmetrical("1.a", "1.0", -1);
 
-    fprintf(stderr, "\nTest group: letter-only component\n");
-    errors += version_test_symmetrical("1.0.a", "1.0.b", -1);
-    errors += version_test_symmetrical("1.0.b", "1.0.c", -1);
-    errors += version_test_symmetrical("1.0.c", "1.0", -1);
-    errors += version_test_symmetrical("1.0.c", "1.0.0", -1);
+	fprintf(stderr, "\nTest group: letter-only component\n");
+	errors += version_test_symmetrical("1.0.a", "1.0.b", -1);
+	errors += version_test_symmetrical("1.0.b", "1.0.c", -1);
+	errors += version_test_symmetrical("1.0.c", "1.0", -1);
+	errors += version_test_symmetrical("1.0.c", "1.0.0", -1);
 
-    fprintf(stderr, "\nTest group: letter component split\n");
-    errors += version_test_symmetrical("1.0a0", "1.0.a0", 0);
-    errors += version_test_symmetrical("1.0beta3", "1.0.b3", 0);
+	fprintf(stderr, "\nTest group: letter component split\n");
+	errors += version_test_symmetrical("1.0a0", "1.0.a0", 0);
+	errors += version_test_symmetrical("1.0beta3", "1.0.b3", 0);
 
-    fprintf(stderr, "\nTest group: case is ignored\n");
-    errors += version_test_symmetrical("a", "A", 0);
-    errors += version_test_symmetrical("1alpha", "1ALPHA", 0);
-    errors += version_test_symmetrical("alpha1", "ALPHA1", 0);
+	fprintf(stderr, "\nTest group: case is ignored\n");
+	errors += version_test_symmetrical("a", "A", 0);
+	errors += version_test_symmetrical("1alpha", "1ALPHA", 0);
+	errors += version_test_symmetrical("alpha1", "ALPHA1", 0);
 
-    fprintf(stderr, "\nTest group: strings are shortened to one letter\n");
-    errors += version_test_symmetrical("a", "alpha", 0);
-    errors += version_test_symmetrical("b", "beta", 0);
-    errors += version_test_symmetrical("p", "prerelease", 0);
+	fprintf(stderr, "\nTest group: strings are shortened to one letter\n");
+	errors += version_test_symmetrical("a", "alpha", 0);
+	errors += version_test_symmetrical("b", "beta", 0);
+	errors += version_test_symmetrical("p", "prerelease", 0);
 
-    fprintf(stderr, "\nTest group: unusial component separators\n");
-    errors += version_test_symmetrical("1.0.alpha.2", "1_0_alpha_2", 0);
-    errors += version_test_symmetrical("1.0.alpha.2", "1-0-alpha-2", 0);
-    errors += version_test_symmetrical("1.0.alpha.2", "1,0:alpha~2", 0);
+	fprintf(stderr, "\nTest group: unusial component separators\n");
+	errors += version_test_symmetrical("1.0.alpha.2", "1_0_alpha_2", 0);
+	errors += version_test_symmetrical("1.0.alpha.2", "1-0-alpha-2", 0);
+	errors += version_test_symmetrical("1.0.alpha.2", "1,0:alpha~2", 0);
 
-    fprintf(stderr, "\nTest group: multiple consequentional separators\n");
-    errors += version_test_symmetrical("..1....2....3..", "1.2.3", 0);
-    errors += version_test_symmetrical(".-~1~-.-~2~-.", "1.2", 0);
-    errors += version_test_symmetrical(".,:;~+-_", "0", 0);
+	fprintf(stderr, "\nTest group: multiple consequentional separators\n");
+	errors += version_test_symmetrical("..1....2....3..", "1.2.3", 0);
+	errors += version_test_symmetrical(".-~1~-.-~2~-.", "1.2", 0);
+	errors += version_test_symmetrical(".,:;~+-_", "0", 0);
 
-    fprintf(stderr, "\nTest group: empty string\n");
-    errors += version_test_symmetrical("", "0", 0);
-    errors += version_test_symmetrical("", "1", -1);
+	fprintf(stderr, "\nTest group: empty string\n");
+	errors += version_test_symmetrical("", "0", 0);
+	errors += version_test_symmetrical("", "1", -1);
 
-    fprintf(stderr, "\nTest group: prerelease sequence\n");
-    errors += version_test_symmetrical("1.0.alpha1", "1.0.alpha2", -1);
-    errors += version_test_symmetrical("1.0.alpha2", "1.0.beta1", -1);
-    errors += version_test_symmetrical("1.0.beta1", "1.0.beta2", -1);
-    errors += version_test_symmetrical("1.0.beta2", "1.0.rc1", -1);
-    errors += version_test_symmetrical("1.0.beta2", "1.0.pre1", -1);
-    errors += version_test_symmetrical("1.0.rc1", "1.0", -1);
-    errors += version_test_symmetrical("1.0.pre1", "1.0", -1);
-    /* XXX: is rc/pre ordering defined? */
+	fprintf(stderr, "\nTest group: prerelease sequence\n");
+	errors += version_test_symmetrical("1.0.alpha1", "1.0.alpha2", -1);
+	errors += version_test_symmetrical("1.0.alpha2", "1.0.beta1", -1);
+	errors += version_test_symmetrical("1.0.beta1", "1.0.beta2", -1);
+	errors += version_test_symmetrical("1.0.beta2", "1.0.rc1", -1);
+	errors += version_test_symmetrical("1.0.beta2", "1.0.pre1", -1);
+	errors += version_test_symmetrical("1.0.rc1", "1.0", -1);
+	errors += version_test_symmetrical("1.0.pre1", "1.0", -1);
+	/* XXX: is rc/pre ordering defined? */
 
-    errors += version_test_symmetrical("1.0alpha1", "1.0alpha2", -1);
-    errors += version_test_symmetrical("1.0alpha2", "1.0beta1", -1);
-    errors += version_test_symmetrical("1.0beta1", "1.0beta2", -1);
-    errors += version_test_symmetrical("1.0beta2", "1.0rc1", -1);
-    errors += version_test_symmetrical("1.0beta2", "1.0pre1", -1);
-    errors += version_test_symmetrical("1.0rc1", "1.0", -1);
-    errors += version_test_symmetrical("1.0pre1", "1.0", -1);
+	errors += version_test_symmetrical("1.0alpha1", "1.0alpha2", -1);
+	errors += version_test_symmetrical("1.0alpha2", "1.0beta1", -1);
+	errors += version_test_symmetrical("1.0beta1", "1.0beta2", -1);
+	errors += version_test_symmetrical("1.0beta2", "1.0rc1", -1);
+	errors += version_test_symmetrical("1.0beta2", "1.0pre1", -1);
+	errors += version_test_symmetrical("1.0rc1", "1.0", -1);
+	errors += version_test_symmetrical("1.0pre1", "1.0", -1);
 
-    if (errors) {
-        fprintf(stderr, "\n%d test(s) failed!\n", errors);
-        return 1;
-    }
+	if (errors) {
+		fprintf(stderr, "\n%d test(s) failed!\n", errors);
+		return 1;
+	}
 
-    fprintf(stderr, "\nAll tests OK!\n");
-    return 0;
+	fprintf(stderr, "\nAll tests OK!\n");
+	return 0;
 }
