@@ -1,0 +1,12 @@
+CMakeCache.txt
+CMakeFiles/
+CTestTestfile.cmake
+Makefile
+Testing/
+cmake_install.cmake
+install_manifest.txt
+
+libversion/libversion.a
+libversion/libversion.pc
+tests/libversion_test
+version_compare/version_compare
