@@ -29,8 +29,16 @@
 #define MY_MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MY_MAX(a, b) ((a) > (b) ? (a) : (b))
 
-typedef long version_component_t;
-#define VERSION_COMPONENT_MAX ((LONG_MAX - 9) / 10)
+#if defined(INT64_MAX)
+    typedef int64_t version_component_t;
+    #define VERSION_COMPONENT_MAX ((INT64_MAX - 9) / 10)
+#elif defined(LLONG_MAX)
+    typedef long long version_component_t;
+    #define VERSION_COMPONENT_MAX ((LLONG_MAX - 9) / 10)
+#else
+    typedef long version_component_t;
+    #define VERSION_COMPONENT_MAX ((LONG_MAX - 9) / 10)
+#endif
 
 static int is_version_char(char c) {
 	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
