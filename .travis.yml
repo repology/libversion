@@ -7,9 +7,12 @@ compiler:
 env:
   - ARCHFLAGS=""
   - ARCHFLAGS="-m32"
+install:
+  - sudo apt-get update
+  - sudo apt-get install gcc-multilib
 script:
   - cmake . -DCMAKE_VERBOSE_MAKEFILE=yes -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_FLAGS="${ARCHFLAGS} -Werror -Wall -Wextra -pedantic"
   - make
   - make test
   - sudo make install
-  - $CC version_compare/version_compare.c `pkg-config --libs --cflags libversion` -o test-installation
+  - ${CC} version_compare/version_compare.c ${ARCHFLAGS} `pkg-config --libs --cflags libversion` -o test-installation
