@@ -1,6 +1,6 @@
 # libversion
 
-[![Build Status](https://travis-ci.org/AMDmi3/libversion.svg?branch=master)](https://travis-ci.org/AMDmi3/libversion)
+[![Build Status](https://travis-ci.org/repology/libversion.svg?branch=master)](https://travis-ci.org/repology/libversion)
 
 Advanced version string comparison library.
 
