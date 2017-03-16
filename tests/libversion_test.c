@@ -144,7 +144,7 @@ int main() {
     errors += version_test_symmetrical("1.0.beta2", "1.0.pre1", -1);
     errors += version_test_symmetrical("1.0.rc1", "1.0", -1);
     errors += version_test_symmetrical("1.0.pre1", "1.0", -1);
-    // XXX: is rc/pre ordering defined?
+    /* XXX: is rc/pre ordering defined? */
 
     errors += version_test_symmetrical("1.0alpha1", "1.0alpha2", -1);
     errors += version_test_symmetrical("1.0alpha2", "1.0beta1", -1);

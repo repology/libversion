@@ -36,7 +36,7 @@ static int is_version_char(char c) {
 }
 
 static long parse_number(const char** str) {
-	const char *cur = *str;
+	const char* cur = *str;
 	long number = 0;
 	while (*cur >= '0' && *cur <= '9') {
 		number = number * 10 + (*cur - '0');
@@ -55,7 +55,7 @@ static long parse_number(const char** str) {
 static long parse_alpha(const char** str) {
 	char start = **str;
 
-	const char *cur = *str;
+	const char* cur = *str;
 
 	while ((*cur >= 'a' && *cur <= 'z') || (*cur >= 'A' && *cur <= 'Z'))
 		cur++;
@@ -66,17 +66,20 @@ static long parse_alpha(const char** str) {
 	*str = cur;
 
 	if (start >= 'A' && start <= 'Z')
-		return start - 'A' + 'a'; // lowercase
+		return start - 'A' + 'a';  /* lowercase */
 	else
 		return start;
 }
 
 static size_t get_next_version_component(const char** str, long* target) {
-	// skip separators
+    const char* end;
+    long number, alpha, extranumber;
+
+	/* skip separators */
 	while (**str != '\0' && !is_version_char(**str))
 		++*str;
 
-	// EOL, generate empty component
+	/* EOL, generate empty component */
 	if (**str == '\0') {
 		*(target++) = 0;
 		*(target++) = 0;
@@ -84,20 +87,20 @@ static size_t get_next_version_component(const char** str, long* target) {
 		return 3;
 	}
 
-	const char *end = *str;
+	end = *str;
 	while (is_version_char(*end))
 		end++;
 
-	// parse component from string [str; end)
-	long number = parse_number(str);
-	long alpha = parse_alpha(str);
-	long extranumber = parse_number(str);
+	/* parse component from string [str; end) */
+	number = parse_number(str);
+	alpha = parse_alpha(str);
+	extranumber = parse_number(str);
 
-	// skip remaining alphanumeric part
+	/* skip remaining alphanumeric part */
 	while (is_version_char(**str))
 		++*str;
 
-	// split part with two numbers
+	/* split part with two numbers */
 	if (number != -1 && extranumber != -1) {
 		*(target++) = number;
 		*(target++) = 0;
@@ -115,18 +118,18 @@ static size_t get_next_version_component(const char** str, long* target) {
 }
 
 int version_compare_simple(const char* v1, const char* v2) {
-	long v1_comps[6];
-	long v2_comps[6];
-	size_t v1_len = 0;
-	size_t v2_len = 0;
+	long v1_comps[6], v2_comps[6];
+	size_t v1_len = 0, v2_len = 0;
+    size_t shift, i;
+
 	while (*v1 != '\0' || *v2 != '\0' || v1_len || v2_len) {
 		if (v1_len == 0)
 			v1_len = get_next_version_component(&v1, v1_comps);
 		if (v2_len == 0)
 			v2_len = get_next_version_component(&v2, v2_comps);
 
-		const size_t shift = MY_MIN(v1_len, v2_len);
-		for (size_t i = 0; i < shift; i++) {
+		shift = MY_MIN(v1_len, v2_len);
+		for (i = 0; i < shift; i++) {
 			if (v1_comps[i] < v2_comps[i])
 				return -1;
 			if (v1_comps[i] > v2_comps[i])
@@ -134,7 +137,7 @@ int version_compare_simple(const char* v1, const char* v2) {
 		}
 
 		if (v1_len != v2_len) {
-			for (size_t i = 0; i < shift; i++) {
+			for (i = 0; i < shift; i++) {
 				v1_comps[i] = v1_comps[i+shift];
 				v2_comps[i] = v2_comps[i+shift];
 			}

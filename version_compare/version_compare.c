@@ -25,12 +25,14 @@
 #include <libversion/compare.h>
 
 int main(int argc, char** argv) {
+    int result;
+
     if (argc != 3) {
         fprintf(stderr, "Usage: %s version1 version2\n", argv[0]);
         return 1;
     }
 
-    int result = version_compare_simple(argv[1], argv[2]);
+    result = version_compare_simple(argv[1], argv[2]);
     if (result < 0)
         printf("<\n");
     else if (result > 0)

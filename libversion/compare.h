@@ -33,4 +33,4 @@ int version_compare_simple(const char* v1, const char* v2);
 }
 #endif
 
-#endif // LIBVERSION_COMPARE_H
+#endif /* LIBVERSION_COMPARE_H */
