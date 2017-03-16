@@ -18,7 +18,9 @@ A short list of version features libversion handles for you:
 * Leading zeroes: ```1.001 = 1.1```
 * Unusual separators: ```1_2~3 = 1.2.3```
 * Letter suffixes: ```1.2 < 1.2a < 1.2b < 1.3```
-* Alphanumeric prerelease components: ```(1.0alpha1 = 1.0.alpha1 = 1.0a1 = 1.0.a1) < 1.0alpha2 < 1.0beta1 < 1.0rc1 < 1.0```
+* Alphanumeric prerelease components:
+  * ```1.0alpha1 = 1.0.alpha1 = 1.0a1 = 1.0.a1```
+  * ```1.0alpha1 < 1.0alpha2 < 1.0beta1 < 1.0rc1 < 1.0```
 
 See [doc/ALGORITHM.md](doc/ALGORITHM.md) for more elaborate description
 of inner logic.
@@ -64,10 +66,13 @@ To run test suite, run ```make test``` after building.
 
 To install the library systemwide, run ```make install```.
 
-The project install library, headers, pkg-config file and a demo utility, ```version_compare```, which may be used to compare versions from command line:
+The project installs library, headers, pkg-config file and a demo utility, ```version_compare```, which may be used to compare versions from command line:
 
 ```
-version_compare version1 version2
+$ ./version_compare
+Usage: ./version_compare version1 version2
+$ ./version_compare 0.99 1.0
+<
 ```
 
 ## Author
@@ -76,22 +81,4 @@ version_compare version1 version2
 
 ## License
 
-Copyright (c) 2017 Dmitry Marakasov <amdmi3@amdmi3.ru>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+[MIT](COPYING)
