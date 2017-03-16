@@ -26,22 +26,23 @@
 #include <limits.h>
 #include <stddef.h>
 
-#define VERCOMP_MAX ((LONG_MAX - 9) / 10)
-
 #define MY_MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MY_MAX(a, b) ((a) > (b) ? (a) : (b))
+
+typedef long version_component_t;
+#define VERSION_COMPONENT_MAX ((LONG_MAX - 9) / 10)
 
 static int is_version_char(char c) {
 	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
-static long parse_number(const char** str) {
+static version_component_t parse_number(const char** str) {
 	const char* cur = *str;
-	long number = 0;
+	version_component_t number = 0;
 	while (*cur >= '0' && *cur <= '9') {
 		number = number * 10 + (*cur - '0');
-		if (number > VERCOMP_MAX)
-			number = VERCOMP_MAX;
+		if (number > VERSION_COMPONENT_MAX)
+			number = VERSION_COMPONENT_MAX;
 		cur++;
 	}
 
@@ -52,7 +53,7 @@ static long parse_number(const char** str) {
 	return number;
 }
 
-static long parse_alpha(const char** str) {
+static version_component_t parse_alpha(const char** str) {
 	char start = **str;
 
 	const char* cur = *str;
@@ -71,9 +72,9 @@ static long parse_alpha(const char** str) {
 		return start;
 }
 
-static size_t get_next_version_component(const char** str, long* target) {
+static size_t get_next_version_component(const char** str, version_component_t* target) {
     const char* end;
-    long number, alpha, extranumber;
+    version_component_t number, alpha, extranumber;
 
 	/* skip separators */
 	while (**str != '\0' && !is_version_char(**str))
@@ -118,7 +119,7 @@ static size_t get_next_version_component(const char** str, long* target) {
 }
 
 int version_compare_simple(const char* v1, const char* v2) {
-	long v1_comps[6], v2_comps[6];
+	version_component_t v1_comps[6], v2_comps[6];
 	size_t v1_len = 0, v2_len = 0;
     size_t shift, i;
 
