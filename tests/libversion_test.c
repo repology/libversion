@@ -54,6 +54,7 @@ int version_test_symmetrical(const char* v1, const char* v2, int expected) {
 
 int main() {
 	int errors = 0;
+	int result;
 
 	fprintf(stderr, "Test group: equality\n");
 	errors += version_test_symmetrical("0", "0", 0);
@@ -92,6 +93,28 @@ int main() {
 	fprintf(stderr, "\nTest group: long numbers comparisons\n");
 	errors += version_test_symmetrical("20160101", "20160102", -1);
 	errors += version_test_symmetrical("9999999999999999", "10000000000000000", -1);
+
+	fprintf(stderr, "\nTest group: too long numbers\n");
+	/* if it won't fit into 64bit there's nothing we can do, but at least it should not invert compariosn order */
+	result = version_compare_simple("99999999999999999999999999999999999998", "99999999999999999999999999999999999999");
+	if (result < 0) {
+		fprintf(stderr, "[ OK ] very long versions compared as normal ones\n");
+	} else if (result == 0) {
+		fprintf(stderr, "[SKIP] very long versions compared as equal\n");
+	} else {
+		fprintf(stderr, "[FAIL] very long versions compared incorrectly\n");
+	    errors += 1;
+	}
+
+	result = version_compare_simple("99999999999999999999999999999999999999", "99999999999999999999999999999999999998");
+	if (result < 0) {
+		fprintf(stderr, "[ OK ] very long versions compared as normal ones\n");
+	} else if (result == 0) {
+		fprintf(stderr, "[SKIP] very long versions compared as equal\n");
+	} else {
+		fprintf(stderr, "[FAIL] very long versions compared incorrectly\n");
+	    errors += 1;
+	}
 
 	fprintf(stderr, "\nTest group: letter addendum\n");
 	errors += version_test_symmetrical("1.0", "1.0a", -1);
