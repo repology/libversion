@@ -1,18 +1,24 @@
 language: c
 sudo: required
 dist: trusty
-compiler:
-  - gcc
-  - clang
-env:
-  - ARCHFLAGS=""
-  - ARCHFLAGS="-m32"
-install:
-  - sudo apt-get update
-  - sudo apt-get install gcc-multilib
+matrix:
+  include:
+    - compiler: gcc
+      env: COVERAGE=yes CMAKE_FLAGS="-DCMAKE_BUILD_TYPE=Coverage"
+    - compiler: gcc
+      env: ARCH_FLAGS="-m32"
+    - compiler: clang
+    - compiler: clang
+      env: ARCH_FLAGS="-m32"
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq gcc-multilib
+  - if [ -n "${COVERAGE}" ]; then pip install --user pyyaml cpp-coveralls; fi
 script:
-  - cmake . -DCMAKE_VERBOSE_MAKEFILE=yes -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_FLAGS="${ARCHFLAGS} -Werror -Wall -Wextra -pedantic"
+  - cmake . -DCMAKE_VERBOSE_MAKEFILE=yes -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_FLAGS="${ARCH_FLAGS} -Werror -Wall -Wextra -pedantic" ${CMAKE_FLAGS}
   - make
   - make test
   - sudo make install
-  - ${CC} version_compare/version_compare.c ${ARCHFLAGS} `pkg-config --libs --cflags libversion` -o test-installation
+  - if [ -z "${COVERAGE}" ]; then ${CC} version_compare/version_compare.c ${ARCH_FLAGS} `pkg-config --libs --cflags libversion` -o test-installation; fi
+after_success:
+  - if [ -n "${COVERAGE}" ]; then coveralls -i libversion; fi
