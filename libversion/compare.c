@@ -25,6 +25,7 @@
 #include <stdint.h>
 #include <limits.h>
 #include <stddef.h>
+#include <string.h>
 
 #define MY_MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MY_MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -61,7 +62,27 @@ static version_component_t parse_number(const char** str) {
 	return number;
 }
 
-static version_component_t parse_alpha(const char** str) {
+enum {
+	ALPHAFLAG_PRERELEASE = 1,
+	ALPHAFLAG_POSTRELEASE = 2,
+};
+
+static int mymemcasecmp(const char* a, const char* b, size_t len) {
+	while (len-- != 0) {
+		unsigned char ua = (*a >= 'A' && *a <= 'Z') ? (*a - 'A' + 'a') : (*a);
+		unsigned char ub = (*b >= 'A' && *b <= 'Z') ? (*b - 'A' + 'a') : (*b);
+
+		if (ua != ub)
+			return ua - ub;
+
+		a++;
+		b++;
+	}
+
+	return 0;
+}
+
+static version_component_t parse_alpha(const char** str, int* flags) {
 	char start = **str;
 
 	const char* cur = *str;
@@ -69,8 +90,20 @@ static version_component_t parse_alpha(const char** str) {
 	while ((*cur >= 'a' && *cur <= 'z') || (*cur >= 'A' && *cur <= 'Z'))
 		cur++;
 
+	*flags = 0;
+
 	if (cur == *str)
 		return -1;
+	else if (cur - *str == 5 && mymemcasecmp(*str, "alpha", 5) == 0)
+		*flags = ALPHAFLAG_PRERELEASE;
+	else if (cur - *str == 4 && mymemcasecmp(*str, "beta", 4) == 0)
+		*flags = ALPHAFLAG_PRERELEASE;
+	else if (cur - *str == 2 && mymemcasecmp(*str, "rc", 2) == 0)
+		*flags = ALPHAFLAG_PRERELEASE;
+	else if (cur - *str >= 3 && mymemcasecmp(*str, "pre", 3) == 0)
+		*flags = ALPHAFLAG_PRERELEASE;
+	else if (cur - *str == 5 && mymemcasecmp(*str, "patch", 5) == 0)
+		*flags = ALPHAFLAG_POSTRELEASE;
 
 	*str = cur;
 
@@ -83,6 +116,7 @@ static version_component_t parse_alpha(const char** str) {
 static size_t get_next_version_component(const char** str, version_component_t* target) {
 	const char* end;
 	version_component_t number, alpha, extranumber;
+	int alphaflags = 0;
 
 	/* skip separators */
 	while (**str != '\0' && !is_version_char(**str))
@@ -102,23 +136,42 @@ static size_t get_next_version_component(const char** str, version_component_t* 
 
 	/* parse component from string [str; end) */
 	number = parse_number(str);
-	alpha = parse_alpha(str);
+	alpha = parse_alpha(str, &alphaflags);
 	extranumber = parse_number(str);
 
 	/* skip remaining alphanumeric part */
 	while (is_version_char(**str))
 		++*str;
 
-	/* split part with two numbers */
 	if (number != -1 && extranumber != -1) {
+		/*
+		 * `1a1' -> treat as [1  ].[ a1]
+		 * `1patch1' -> special case, treat as [1  ].[0p1]
+		 */
 		*(target++) = number;
 		*(target++) = -1;
 		*(target++) = -1;
-		*(target++) = -1;
+		*(target++) = (alphaflags == ALPHAFLAG_POSTRELEASE) ? 0 : -1;
 		*(target++) = alpha;
 		*(target++) = extranumber;
 		return 6;
+	} else if (number != -1 && alpha != -1 && alphaflags) {
+		/*
+		 * when alpha part is known to mean prerelease,
+		 * not a version addendum, unglue it from number
+		 *
+		 * `1alpha' is treated as [1  ].[ a ], not [1a ]
+		 */
+		*(target++) = number;
+		*(target++) = -1;
+		*(target++) = -1;
+		*(target++) = (alphaflags == ALPHAFLAG_POSTRELEASE) ? 0 : -1;
+		*(target++) = alpha;
+		*(target++) = -1;
+		return 6;
 	} else {
+		if (number == -1 && alphaflags == ALPHAFLAG_POSTRELEASE)
+			number = 0;
 		*(target++) = number;
 		*(target++) = alpha;
 		*(target++) = extranumber;
