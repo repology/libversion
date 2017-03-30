@@ -16,7 +16,7 @@
 
    * Tuples are stored as three 64bit signed integers
      * For numeric parts, 64 bits are needed to represent long numeric
-       version componenents such as 20160328234507 (real-world case).
+       version components such as 20160328234507 (real-world case).
      * Numbers which do not fit into 64 bits are clamped to maximal
        representable value
    * Alphabetic parts are currently clamped to a single character
@@ -56,7 +56,7 @@
      ```patch```.
      * If the check succeeds, we now have additional information that this is
        definitely not a version addendum, so we always unglue this from
-       preceeding number by generating additional triple. Compare:
+       preceding number by generating additional triple. Compare:
        * ```2.0 < 2.0a-3 = 2.0a.3```
        * ```2.0alpha-3 = 2.0.a.3 < 2.0```
      * ```patch``` is handled even more specially, as it's a
@@ -66,7 +66,7 @@
        * ```1.0 < 1.0patch1 = 1.0.0p1```
 
 3. To compare two versions, generate triples for both of them and compare
-   as simple integer lists. If one of lists is shorder, it's padded with
+   as simple integer lists. If one of lists is shorter, it's padded with
    ```{0, -1, -1}``` triple, which is an equivalent to ```0``` version
    component. Therefore, ```1``` is equal to ```1.0``` and ```1.0.0```.
 
