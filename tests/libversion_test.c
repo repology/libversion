@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <string.h>
 
-char comparison_to_char(int comp) {
+static char comparison_to_char(int comp) {
 	if (comp < 0)
 		return '<';
 	if (comp > 0)
@@ -33,7 +33,7 @@ char comparison_to_char(int comp) {
 	return '=';
 }
 
-int version_test(const char* v1, const char* v2, int expected) {
+static int version_test(const char* v1, const char* v2, int expected) {
 	int result = version_compare_simple(v1, v2);
 
 	if (result != expected) {
@@ -45,7 +45,7 @@ int version_test(const char* v1, const char* v2, int expected) {
 	}
 }
 
-int version_test_symmetrical(const char* v1, const char* v2, int expected) {
+static int version_test_symmetrical(const char* v1, const char* v2, int expected) {
 	if (expected == 0 && strcmp(v1, v2) == 0)
 		return version_test(v1, v2, 0);
 

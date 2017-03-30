@@ -68,8 +68,8 @@ enum {
 
 static int mymemcasecmp(const char* a, const char* b, size_t len) {
 	while (len-- != 0) {
-		unsigned char ua = (*a >= 'A' && *a <= 'Z') ? (*a - 'A' + 'a') : (*a);
-		unsigned char ub = (*b >= 'A' && *b <= 'Z') ? (*b - 'A' + 'a') : (*b);
+		unsigned char ua = (unsigned char)((*a >= 'A' && *a <= 'Z') ? (*a - 'A' + 'a') : (*a));
+		unsigned char ub = (unsigned char)((*b >= 'A' && *b <= 'Z') ? (*b - 'A' + 'a') : (*b));
 
 		if (ua != ub)
 			return ua - ub;
