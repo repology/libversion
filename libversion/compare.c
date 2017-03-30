@@ -64,7 +64,7 @@ static version_component_t parse_number(const char** str) {
 
 enum {
 	ALPHAFLAG_PRERELEASE = 1,
-	ALPHAFLAG_POSTRELEASE = 2,
+	ALPHAFLAG_POSTRELEASE = 2
 };
 
 static int mymemcasecmp(const char* a, const char* b, size_t len) {
