@@ -6,20 +6,20 @@ matrix:
     - compiler: gcc
       env: COVERAGE=yes CMAKE_FLAGS="-DCMAKE_BUILD_TYPE=Coverage"
     - compiler: gcc
-      env: CFLAGS="-m32"
+      env: ARCH_CFLAGS="-m32"
     - compiler: clang
       env: CFLAGS="-Weverything"
     - compiler: clang
-      env: CFLAGS="-Weverything -m32"
+      env: CFLAGS="-Weverything" ARCH_CFLAGS="-m32"
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq gcc-multilib
   - if [ -n "${COVERAGE}" ]; then pip install --user pyyaml cpp-coveralls; fi
 script:
-  - cmake . -DCMAKE_VERBOSE_MAKEFILE=yes -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_FLAGS="-Werror -Wall -Wextra -pedantic ${CFLAGS}" ${CMAKE_FLAGS}
+  - cmake . -DCMAKE_VERBOSE_MAKEFILE=yes -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_FLAGS="-Werror -Wall -Wextra -pedantic ${CFLAGS} ${ARCH_CFLAGS}" ${CMAKE_FLAGS}
   - make
   - make test
   - sudo make install
-  - if [ -z "${COVERAGE}" ]; then ${CC} version_compare/version_compare.c ${ARCH_FLAGS} `pkg-config --libs --cflags libversion` -o test-installation; fi
+  - if [ -z "${COVERAGE}" ]; then ${CC} version_compare/version_compare.c ${ARCH_CFLAGS} `pkg-config --libs --cflags libversion` -o test-installation; fi
 after_success:
   - if [ -n "${COVERAGE}" ]; then coveralls -i libversion; fi
