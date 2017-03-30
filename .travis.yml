@@ -6,16 +6,17 @@ matrix:
     - compiler: gcc
       env: COVERAGE=yes CMAKE_FLAGS="-DCMAKE_BUILD_TYPE=Coverage"
     - compiler: gcc
-      env: ARCH_FLAGS="-m32"
+      env: CFLAGS="-m32"
     - compiler: clang
+      env: CFLAGS="-Weverything"
     - compiler: clang
-      env: ARCH_FLAGS="-m32"
+      env: CFLAGS="-Weverything -m32"
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq gcc-multilib
   - if [ -n "${COVERAGE}" ]; then pip install --user pyyaml cpp-coveralls; fi
 script:
-  - cmake . -DCMAKE_VERBOSE_MAKEFILE=yes -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_FLAGS="${ARCH_FLAGS} -Werror -Wall -Wextra -pedantic" ${CMAKE_FLAGS}
+  - cmake . -DCMAKE_VERBOSE_MAKEFILE=yes -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_FLAGS="-Werror -Wall -Wextra -pedantic ${CFLAGS}" ${CMAKE_FLAGS}
   - make
   - make test
   - sudo make install
