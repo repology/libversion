@@ -28,7 +28,6 @@
 #include <string.h>
 
 #define MY_MIN(a, b) ((a) < (b) ? (a) : (b))
-#define MY_MAX(a, b) ((a) > (b) ? (a) : (b))
 
 #if defined(INT64_MAX)
 	typedef int64_t version_component_t;
