@@ -1,158 +1,92 @@
 # Repology version comparison algorithm
 
-The core of the project is its version comparison algorithm, which
-need to be robust and generic enough to compare versions in different
-repos which may have incompatible rules or traditions for mangling.
+1. Version is split into alphanumeric components, all other characters
+   are treated as separators. Empty components are ignored.
 
-For example, ```1.2.3alpha4```, ```1.2.3~a4``` and ```1.2.3.a4```
-are all the same version written differently, and these should all
-compare as equal. And, by the way, it should be compare less to
-```1.2.3``` because alpha versions come before the release. Repology
-does that.
+   * ```1.2.3a``` → ```1```, ```2```, ```3a```
+   * ```~1...2-3a~``` → ```1```, ```2```, ```3a```
 
-## Preprocessing
+2. Each component is decomposed into one or more (currently no more
+   than two) triplets of ```{number, string, number}``` format. Each
+   part of such triple either holds some value parsed from version
+   or a placeholder value crafted for proper comparison. The set of
+   rules on how to convert a version component into a set of triples
+   is the core of this algorithm, but before explaining it, some
+   implementation details:
 
-It is worth mentioning that in many cases versions are preprocessed
-in repository-specific way. For example, in FreeBSD ports you can
-run into something like ```1.2.3_4,5```, which means upstream version
-```1.2.3```, port revision 4, epoch 5. Revisions and epochs are internal
-to FreeBSD ports, have nothing to do with upstream and cannot be compared
-to anything in other repositories (though they have similar concepts). So
-such artifacts are just stripped. This doesn't make the life much
-easier though, as complexity described in the first example remains.
+   * Tuples are stored as three 64bit signed integers
+     * For numeric parts, 64 bits are needed to represent long numeric
+       version componenents such as 20160328234507 (real-world case).
+     * Numbers which do not fit into 64 bits are clamped to maximal
+       representable value
+   * Alphabetic parts are currently clamped to a single character
+     * This works correctly with both known cases where alphabetic
+       parts are used: either as an addendum to a number (```1.49c```)
+       which is single character naturally, or a prerelease keyword
+       (```alpha2```, ```beta3```, ...) which are thankfully already
+       ordered alphabetically and this does not change after clamping
+     * Alphabetic values are converted to lowercase.
+   * -1 is the default placeholder value.
 
-## Base algorithm
+   Now, basic rules on how we split component into tuples:
 
-As long as simple numeric versions are used, it is pretty easy to
-compare them (so please [DO](http://semver.org/) use these). When
-you have two versions, you split them into components by periods,
-and just compare them as numbers. If there's different number of
-components, the shorter version in padded with zeroes.
+   * We try to parse number, then alphabetic part, then another
+     number from a version component. Additional contents are
+     discarded (```1a2b3``` is treated as ```1a2```).
+   * We only allow a single numeric part in a triple, so component
+     with two numeric parts generates two triples. Here are all
+     possible variants:
+     * ```2``` → ```{2, -1, -1}```
+     * ```2a``` → ```{2, 'a', -1}```
+     * ```a2``` → ```{-1, 'a', 2}```
+     * ```2a2``` → ```{2, -1, -1}, {-1, 'a', 2}```
 
-```
-# components are compared from left to right, e.g
-# leftmost components have the highest priority
-1.0.0 < 1.0.1 < 1.1.0 < 2.0.0
+   The result of this logic is that the comparison of tuples gives
+   correct results for both cases involving alphabetic parts:
 
-# numeric comparison, leading zeros do not matter
-1.1 == 1.0001
+   * ```1.0 < 1.0a < 1.0b``` (addendum letter)
+   * ```1alpha1 == 1.alpha1 == 1a1 == 1.a1 < 1 == 1.0``` (prerelease version)
+   * As a side effect, ```1alpha1 == 1.alpha1``` which also handles some cases
+     of different formats of a same version, without giving false positives
 
-# pad with zeros up to equal component number
-1.2.0 == 1.2
-1.2 < 1.2.1 < 1.3
-```
+   This base algorithm was later extended with more rules for specific cases:
 
-## Alphabetics handling
+   * Before cropping alphabetic part to a single character, it's checked to
+     be ```alpha```, ```beta```, ```pre```, ```prerelease```, ```rc``` or
+     ```patch```.
+     * If the check succeeds, we now have additional information that this is
+       definitely not a version addendum, so we always unglue this from
+       preceeding number by generating additional triple. Compare:
+       * ```2.0 < 2.0a-3 = 2.0a.3```
+       * ```2.0alpha-3 = 2.0.a.3 < 2.0```
+     * ```patch``` is handled even more specially, as it's a
+       __post__-release keyword as opposed to pre-release. For it, tuple
+       with different placeholder numeric part is generated. Compare:
+       * ```1.0prerelease1 = 1.0.p1 < 1.0```
+       * ```1.0 < 1.0patch1 = 1.0.0p1```
 
-The complexity begins when alphabetic part is added. First, some facts:
+3. To compare two versions, generate triples for both of them and compare
+   as simple integer lists. If one of lists is shorder, it's padded with
+   ```{0, -1, -1}``` triple, which is an equivalent to ```0``` version
+   component. Therefore, ```1``` is equal to ```1.0``` and ```1.0.0```.
 
-* Alphabetic version component may be used the same way as numeric ones
-  ```1.2.a < 1.2.b < 1.2.e```, ```1.2a < 1.2b```
-* Alphabetic suffix may be used to denote minor releases
-  ```1.2 < 1.2a < 1.2b```
-* Alphabetic part may denote pre-release versions
-  ```1.2alpha1 < 1.2alpha2 < 1.2beta1 < 1.2prerelease1 < 1.2```
+## Possible room for improvement
 
-Let's introduce some assumptions to make life easier:
+* :warning: extra alphabetic components are dropped (```1ab2cd3e```)
+  These are rare, and probably come from git commit hashes. We can't
+  compare them anyway.
 
-1. When comparing, alphabetics are compared lexicographically.
-   This is obvious for single-letter suffixes, but it's less obvious
-   for long words. *Luckily*, the most words (that is, ```alpha```,
-   ```beta```, ```prerelease```, and ```rc```) used in versions may
-   be compared which each other and produce correct order when
-   compared lexicographically.
-2. We may trim any alphabetic part to a single letter.
-   This follows from 1: ```alpha```, ```beta```, ```prerelease```,
-   ```rc``` are compared the same as ```a```, ```b```, ```p```, and
-   ```r```, and this is useful because ```a``` and ```alpha``` are
-   often used interchangeably in the versions.
-3. Case is ignored.
-   Well, *luckily* I don't have cases where ```1a``` and ```1A```
-   would bean different versions
-4. We split all component into parts each of which contains no more
-   than a single numeric part and a single alpha part. First, it
-   makes further comparison possible, as we don't know how to compare
-   complex things. Next, it catches some cases when maintainers
-   split upstream versions by hand.
-   The split may me done in multiple ways, but we now only split
-   ```0a0``` into ```0.a0```, as this is the most common case and
-   it is almost unambiguous (e.g. ```1alpha2``` is version one,
-   second alpha, not first alpha with subversion two). This does
-   not affect comparison of equally formatted versions ```1alpha1
-   vs. 1alpha2```, but allows us to catch differently formatted
-   versions as well ```1.alpha1``` vs.  ```1alpha2```, which is
-   pretty common case.
-5. We now only have 4 simple variants of mixing numeric and alpha
-   parts:
-   * ```0```
-   * ```0a```
-   * ```a```
-   * ```a0```
-   What's left is to define comparison rules for these:
-6. Letters always compare less to numbers. That is, ```z < 0```.
-   This makes ```1.2.alpha1``` come before ```1.2``` and ```1.2.0```
-   which is the same. Note that due to rule 4, ```1.2alpha1``` is
-   converted to ```1.2.alpha1``` so is treated the same way.
-7. Missing subcomponents are always compared before existing ones. E.g.
-   ```0``` < ```0a``` (covers letter suffixes for minor releases as in
-   ```1.2 < 1.2a < 1.2b```) and ```a``` < ```a0``` (ambiguous, but
-   not widely used in practice)
+* :warning: strings are clamped to a single character (```1aa == 1ab```)
+  As mentioned, it works well on practice. But if there are real
+  world cases where longer strings are used, these may be packed
+  into integers
 
-## Algorithm
+* :warning: specific case ```0.21-alpha```
+   There is a prerelease keyword without numeric part. In some cases, it
+   may be dropped (e.g. whole ```0.``` branch is alpha), in other cases
+   it may be a version part.
 
-Summarizing, what our algorithm does is:
-
-1. Split versions into components by any number of non-alphanumerics.
-   ```1.2a2-1``` → ```['1', '2a2', '1']```
-2. Further split ```0a0``` components
-   ```['1', '2a2', '1']``` → ```['1', '2', 'a2', '1']```
-3. Each component is converted into internal representation,
-   num-alpha-num triple. Empty subcomponents are filled with
-   values which always compare less than actual ones (-1 for numbers
-   and empty string for strings).
-   * ```a``` -> ```(-1, 'a', -1)```
-   * ```a2``` -> ```(-1, 'a', 2)```
-   * ```2``` -> ```(2, '', -1)```
-   * ```2a``` -> ```(2, 'a', -1)```
-4. The shorter vector is padded with ```(0, '', -1)``` (representation of zero)
-5. Compare from left to right
-
-## Failures
-
-All know theoretical and practical failures of the algorithm will
-be listed here. They fall into two major categories: some may be
-fixed in the algorithm (and will be, or will be not due to rarity
-of occurrences and avoiding adding unneeded complexity), or may not
-be fixed, due to lack of information.
-
-* ```1EE2AB3```
-
-  These are undefined behavior now as we assume only one alphabetic
-  part. I've seen this in practice for some nethack-related package,
-  and this also may be encountered when version contains git commit
-  hashes. The former case may be fixed by improving splitting, the
-  latter is doomed.
-
-* ```1.0beta``` vs. ```1.0beta1```
-
-  Fails because the former is not split. May be fixed by handling
-  words (as opposed to letters) specially. Real-word cases have
-  it either split upstream (e.g. ```1.0.beta```), and most cases
-  are numbered anyway.
-
-* ```1.beta``` vs. ```1.beta1```
-
-  Compare as less, but may be expected to be equal. May be easily
-  fixed, as soon as we assume there can't be ```beta0```.
-
-* ```1.0 vs 1.0patch2```
-
-  ```patch``` is a special word which requires different handling
-  than all other alphabetics. While ```1.0alpha1 < 1.0```,
-  ```1.0patch1``` > ```1.0```. May handle it (as well as ```p```)
-  specially. FreeBSD does that, btw.
-
-There are also cases like ```1b``` vs. ```1.b```, ```1beta vs.
-1.beta```, but the cause of this is package maintainer representing version incorrectly.
-
-but this is out of scope of this algorithm.
+* :warning: are there more keywords?
+   Can ```rev```, ```git```, be handled in some sane way? What about
+   ```post```, ```dev```, ```final```, ```release```, ```prealpha```,
+   ```build```?
