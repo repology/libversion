@@ -103,7 +103,7 @@ int main() {
 		fprintf(stderr, "[SKIP] very long versions compared as equal\n");
 	} else {
 		fprintf(stderr, "[FAIL] very long versions compared incorrectly\n");
-	    errors += 1;
+		errors += 1;
 	}
 
 	result = version_compare_simple("99999999999999999999999999999999999999", "99999999999999999999999999999999999998");
@@ -113,7 +113,7 @@ int main() {
 		fprintf(stderr, "[SKIP] very long versions compared as equal\n");
 	} else {
 		fprintf(stderr, "[FAIL] very long versions compared incorrectly\n");
-	    errors += 1;
+		errors += 1;
 	}
 
 	fprintf(stderr, "\nTest group: letter addendum\n");
