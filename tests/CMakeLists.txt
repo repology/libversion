@@ -1,3 +1,3 @@
-ADD_EXECUTABLE(libversion_test libversion_test.c)
-TARGET_LINK_LIBRARIES(libversion_test version)
-ADD_TEST(libversion_test libversion_test)
+ADD_EXECUTABLE(compare_test compare_test.c)
+TARGET_LINK_LIBRARIES(compare_test version)
+ADD_TEST(compare_test compare_test)
