@@ -70,7 +70,7 @@ static version_component_t parse_alpha(const char** str) {
 		cur++;
 
 	if (cur == *str)
-		return 0;
+		return -1;
 
 	*str = cur;
 
@@ -91,7 +91,7 @@ static size_t get_next_version_component(const char** str, version_component_t* 
 	/* EOL, generate empty component */
 	if (**str == '\0') {
 		*(target++) = 0;
-		*(target++) = 0;
+		*(target++) = -1;
 		*(target++) = -1;
 		return 3;
 	}
@@ -112,7 +112,7 @@ static size_t get_next_version_component(const char** str, version_component_t* 
 	/* split part with two numbers */
 	if (number != -1 && extranumber != -1) {
 		*(target++) = number;
-		*(target++) = 0;
+		*(target++) = -1;
 		*(target++) = -1;
 		*(target++) = -1;
 		*(target++) = alpha;
