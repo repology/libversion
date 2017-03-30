@@ -34,8 +34,8 @@
      number from a version component. Additional contents are
      discarded (```1a2b3``` is treated as ```1a2```).
    * We only allow a single numeric part in a triple, so component
-     with two numeric parts generates two triples. Here are all
-     possible variants:
+     with two numeric parts generates two triples.
+   * Summarizing, here are all possible variants of triple generation:
      * ```2``` → ```{2, -1, -1}```
      * ```2a``` → ```{2, 'a', -1}```
      * ```a2``` → ```{-1, 'a', 2}```
@@ -73,20 +73,24 @@
 ## Possible room for improvement
 
 * :warning: extra alphabetic components are dropped (```1ab2cd3e```)
+
   These are rare, and probably come from git commit hashes. We can't
   compare them anyway.
 
 * :warning: strings are clamped to a single character (```1aa == 1ab```)
+
   As mentioned, it works well on practice. But if there are real
   world cases where longer strings are used, these may be packed
   into integers
 
 * :warning: specific case ```0.21-alpha```
-   There is a prerelease keyword without numeric part. In some cases, it
-   may be dropped (e.g. whole ```0.``` branch is alpha), in other cases
-   it may be a version part.
+
+  There is a prerelease keyword without numeric part. In some cases, it
+  may be dropped (e.g. whole ```0.``` branch is alpha), in other cases
+  it may be a version part.
 
 * :warning: are there more keywords?
-   Can ```rev```, ```git```, be handled in some sane way? What about
-   ```post```, ```dev```, ```final```, ```release```, ```prealpha```,
-   ```build```?
+
+  Can ```rev```, ```git```, be handled in some sane way? What about
+  ```post```, ```dev```, ```final```, ```release```, ```prealpha```,
+  ```build```?
