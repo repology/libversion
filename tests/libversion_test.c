@@ -177,6 +177,46 @@ int main() {
 	errors += version_test_symmetrical("1.0rc1", "1.0", -1);
 	errors += version_test_symmetrical("1.0pre1", "1.0", -1);
 
+	fprintf(stderr, "\nTest group: long word awareness\n");
+	/* this should not be treated as 1.0a-1 */
+	errors += version_test_symmetrical("1.0alpha-1", "0.9", 1);
+	errors += version_test_symmetrical("1.0alpha-1", "1.0", -1);
+	errors += version_test_symmetrical("1.0alpha-1", "1.1", -1);
+
+	errors += version_test_symmetrical("1.0beta-1", "0.9", 1);
+	errors += version_test_symmetrical("1.0beta-1", "1.0", -1);
+	errors += version_test_symmetrical("1.0beta-1", "1.1", -1);
+
+	errors += version_test_symmetrical("1.0pre-1", "0.9", 1);
+	errors += version_test_symmetrical("1.0pre-1", "1.0", -1);
+	errors += version_test_symmetrical("1.0pre-1", "1.1", -1);
+
+	errors += version_test_symmetrical("1.0prerelease-1", "0.9", 1);
+	errors += version_test_symmetrical("1.0prerelease-1", "1.0", -1);
+	errors += version_test_symmetrical("1.0prerelease-1", "1.1", -1);
+
+	errors += version_test_symmetrical("1.0rc-1", "0.9", 1);
+	errors += version_test_symmetrical("1.0rc-1", "1.0", -1);
+	errors += version_test_symmetrical("1.0rc-1", "1.1", -1);
+
+	fprintf(stderr, "\nTest group: patch word awareness\n");
+	/* this should not be treated as 1.0a-1 */
+	errors += version_test_symmetrical("1.0patch1", "0.9", 1);
+	errors += version_test_symmetrical("1.0patch1", "1.0", 1);
+	errors += version_test_symmetrical("1.0patch1", "1.1", -1);
+
+	errors += version_test_symmetrical("1.0.patch1", "0.9", 1);
+	errors += version_test_symmetrical("1.0.patch1", "1.0", 1);
+	errors += version_test_symmetrical("1.0.patch1", "1.1", -1);
+
+	errors += version_test_symmetrical("1.0patch.1", "0.9", 1);
+	errors += version_test_symmetrical("1.0patch.1", "1.0", 1);
+	errors += version_test_symmetrical("1.0patch.1", "1.1", -1);
+
+	errors += version_test_symmetrical("1.0.patch.1", "0.9", 1);
+	errors += version_test_symmetrical("1.0.patch.1", "1.0", 1);
+	errors += version_test_symmetrical("1.0.patch.1", "1.1", -1);
+
 	if (errors) {
 		fprintf(stderr, "\n%d test(s) failed!\n", errors);
 		return 1;
