@@ -17,15 +17,15 @@ if they are written in different formats.
 A short list of version features libversion handles for you:
 
 * Simple versions, obviously: ```0.9 < 1.0 < 1.1```
-* Missing components: ```1.0 = 1.0.0```
-* Leading zeroes: ```1.001 = 1.1```
-* Unusual separators: ```1_2~3 = 1.2.3```
+* Missing components: ```1.0 == 1.0.0```
+* Leading zeroes: ```1.001 == 1.1```
+* Unusual separators: ```1_2~3 == 1.2.3```
 * Letter suffixes: ```1.2 < 1.2a < 1.2b < 1.3```
 * Alphanumeric prerelease components:
-  * ```1.0alpha1 = 1.0.alpha1 = 1.0a1 = 1.0.a1```
+  * ```1.0alpha1 == 1.0.alpha1 == 1.0a1 == 1.0.a1```
   * ```1.0alpha1 < 1.0alpha2 < 1.0beta1 < 1.0rc1 < 1.0```
-* Awareness of prerelease keywords: while ```1.0 < 1.0a-1``` (_a_ treated as version addendum), ```1.0alpha-1 < 1.0``` (_alpha_ is treated as prerelease marker)
-* Awareness of _patch_ keyword: while ```1.0alpha1 < 1.0``` (_alpha_ is pre-release), ```1.0 < 1.0patch1 < 1.1``` (_patch_ is post-release)
+* Awareness of prerelease keywords: while ```1.0 < 1.0a-1``` (_a_ treated as version addendum), but ```1.0alpha-1 < 1.0``` (_alpha_ is treated as prerelease marker)
+* Awareness of _patch_ keyword: while ```1.0alpha1 < 1.0``` (_alpha_ is pre-release), but ```1.0 < 1.0patch1 < 1.1``` (_patch_ is post-release)
 
 See [doc/ALGORITHM.md](doc/ALGORITHM.md) for more elaborate description
 of inner logic.
