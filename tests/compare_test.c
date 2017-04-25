@@ -217,6 +217,25 @@ int main() {
 	errors += version_test_symmetrical("1.0.patch.1", "1.0", 1);
 	errors += version_test_symmetrical("1.0.patch.1", "1.1", -1);
 
+	fprintf(stderr, "\nTest group: prerelease words without numbers\n");
+	errors += version_test_symmetrical("1.0alpha", "1.0", -1);
+	errors += version_test_symmetrical("1.0.alpha", "1.0", -1);
+
+	errors += version_test_symmetrical("1.0beta", "1.0", -1);
+	errors += version_test_symmetrical("1.0.beta", "1.0", -1);
+
+	errors += version_test_symmetrical("1.0rc", "1.0", -1);
+	errors += version_test_symmetrical("1.0.rc", "1.0", -1);
+
+	errors += version_test_symmetrical("1.0pre", "1.0", -1);
+	errors += version_test_symmetrical("1.0.pre", "1.0", -1);
+
+	errors += version_test_symmetrical("1.0prerelese", "1.0", -1);
+	errors += version_test_symmetrical("1.0.prerelese", "1.0", -1);
+
+	errors += version_test_symmetrical("1.0patch", "1.0", 1);
+	errors += version_test_symmetrical("1.0.patch", "1.0", 1);
+
 	if (errors) {
 		fprintf(stderr, "\n%d test(s) failed!\n", errors);
 		return 1;
