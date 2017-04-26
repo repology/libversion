@@ -1,0 +1,6 @@
+version: '{branch}.{build}'
+clone_depth: 1
+build_script:
+  - cmake .
+  - cmake --build .
+  - ctest -V
