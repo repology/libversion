@@ -1,5 +1,9 @@
 # libversion
 
+<a href="https://repology.org/metapackage/libversion">
+    <img src="https://repology.org/badge/vertical-allrepos/libversion.svg" alt="Packaging status" align="right">
+</a>
+
 [![Build Status](https://travis-ci.org/repology/libversion.svg?branch=master)](https://travis-ci.org/repology/libversion)
 [![Build status](https://ci.appveyor.com/api/projects/status/n78dvl22i70v379x/branch/master?svg=true)](https://ci.appveyor.com/project/AMDmi3/libversion/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/repology/libversion/badge.svg?branch=master)](https://coveralls.io/github/repology/libversion?branch=master)
