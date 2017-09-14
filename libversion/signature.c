@@ -33,10 +33,10 @@ typedef enum {
 } signature_parser_state_t;
 
 #define ROTARY_SHIFT_LEFT(arg, bits) \
-	((arg) << (bits)) | ((arg) >> (sizeof(arg) * CHAR_BIT - 1))
+	(((arg) << (bits)) | ((arg) >> (sizeof(arg) * CHAR_BIT - 1)))
 
 #define ROTARY_SHIFT_RIGHT(arg, bits) \
-	((arg) >> (bits)) | ((arg) << (sizeof(arg) * CHAR_BIT - 1))
+	(((arg) >> (bits)) | ((arg) << (sizeof(arg) * CHAR_BIT - 1)))
 
 #define UNUSED(x) (void)(x)
 
