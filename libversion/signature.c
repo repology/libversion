@@ -47,7 +47,7 @@ version_signature_t version_signature_simple(const char* v) {
 version_signature_t version_signature_flags(const char* v, int flags) {
 	signature_parser_state_t state, prev_state = STATE_SEPARATOR;
 	version_signature_t result = 1;
-	int bit = 0;
+	unsigned int bit = 0;
 
 	UNUSED(flags);
 
