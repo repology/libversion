@@ -25,4 +25,7 @@ ENABLE_TESTING()
 # subdirs
 ADD_SUBDIRECTORY(libversion)
 ADD_SUBDIRECTORY(tests)
-ADD_SUBDIRECTORY(version_compare)
+
+IF(UNIX)
+	ADD_SUBDIRECTORY(version_compare)
+ENDIF(UNIX)
