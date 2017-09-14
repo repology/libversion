@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-#include <libversion/compare.h>
+#include <libversion/version.h>
 
 #include <stdio.h>
 #include <string.h>

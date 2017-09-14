@@ -20,8 +20,8 @@
  * THE SOFTWARE.
  */
 
-#ifndef LIBVERSION_COMPARE_H
-#define LIBVERSION_COMPARE_H
+#ifndef LIBVERSION_VERSION_H
+#define LIBVERSION_VERSION_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,11 +32,10 @@ enum {
 };
 
 int version_compare_simple(const char* v1, const char* v2);
-
 int version_compare_flags(const char* v1, const char* v2, int flags);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* LIBVERSION_COMPARE_H */
+#endif /* LIBVERSION_VERSION_H */

@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include <libversion/compare.h>
+#include <libversion/version.h>
 
 static void usage(const char* progname) {
     fprintf(stderr, "Usage: %s [-p] version1 version2\n", progname);

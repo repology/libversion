@@ -71,7 +71,7 @@ Thread safe, does not produce errors, does not allocate dynamic memory.
 
 ```c
 #include <assert.h>
-#include <libversion/compare.h>
+#include <libversion/version.h>
 
 int main() {
     /* 0.99 < 1.11 */

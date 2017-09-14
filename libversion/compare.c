@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-#include <libversion/compare.h>
+#include <libversion/version.h>
 
 #include <stdint.h>
 #include <limits.h>
@@ -181,7 +181,7 @@ static size_t get_next_version_component(const char** str, version_component_t* 
 }
 
 int version_compare_simple(const char* v1, const char* v2) {
-    return version_compare_flags(v1, v2, 0);
+	return version_compare_flags(v1, v2, 0);
 }
 
 int version_compare_flags(const char* v1, const char* v2, int flags) {
