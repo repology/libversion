@@ -81,7 +81,7 @@ static int mymemcasecmp(const char* a, const char* b, size_t len) {
 	return 0;
 }
 
-static version_component_t parse_alpha(const char** str, int* flags) {
+static version_component_t parse_alpha(const char** str, int* outflags, int flags) {
 	char start = **str;
 
 	const char* cur = *str;
@@ -89,20 +89,22 @@ static version_component_t parse_alpha(const char** str, int* flags) {
 	while ((*cur >= 'a' && *cur <= 'z') || (*cur >= 'A' && *cur <= 'Z'))
 		cur++;
 
-	*flags = 0;
+	*outflags = 0;
 
 	if (cur == *str)
 		return -1;
 	else if (cur - *str == 5 && mymemcasecmp(*str, "alpha", 5) == 0)
-		*flags = ALPHAFLAG_PRERELEASE;
+		*outflags = ALPHAFLAG_PRERELEASE;
 	else if (cur - *str == 4 && mymemcasecmp(*str, "beta", 4) == 0)
-		*flags = ALPHAFLAG_PRERELEASE;
+		*outflags = ALPHAFLAG_PRERELEASE;
 	else if (cur - *str == 2 && mymemcasecmp(*str, "rc", 2) == 0)
-		*flags = ALPHAFLAG_PRERELEASE;
+		*outflags = ALPHAFLAG_PRERELEASE;
 	else if (cur - *str >= 3 && mymemcasecmp(*str, "pre", 3) == 0)
-		*flags = ALPHAFLAG_PRERELEASE;
+		*outflags = ALPHAFLAG_PRERELEASE;
 	else if (cur - *str == 5 && mymemcasecmp(*str, "patch", 5) == 0)
-		*flags = ALPHAFLAG_POSTRELEASE;
+		*outflags = ALPHAFLAG_POSTRELEASE;
+    else if (flags & VERSIONFLAG_P_IS_PATCH && cur - *str == 1 && (**str == 'p' || **str == 'P'))
+		*outflags = ALPHAFLAG_POSTRELEASE;
 
 	*str = cur;
 
@@ -112,7 +114,7 @@ static version_component_t parse_alpha(const char** str, int* flags) {
 		return start;
 }
 
-static size_t get_next_version_component(const char** str, version_component_t* target) {
+static size_t get_next_version_component(const char** str, version_component_t* target, int flags) {
 	const char* end;
 	version_component_t number, alpha, extranumber;
 	int alphaflags = 0;
@@ -135,7 +137,7 @@ static size_t get_next_version_component(const char** str, version_component_t* 
 
 	/* parse component from string [str; end) */
 	number = parse_number(str);
-	alpha = parse_alpha(str, &alphaflags);
+	alpha = parse_alpha(str, &alphaflags, flags);
 	extranumber = parse_number(str);
 
 	/* skip remaining alphanumeric part */
@@ -179,15 +181,19 @@ static size_t get_next_version_component(const char** str, version_component_t* 
 }
 
 int version_compare_simple(const char* v1, const char* v2) {
+    return version_compare_flags(v1, v2, 0);
+}
+
+int version_compare_flags(const char* v1, const char* v2, int flags) {
 	version_component_t v1_comps[6], v2_comps[6];
 	size_t v1_len = 0, v2_len = 0;
 	size_t shift, i;
 
 	while (*v1 != '\0' || *v2 != '\0' || v1_len || v2_len) {
 		if (v1_len == 0)
-			v1_len = get_next_version_component(&v1, v1_comps);
+			v1_len = get_next_version_component(&v1, v1_comps, flags);
 		if (v2_len == 0)
-			v2_len = get_next_version_component(&v2, v2_comps);
+			v2_len = get_next_version_component(&v2, v2_comps, flags);
 
 		shift = MY_MIN(v1_len, v2_len);
 		for (i = 0; i < shift; i++) {

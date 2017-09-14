@@ -27,7 +27,13 @@
 extern "C" {
 #endif
 
+enum {
+    VERSIONFLAG_P_IS_PATCH = 0x1
+};
+
 int version_compare_simple(const char* v1, const char* v2);
+
+int version_compare_flags(const char* v1, const char* v2, int flags);
 
 #ifdef __cplusplus
 }
