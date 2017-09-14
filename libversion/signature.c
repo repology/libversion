@@ -38,6 +38,8 @@ typedef enum {
 #define ROTARY_SHIFT_RIGHT(arg, bits) \
 	((arg) >> (bits)) | ((arg) << (sizeof(arg) * CHAR_BIT - 1))
 
+#define UNUSED(x) (void)(x)
+
 version_signature_t version_signature_simple(const char* v) {
 	return version_signature_flags(v, 0);
 }
@@ -46,6 +48,8 @@ version_signature_t version_signature_flags(const char* v, int flags) {
 	signature_parser_state_t state, prev_state = STATE_SEPARATOR;
 	version_signature_t result = 1;
 	int bit = 0;
+
+	UNUSED(flags);
 
 	/*
 	 * The idea here is the following:
