@@ -21,18 +21,47 @@
  */
 
 #include <stdio.h>
+#include <unistd.h>
 
 #include <libversion/compare.h>
 
+static void usage(const char* progname) {
+    fprintf(stderr, "Usage: %s [-p] version1 version2\n", progname);
+    fprintf(stderr, "\n");
+    fprintf(stderr, " -p       - 'p' letter is treated as 'patch' instead of 'pre'\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, " -h, -?   - print usage and exit\n");
+}
+
 int main(int argc, char** argv) {
-	int result;
+    int ch, pflag, result, flags = 0;
+    const char* progname = argv[0];
 
-	if (argc != 3) {
-		fprintf(stderr, "Usage: %s version1 version2\n", argv[0]);
-		return 1;
-	}
+    while ((ch = getopt(argc, argv, "ph")) != -1) {
+        switch (ch) {
+        case 'p':
+            flags |= VERSIONFLAG_P_IS_PATCH;
+            pflag = 1;
+            break;
+        case 'h':
+        case '?':
+            usage(progname);
+            return 0;
+        default:
+            usage(progname);
+            return 1;
+        }
+    }
 
-	result = version_compare_simple(argv[1], argv[2]);
+    argc -= optind;
+    argv += optind;
+
+	if (argc != 2) {
+        usage(progname);
+        return 1;
+    }
+
+	result = version_compare_flags(argv[0], argv[1], flags);
 	if (result < 0)
 		printf("<\n");
 	else if (result > 0)
