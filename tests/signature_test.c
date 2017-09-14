@@ -52,7 +52,6 @@ static int signature_test(const char* v1, const char* v2, int expected) {
 
 int main() {
 	int errors = 0;
-	int result;
 
 	fprintf(stderr, "Test group: lowlevel 1\n");
 	errors += signature_test("", "", 1);
