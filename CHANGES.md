@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.3.0 - 2017-09-14
+* Add `version_compare_flags`, equivalent of `version_compare_simple`
+  which takes additional `flags` argument used to fine tune its
+  behavior.
+* Implemented `VERSIONFLAG_P_IS_PATCH` flag which affects the handling
+  of `p` letter encountered in versions.
+
 ## 1.2.0 - 2017-05-23
 * Enable position independent code so libversion can be used with shared libraries
 
