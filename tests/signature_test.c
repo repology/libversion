@@ -61,7 +61,7 @@ int main() {
 	errors += signature_test("", "2", 0);
 	errors += signature_test("a", "2", 0);
 
-	fprintf(stderr, "Test group: lowlevel 2\n");
+	fprintf(stderr, "\nTest group: lowlevel 2\n");
 	errors += signature_test("01", "23", 1);
 	errors += signature_test("a1", "23", 0);
 	errors += signature_test("0b", "23", 0);
@@ -82,7 +82,7 @@ int main() {
 	errors += signature_test("0b", "cd", 0);
 	errors += signature_test("ab", "cd", 1);
 
-	fprintf(stderr, "Test group: lowlevel 2.5\n");
+	fprintf(stderr, "\nTest group: lowlevel 2.5\n");
 	errors += signature_test("01", "2.3", 0);
 	errors += signature_test("a1", "2.3", 0);
 	errors += signature_test("0b", "2.3", 0);
@@ -103,7 +103,7 @@ int main() {
 	errors += signature_test("0b", "c.d", 0);
 	errors += signature_test("ab", "c.d", 0);
 
-	fprintf(stderr, "Test group: lowlevel 3\n");
+	fprintf(stderr, "\nTest group: lowlevel 3\n");
 	errors += signature_test("0.1", "2.3", 1);
 	errors += signature_test("a.1", "2.3", 0);
 	errors += signature_test("0.b", "2.3", 0);
@@ -124,19 +124,19 @@ int main() {
 	errors += signature_test("0.b", "c.d", 0);
 	errors += signature_test("a.b", "c.d", 1);
 
-	fprintf(stderr, "Test group: values are ignored\n");
+	fprintf(stderr, "\nTest group: values are ignored\n");
 	errors += signature_test("1.0", "0.1", 1);
 	errors += signature_test("1.0", "1.00", 1);
 	errors += signature_test("1.1", "1.001", 1);
 	errors += signature_test("1.0", "9999.9999", 1);
 	errors += signature_test("1asdfdhasfkjahsdkjf2", "9999x9999", 1);
 
-	fprintf(stderr, "Test group: extra separators are ignored\n");
+	fprintf(stderr, "\nTest group: extra separators are ignored\n");
 	errors += signature_test(".~.1.0", "1.0", 1);
 	errors += signature_test("1.~.0", "1.0", 1);
 	errors += signature_test("1.0.~.", "1.0", 1);
 
-	fprintf(stderr, "Test group: number of components\n");
+	fprintf(stderr, "\nTest group: number of components\n");
 	errors += signature_test("1.0", "1", 0);
 	errors += signature_test("1.0", "1.0.0", 0);
 
