@@ -34,14 +34,13 @@ static void usage(const char* progname) {
 }
 
 int main(int argc, char** argv) {
-    int ch, pflag, result, flags = 0;
+    int ch, result, flags = 0;
     const char* progname = argv[0];
 
     while ((ch = getopt(argc, argv, "ph")) != -1) {
         switch (ch) {
         case 'p':
             flags |= VERSIONFLAG_P_IS_PATCH;
-            pflag = 1;
             break;
         case 'h':
         case '?':
