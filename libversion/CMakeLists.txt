@@ -1,5 +1,6 @@
 SET(LIBVERSION_SOURCES
 	compare.c
+	signature.c
 )
 
 SET(LIBVERSION_HEADERS
