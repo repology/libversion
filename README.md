@@ -61,7 +61,7 @@ Available `flags` values:
 
 * `VERSIONFLAG_P_IS_PATCH` _p_ keyword is treated as _patch_ (post-release) instead of _pre_ (pre-release)
 
-If flags is 0, acts exactly the same way as `version_compare_simple`.
+If flags is **0**, acts exactly the same way as `version_compare_simple`.
 
 Returns **-1** if `v1` is lower than `v2`, **0** if `v1` is equal to `v2` and **1** if `v1` is higher than `v2`.
 
