@@ -28,7 +28,7 @@ extern "C" {
 #endif
 
 enum {
-    VERSIONFLAG_P_IS_PATCH = 0x1
+	VERSIONFLAG_P_IS_PATCH = 0x1
 };
 
 int version_compare_simple(const char* v1, const char* v2);

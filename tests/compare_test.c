@@ -53,7 +53,7 @@ static int version_test_symmetrical_flags(const char* v1, const char* v2, int ex
 }
 
 static int version_test_symmetrical(const char* v1, const char* v2, int expected) {
-    return version_test_symmetrical_flags(v1, v2, expected, 0);
+	return version_test_symmetrical_flags(v1, v2, expected, 0);
 }
 
 int main() {
