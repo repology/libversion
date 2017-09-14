@@ -31,6 +31,7 @@ A short list of version features libversion handles for you:
   * ```1.0alpha1 < 1.0alpha2 < 1.0beta1 < 1.0rc1 < 1.0```
 * Awareness of prerelease keywords: while ```1.0 < 1.0a-1``` (_a_ treated as version addendum), but ```1.0alpha-1 < 1.0``` (_alpha_ is treated as prerelease marker)
 * Awareness of _patch_ keyword: while ```1.0alpha1 < 1.0``` (_alpha_ is pre-release), but ```1.0 < 1.0patch1 < 1.1``` (_patch_ is post-release)
+* Customizable handling of _p_ keyword (it may mean either _patch_ or _pre_, and since libversion cannot guess, this is controlled with an external flag)
 
 See [doc/ALGORITHM.md](doc/ALGORITHM.md) for more elaborate description
 of inner logic.
@@ -41,7 +42,24 @@ of inner logic.
 int version_compare_simple(const char* v1, const char* v2);
 ```
 
-Compares version strings ```v1``` and ```v2```
+Compares version strings ```v1``` and ```v2```.
+
+Returns **-1** if ```v1``` is lower than ```v2```, **0** if ```v1``` is equal to ```v2``` and **1** if ```v1``` is higher than ```v2```.
+
+Thread safe, does not produce errors, does not allocate dynamic memory.
+
+```
+int version_compare_flags(const char* v1, const char* v2, int flags);
+```
+
+Compares version strings ```v1``` and ```v2```, allowing to fine tune
+comparison behavior.
+
+Available `flags` values:
+
+* `VERSIONFLAG_P_IS_PATCH` _p_ keyword is treated as _patch_ (post-release) instead of _pre_ (pre-release)
+
+If flags is 0, acts exactly the same way as `version_compare_simple`.
 
 Returns **-1** if ```v1``` is lower than ```v2```, **0** if ```v1``` is equal to ```v2``` and **1** if ```v1``` is higher than ```v2```.
 
@@ -54,11 +72,27 @@ Thread safe, does not produce errors, does not allocate dynamic memory.
 #include <libversion/compare.h>
 
 int main() {
+    /* 0.99 < 1.11 */
     assert(version_compare_simple("0.99", "1.11") == -1);
+
+    /* 1.0 == 1.0.0 */
     assert(version_compare_simple("1.0", "1.0.0") == 0);
+
+    /* 1.0alpha1 < 1.0.rc1 */
     assert(version_compare_simple("1.0alpha1", "1.0.rc1") == -1);
+
+    /* 1.0 > 1.0.rc1 */
     assert(version_compare_simple("1.0", "1.0-rc1") == 1);
+
+    /* 1.2.3alpha4 is the same as 1.2.3~a4 */
     assert(version_compare_simple("1.2.3alpha4", "1.2.3~a4") == 0);
+
+    /* by default, `p' is treated as `pre'... */
+    assert(version_compare_simple("1.0p0", "1.0", 0) == -1);
+    assert(version_compare_flags("1.0p0", "1.0", 0) == -1);
+
+    /* ...but this is tunable: here it's handled as `patch` */
+    assert(version_compare_flags("1.0p0", "1.0", VERSIONFLAG_P_IS_PATCH) == 1);
 }
 ```
 
