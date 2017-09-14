@@ -1,7 +1,7 @@
 # libversion
 
 <a href="https://repology.org/metapackage/libversion">
-    <img src="https://repology.org/badge/vertical-allrepos/libversion.svg" alt="Packaging status" align="right">
+	<img src="https://repology.org/badge/vertical-allrepos/libversion.svg" alt="Packaging status" align="right">
 </a>
 
 [![Build Status](https://travis-ci.org/repology/libversion.svg?branch=master)](https://travis-ci.org/repology/libversion)
@@ -74,27 +74,27 @@ Thread safe, does not produce errors, does not allocate dynamic memory.
 #include <libversion/version.h>
 
 int main() {
-    /* 0.99 < 1.11 */
-    assert(version_compare_simple("0.99", "1.11") == -1);
+	/* 0.99 < 1.11 */
+	assert(version_compare_simple("0.99", "1.11") == -1);
 
-    /* 1.0 == 1.0.0 */
-    assert(version_compare_simple("1.0", "1.0.0") == 0);
+	/* 1.0 == 1.0.0 */
+	assert(version_compare_simple("1.0", "1.0.0") == 0);
 
-    /* 1.0alpha1 < 1.0.rc1 */
-    assert(version_compare_simple("1.0alpha1", "1.0.rc1") == -1);
+	/* 1.0alpha1 < 1.0.rc1 */
+	assert(version_compare_simple("1.0alpha1", "1.0.rc1") == -1);
 
-    /* 1.0 > 1.0.rc1 */
-    assert(version_compare_simple("1.0", "1.0-rc1") == 1);
+	/* 1.0 > 1.0.rc1 */
+	assert(version_compare_simple("1.0", "1.0-rc1") == 1);
 
-    /* 1.2.3alpha4 is the same as 1.2.3~a4 */
-    assert(version_compare_simple("1.2.3alpha4", "1.2.3~a4") == 0);
+	/* 1.2.3alpha4 is the same as 1.2.3~a4 */
+	assert(version_compare_simple("1.2.3alpha4", "1.2.3~a4") == 0);
 
-    /* by default, `p' is treated as `pre'... */
-    assert(version_compare_simple("1.0p0", "1.0", 0) == -1);
-    assert(version_compare_flags("1.0p0", "1.0", 0) == -1);
+	/* by default, `p' is treated as `pre'... */
+	assert(version_compare_simple("1.0p0", "1.0", 0) == -1);
+	assert(version_compare_flags("1.0p0", "1.0", 0) == -1);
 
-    /* ...but this is tunable: here it's handled as `patch` */
-    assert(version_compare_flags("1.0p0", "1.0", VERSIONFLAG_P_IS_PATCH) == 1);
+	/* ...but this is tunable: here it's handled as `patch` */
+	assert(version_compare_flags("1.0p0", "1.0", VERSIONFLAG_P_IS_PATCH) == 1);
 }
 ```
 

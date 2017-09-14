@@ -26,39 +26,39 @@
 #include <libversion/version.h>
 
 static void usage(const char* progname) {
-    fprintf(stderr, "Usage: %s [-p] version1 version2\n", progname);
-    fprintf(stderr, "\n");
-    fprintf(stderr, " -p       - 'p' letter is treated as 'patch' instead of 'pre'\n");
-    fprintf(stderr, "\n");
-    fprintf(stderr, " -h, -?   - print usage and exit\n");
+	fprintf(stderr, "Usage: %s [-p] version1 version2\n", progname);
+	fprintf(stderr, "\n");
+	fprintf(stderr, " -p       - 'p' letter is treated as 'patch' instead of 'pre'\n");
+	fprintf(stderr, "\n");
+	fprintf(stderr, " -h, -?   - print usage and exit\n");
 }
 
 int main(int argc, char** argv) {
-    int ch, result, flags = 0;
-    const char* progname = argv[0];
+	int ch, result, flags = 0;
+	const char* progname = argv[0];
 
-    while ((ch = getopt(argc, argv, "ph")) != -1) {
-        switch (ch) {
-        case 'p':
-            flags |= VERSIONFLAG_P_IS_PATCH;
-            break;
-        case 'h':
-        case '?':
-            usage(progname);
-            return 0;
-        default:
-            usage(progname);
-            return 1;
-        }
-    }
+	while ((ch = getopt(argc, argv, "ph")) != -1) {
+		switch (ch) {
+		case 'p':
+			flags |= VERSIONFLAG_P_IS_PATCH;
+			break;
+		case 'h':
+		case '?':
+			usage(progname);
+			return 0;
+		default:
+			usage(progname);
+			return 1;
+		}
+	}
 
-    argc -= optind;
-    argv += optind;
+	argc -= optind;
+	argv += optind;
 
 	if (argc != 2) {
-        usage(progname);
-        return 1;
-    }
+		usage(progname);
+		return 1;
+	}
 
 	result = version_compare_flags(argv[0], argv[1], flags);
 	if (result < 0)
