@@ -48,6 +48,8 @@ Returns **-1** if `v1` is lower than `v2`, **0** if `v1` is equal to `v2` and **
 
 Thread safe, does not produce errors, does not allocate dynamic memory.
 
+---
+
 ```
 int version_compare_flags(const char* v1, const char* v2, int flags);
 ```
