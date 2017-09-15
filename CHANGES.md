@@ -3,8 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.0.0 - 2017-09-15
+* Add `version_signature_single()` function to generate format signature
+  for a version string
+* Header file renamed to `libversion/version.h`
+
 ## 1.3.0 - 2017-09-14
-* Add `version_compare_flags`, equivalent of `version_compare_simple`
+* Add `version_compare_flags()`, equivalent of `version_compare_simple()`
   which takes additional `flags` argument used to fine tune its
   behavior.
 * Implemented `VERSIONFLAG_P_IS_PATCH` flag which affects the handling
