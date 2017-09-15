@@ -113,6 +113,12 @@ int main() {
 
 	/* ...but this is tunable: here it's handled as `patch` */
 	assert(version_compare_flags("1.0p0", "1.0", VERSIONFLAG_P_IS_PATCH) == 1);
+
+	/* versions with same signatures */
+	assert(version_signature_simple("0.9") == version_signature_simple("54.20170112"));
+
+	/* versions with different signatures */
+	assert(version_signature_simple("1.0") == version_signature_simple("1.alpha2"));
 }
 ```
 
