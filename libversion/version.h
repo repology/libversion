@@ -37,7 +37,6 @@ int version_compare_simple(const char* v1, const char* v2);
 int version_compare_flags(const char* v1, const char* v2, int flags);
 
 version_signature_t version_signature_simple(const char* v);
-version_signature_t version_signature_flags(const char* v, int flags);
 
 #ifdef __cplusplus
 }
