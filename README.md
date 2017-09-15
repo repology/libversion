@@ -36,7 +36,14 @@ A short list of version features libversion handles for you:
 See [doc/ALGORITHM.md](doc/ALGORITHM.md) for more elaborate description
 of inner logic.
 
+Additionally, libversion provides facility to extract signature of
+a version string, which may be used to compare version formats.
+That is, `0.1.2` and `54.0.3` have the same signatures, but `1.0`,
+`1.0alpha1`, `1.0a` and `1.0.0` all have different signatures.
+
 ## API
+
+### Version comparison
 
 ```
 int version_compare_simple(const char* v1, const char* v2);
@@ -64,6 +71,17 @@ Available `flags` values:
 If flags is **0**, acts exactly the same way as `version_compare_simple`.
 
 Returns **-1** if `v1` is lower than `v2`, **0** if `v1` is equal to `v2` and **1** if `v1` is higher than `v2`.
+
+Thread safe, does not produce errors, does not allocate dynamic memory.
+
+### Version signature generation
+
+```
+version_signature_t version_signature_simple(const char* v);
+```
+
+For a given version string, generates signature stored as unspecified
+scalar type, which may be then used to compare signatures.
 
 Thread safe, does not produce errors, does not allocate dynamic memory.
 
