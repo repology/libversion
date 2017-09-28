@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.2.0 - 2017-09-28
+* Handle any keyword which starts with `post` equally (as post-release). This
+  is now also consistent with how keywords starting with `pre` are handled.
+
 ## 2.1.0 - 2017-09-28
 * Added special handling of `post` keyword (as post-release, similar to `patch`)
 

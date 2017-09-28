@@ -213,6 +213,7 @@ int main() {
 	errors += version_test_symmetrical("1.0.patch1", "1.0", 1);
 	errors += version_test_symmetrical("1.0.patch1", "1.1", -1);
 
+	/* XXX: 1.0.patch1 is not the same as 1.0patch.1 though; should it be? */
 	errors += version_test_symmetrical("1.0patch.1", "0.9", 1);
 	errors += version_test_symmetrical("1.0patch.1", "1.0", 1);
 	errors += version_test_symmetrical("1.0patch.1", "1.1", -1);
@@ -221,11 +222,13 @@ int main() {
 	errors += version_test_symmetrical("1.0.patch.1", "1.0", 1);
 	errors += version_test_symmetrical("1.0.patch.1", "1.1", -1);
 
-	/* XXX: 1.0.patch1 is not the same as 1.0patch.1 though; should it be? */
-
 	errors += version_test_symmetrical("1.0post1", "0.9", 1);
 	errors += version_test_symmetrical("1.0post1", "1.0", 1);
 	errors += version_test_symmetrical("1.0post1", "1.1", -1);
+
+	errors += version_test_symmetrical("1.0postanythinggoeshere1", "0.9", 1);
+	errors += version_test_symmetrical("1.0postanythinggoeshere1", "1.0", 1);
+	errors += version_test_symmetrical("1.0postanythinggoeshere1", "1.1", -1);
 
 	fprintf(stderr, "\nTest group: p is patch flag\n");
 	errors += version_test_symmetrical_flags("1.0p1", "1.0", -1, 0);
