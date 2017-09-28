@@ -30,7 +30,7 @@ A short list of version features libversion handles for you:
   * `1.0alpha1 == 1.0.alpha1 == 1.0a1 == 1.0.a1`
   * `1.0alpha1 < 1.0alpha2 < 1.0beta1 < 1.0rc1 < 1.0`
 * Awareness of prerelease keywords: while `1.0 < 1.0a-1` (_a_ treated as version addendum), but `1.0alpha-1 < 1.0` (_alpha_ is treated as prerelease marker)
-* Awareness of _patch_ keyword: while `1.0alpha1 < 1.0` (_alpha_ is pre-release), but `1.0 < 1.0patch1 < 1.1` (_patch_ is post-release)
+* Awareness of _patch_ and _post_ keywords: while `1.0alpha1 < 1.0` (_alpha_ is pre-release), but `1.0 < 1.0patch1 < 1.1` (_patch_ is post-release)
 * Customizable handling of _p_ keyword (it may mean either _patch_ or _pre_, and since libversion cannot guess, this is controlled with an external flag)
 
 See [doc/ALGORITHM.md](doc/ALGORITHM.md) for more elaborate description

@@ -203,7 +203,7 @@ int main() {
 	errors += version_test_symmetrical("1.0rc-1", "1.0", -1);
 	errors += version_test_symmetrical("1.0rc-1", "1.1", -1);
 
-	fprintf(stderr, "\nTest group: patch word awareness\n");
+	fprintf(stderr, "\nTest group: post-release keyword awareness\n");
 	/* this should not be treated as 1.0a-1 */
 	errors += version_test_symmetrical("1.0patch1", "0.9", 1);
 	errors += version_test_symmetrical("1.0patch1", "1.0", 1);
@@ -220,6 +220,10 @@ int main() {
 	errors += version_test_symmetrical("1.0.patch.1", "0.9", 1);
 	errors += version_test_symmetrical("1.0.patch.1", "1.0", 1);
 	errors += version_test_symmetrical("1.0.patch.1", "1.1", -1);
+
+	errors += version_test_symmetrical("1.0post1", "0.9", 1);
+	errors += version_test_symmetrical("1.0post1", "1.0", 1);
+	errors += version_test_symmetrical("1.0post1", "1.1", -1);
 
 	fprintf(stderr, "\nTest group: p is patch flag\n");
 	errors += version_test_symmetrical_flags("1.0p1", "1.0", -1, 0);

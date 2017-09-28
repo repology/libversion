@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.1.0 - 2017-09-28
+* Added special handling of `post` keyword (as post-release, similar to `patch`)
+
 ## 2.0.0 - 2017-09-15
 * Add `version_signature_single()` function to generate format signature
   for a version string
