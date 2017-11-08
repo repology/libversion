@@ -118,7 +118,7 @@ int main() {
 	assert(version_signature_simple("0.9") == version_signature_simple("54.20170112"));
 
 	/* versions with different signatures */
-	assert(version_signature_simple("1.0") == version_signature_simple("1.alpha2"));
+	assert(version_signature_simple("1.0") != version_signature_simple("1.alpha2"));
 }
 ```
 
