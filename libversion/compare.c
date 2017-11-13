@@ -105,6 +105,8 @@ static version_component_t parse_alpha(const char** str, int* outflags, int flag
 		*outflags = ALPHAFLAG_POSTRELEASE;
 	else if (cur - *str == 5 && mymemcasecmp(*str, "patch", 5) == 0)
 		*outflags = ALPHAFLAG_POSTRELEASE;
+	else if (cur - *str == 2 && mymemcasecmp(*str, "pl", 2) == 0)  /* patchlevel */
+		*outflags = ALPHAFLAG_POSTRELEASE;
 	else if (flags & VERSIONFLAG_P_IS_PATCH && cur - *str == 1 && (**str == 'p' || **str == 'P'))
 		*outflags = ALPHAFLAG_POSTRELEASE;
 
