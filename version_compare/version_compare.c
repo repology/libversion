@@ -21,16 +21,26 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 
 #include <libversion/version.h>
 
 static void usage(const char* progname) {
-	fprintf(stderr, "Usage: %s [-p] version1 version2\n", progname);
+	fprintf(stderr, "Usage: %s [-p] version1 [op] version2\n", progname);
+	fprintf(stderr, "\n");
+	fprintf(stderr, " op        - if specified (supports <, <=, =, >=, >, lt, le, eq, ge, gt),\n");
+	fprintf(stderr, "             the utility would exit with zero (success) status code if the\n");
+	fprintf(stderr, "             given condition is satisfied.  Otherwise, the utility would\n");
+	fprintf(stderr, "             print <, =, or > to indicate how specified versions compare.\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, " -p       - 'p' letter is treated as 'patch' instead of 'pre'\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, " -h, -?   - print usage and exit\n");
+}
+
+static int streq(const char* a, const char* b) {
+	return strcmp(a, b) == 0;
 }
 
 int main(int argc, char** argv) {
@@ -55,18 +65,32 @@ int main(int argc, char** argv) {
 	argc -= optind;
 	argv += optind;
 
-	if (argc != 2) {
-		usage(progname);
-		return 1;
+	if (argc == 2) {
+		result = version_compare_flags(argv[0], argv[1], flags);
+
+		if (result < 0)
+			printf("<\n");
+		else if (result > 0)
+			printf(">\n");
+		else
+			printf("=\n");
+
+		return 0;
+	} else if (argc == 3) {
+		result = version_compare_flags(argv[0], argv[2], flags);
+
+		if (streq(argv[1], "<") || streq(argv[1], "lt"))
+			return !(result < 0);
+		else if (streq(argv[1], "<=") || streq(argv[1], "=<") || streq(argv[1], "le"))
+			return !(result <= 0);
+		else if (streq(argv[1], "=") || streq(argv[1], "=") || streq(argv[1], "eq"))
+			return !(result == 0);
+		else if (streq(argv[1], ">=") || streq(argv[1], "=>") || streq(argv[1], "ge"))
+			return !(result >= 0);
+		else if (streq(argv[1], ">") || streq(argv[1], "gt"))
+			return !(result > 0);
 	}
 
-	result = version_compare_flags(argv[0], argv[1], flags);
-	if (result < 0)
-		printf("<\n");
-	else if (result > 0)
-		printf(">\n");
-	else
-		printf("=\n");
-
-	return 0;
+	usage(progname);
+	return 1;
 }
