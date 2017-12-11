@@ -1,6 +1,8 @@
 language: c
-sudo: required
-dist: trusty
+addons:
+  apt:
+    packages:
+      - gcc-multilib
 matrix:
   include:
     - compiler: gcc
@@ -12,8 +14,6 @@ matrix:
     - compiler: clang
       env: CFLAGS="-Weverything" ARCH_CFLAGS="-m32"
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq gcc-multilib
   - if [ -n "${COVERAGE}" ]; then pip install --user pyyaml cpp-coveralls; fi
 script:
   - cmake . -DCMAKE_VERBOSE_MAKEFILE=yes -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_FLAGS="-Werror -Wall -Wextra -pedantic ${CFLAGS} ${ARCH_CFLAGS}" ${CMAKE_FLAGS}
