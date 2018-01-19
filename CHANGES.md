@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.4.0 - 2018-01-19
+* Allow to specify `P_IS_PATCH` flag to each comparison argument separately
+
 ## 2.3.0 - 2017-11-13
 * Handle `pl` ("patchlevel") keyword as post-release.
 
