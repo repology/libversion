@@ -66,6 +66,10 @@ enum {
 	ALPHAFLAG_POSTRELEASE = 2
 };
 
+enum {
+	INTVERSIONFLAG_P_IS_PATCH = 0x01
+};
+
 static int mymemcasecmp(const char* a, const char* b, size_t len) {
 	while (len-- != 0) {
 		unsigned char ua = (unsigned char)((*a >= 'A' && *a <= 'Z') ? (*a - 'A' + 'a') : (*a));
@@ -107,7 +111,7 @@ static version_component_t parse_alpha(const char** str, int* outflags, int flag
 		*outflags = ALPHAFLAG_POSTRELEASE;
 	else if (cur - *str == 2 && mymemcasecmp(*str, "pl", 2) == 0)  /* patchlevel */
 		*outflags = ALPHAFLAG_POSTRELEASE;
-	else if (flags & VERSIONFLAG_P_IS_PATCH && cur - *str == 1 && (**str == 'p' || **str == 'P'))
+	else if (flags & INTVERSIONFLAG_P_IS_PATCH && cur - *str == 1 && (**str == 'p' || **str == 'P'))
 		*outflags = ALPHAFLAG_POSTRELEASE;
 
 	*str = cur;
@@ -193,11 +197,14 @@ int version_compare_flags(const char* v1, const char* v2, int flags) {
 	size_t v1_len = 0, v2_len = 0;
 	size_t shift, i;
 
+	const int v1_flags = (flags & VERSIONFLAG_P_IS_PATCH_LEFT) ? INTVERSIONFLAG_P_IS_PATCH : 0;
+	const int v2_flags = (flags & VERSIONFLAG_P_IS_PATCH_RIGHT) ? INTVERSIONFLAG_P_IS_PATCH : 0;
+
 	while (*v1 != '\0' || *v2 != '\0' || v1_len || v2_len) {
 		if (v1_len == 0)
-			v1_len = get_next_version_component(&v1, v1_comps, flags);
+			v1_len = get_next_version_component(&v1, v1_comps, v1_flags);
 		if (v2_len == 0)
-			v2_len = get_next_version_component(&v2, v2_comps, flags);
+			v2_len = get_next_version_component(&v2, v2_comps, v2_flags);
 
 		shift = MY_MIN(v1_len, v2_len);
 		for (i = 0; i < shift; i++) {

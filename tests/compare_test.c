@@ -241,6 +241,20 @@ int main() {
 	errors += version_test_symmetrical_flags("1.0p1", "1.0", 1, VERSIONFLAG_P_IS_PATCH);
 	errors += version_test_symmetrical_flags("1.0p1", "1.0patch1", 0, VERSIONFLAG_P_IS_PATCH);
 
+	fprintf(stderr, "\nTest group: p is patch flag, specific to each argument\n");
+	errors += version_test("1.0p1", "1.0p1", 0, 0);
+	errors += version_test("1.0p1", "1.0p1", 0, VERSIONFLAG_P_IS_PATCH);
+	errors += version_test("1.0p1", "1.0p1", 1, VERSIONFLAG_P_IS_PATCH_LEFT);
+	errors += version_test("1.0p1", "1.0p1", -1, VERSIONFLAG_P_IS_PATCH_RIGHT);
+
+	errors += version_test("1.0p1", "1.0", -1, 0);
+	errors += version_test("1.0p1", "1.0", -1, VERSIONFLAG_P_IS_PATCH_RIGHT);
+	errors += version_test("1.0p1", "1.0", 1, VERSIONFLAG_P_IS_PATCH_LEFT);
+
+	errors += version_test("1.0", "1.0p1", 1, 0);
+	errors += version_test("1.0", "1.0p1", 1, VERSIONFLAG_P_IS_PATCH_LEFT);
+	errors += version_test("1.0", "1.0p1", -1, VERSIONFLAG_P_IS_PATCH_RIGHT);
+
 	fprintf(stderr, "\nTest group: p compatibility\n");
 	errors += version_test_symmetrical_flags("1.0p1", "1.0pre1", 0, 0);
 	errors += version_test_symmetrical_flags("1.0p1", "1.0patch1", -1, 0);
