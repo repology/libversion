@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.5.0 - 2018-02-02
+* Implemented `VERSIONFLAG_ANY_IS_PATCH` flag which makes any alphabecit
+  characters encountered in versions be treated as post-release.
+
 ## 2.4.0 - 2018-01-19
 * Allow to specify `P_IS_PATCH` flag to each comparison argument separately
 
