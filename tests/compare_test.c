@@ -263,7 +263,7 @@ int main() {
 	errors += version_test("1.0", "1.0.p.1", 1, VERSIONFLAG_P_IS_PATCH_LEFT);
 	errors += version_test("1.0", "1.0.p.1", -1, VERSIONFLAG_P_IS_PATCH_RIGHT);
 
-	// this case is not affected
+	/* this case is not affected */
 	errors += version_test("1.0", "1.0p.1", -1, 0);
 	errors += version_test("1.0", "1.0p.1", -1, VERSIONFLAG_P_IS_PATCH_LEFT);
 	errors += version_test("1.0", "1.0p.1", -1, VERSIONFLAG_P_IS_PATCH_RIGHT);
@@ -290,7 +290,7 @@ int main() {
 	errors += version_test("1.0", "1.0.a.1", 1, VERSIONFLAG_ANY_IS_PATCH_LEFT);
 	errors += version_test("1.0", "1.0.a.1", -1, VERSIONFLAG_ANY_IS_PATCH_RIGHT);
 
-	// this case is not affected
+	/* this case is not affected */
 	errors += version_test("1.0", "1.0a.1", -1, 0);
 	errors += version_test("1.0", "1.0a.1", -1, VERSIONFLAG_ANY_IS_PATCH_LEFT);
 	errors += version_test("1.0", "1.0a.1", -1, VERSIONFLAG_ANY_IS_PATCH_RIGHT);
