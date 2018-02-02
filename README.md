@@ -66,7 +66,8 @@ comparison behavior.
 
 Available `flags` values:
 
-* `VERSIONFLAG_P_IS_PATCH` _p_ keyword is treated as _patch_ (post-release) instead of _pre_ (pre-release)
+* `VERSIONFLAG_P_IS_PATCH` _p_ keyword is treated as _patch_ (post-release) instead of _pre_ (pre-release).
+* `VERSIONFLAG_ANY_IS_PATCH` any keyword is treated as post-release (useful for handling patchsets as in `1.2foopatchset3.barpatchset4`)
 
 If flags is **0**, acts exactly the same way as `version_compare_simple`.
 

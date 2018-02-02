@@ -35,6 +35,7 @@ static void usage(const char* progname) {
 	fprintf(stderr, "             print <, =, or > to indicate how specified versions compare.\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, " -p       - 'p' letter is treated as 'patch' instead of 'pre'\n");
+	fprintf(stderr, " -a       - any alphabetic characters are treated as post-release\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, " -h, -?   - print usage and exit\n");
 }
@@ -47,10 +48,13 @@ int main(int argc, char** argv) {
 	int ch, result, flags = 0;
 	const char* progname = argv[0];
 
-	while ((ch = getopt(argc, argv, "ph")) != -1) {
+	while ((ch = getopt(argc, argv, "pah")) != -1) {
 		switch (ch) {
 		case 'p':
 			flags |= VERSIONFLAG_P_IS_PATCH;
+			break;
+		case 'a':
+			flags |= VERSIONFLAG_ANY_IS_PATCH;
 			break;
 		case 'h':
 		case '?':
