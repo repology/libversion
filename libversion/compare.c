@@ -66,11 +66,6 @@ enum {
 	ALPHAFLAG_POSTRELEASE = 2
 };
 
-enum {
-	INTVERSIONFLAG_P_IS_PATCH = 0x01,
-	INTVERSIONFLAG_ANY_IS_PATCH = 0x02
-};
-
 static int mymemcasecmp(const char* a, const char* b, size_t len) {
 	while (len-- != 0) {
 		unsigned char ua = (unsigned char)((*a >= 'A' && *a <= 'Z') ? (*a - 'A' + 'a') : (*a));
@@ -112,7 +107,7 @@ static version_component_t parse_alpha(const char** str, int* outflags, int flag
 		*outflags = ALPHAFLAG_POSTRELEASE;
 	else if (cur - *str == 2 && mymemcasecmp(*str, "pl", 2) == 0)  /* patchlevel */
 		*outflags = ALPHAFLAG_POSTRELEASE;
-	else if (flags & INTVERSIONFLAG_P_IS_PATCH && cur - *str == 1 && (**str == 'p' || **str == 'P'))
+	else if (flags & VERSIONFLAG_P_IS_PATCH && cur - *str == 1 && (**str == 'p' || **str == 'P'))
 		*outflags = ALPHAFLAG_POSTRELEASE;
 
 	*str = cur;
@@ -153,7 +148,7 @@ static size_t get_next_version_component(const char** str, version_component_t* 
 	while (is_version_char(**str))
 		++*str;
 
-	if (flags & INTVERSIONFLAG_ANY_IS_PATCH)
+	if (flags & VERSIONFLAG_ANY_IS_PATCH)
 		alphaflags = ALPHAFLAG_POSTRELEASE;
 
 	if (number != -1 && extranumber != -1) {
@@ -197,16 +192,20 @@ int version_compare_simple(const char* v1, const char* v2) {
 }
 
 int version_compare_flags(const char* v1, const char* v2, int flags) {
+	const int v1_flags =
+		((flags & VERSIONFLAG_P_IS_PATCH_LEFT) ? VERSIONFLAG_P_IS_PATCH : 0) |
+		((flags & VERSIONFLAG_ANY_IS_PATCH_LEFT) ? VERSIONFLAG_ANY_IS_PATCH : 0);
+	const int v2_flags =
+		((flags & VERSIONFLAG_P_IS_PATCH_RIGHT) ? VERSIONFLAG_P_IS_PATCH : 0) |
+		((flags & VERSIONFLAG_ANY_IS_PATCH_RIGHT) ? VERSIONFLAG_ANY_IS_PATCH : 0);
+
+	return version_compare_flags2(v1, v2, v1_flags, v2_flags);
+}
+
+int version_compare_flags2(const char* v1, const char* v2, int v1_flags, int v2_flags) {
 	version_component_t v1_comps[6], v2_comps[6];
 	size_t v1_len = 0, v2_len = 0;
 	size_t shift, i;
-
-	const int v1_flags =
-		((flags & VERSIONFLAG_P_IS_PATCH_LEFT) ? INTVERSIONFLAG_P_IS_PATCH : 0) |
-		((flags & VERSIONFLAG_ANY_IS_PATCH_LEFT) ? INTVERSIONFLAG_ANY_IS_PATCH : 0);
-	const int v2_flags =
-		((flags & VERSIONFLAG_P_IS_PATCH_RIGHT) ? INTVERSIONFLAG_P_IS_PATCH : 0) |
-		((flags & VERSIONFLAG_ANY_IS_PATCH_RIGHT) ? INTVERSIONFLAG_ANY_IS_PATCH : 0);
 
 	while (*v1 != '\0' || *v2 != '\0' || v1_len || v2_len) {
 		if (v1_len == 0)

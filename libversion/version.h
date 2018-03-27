@@ -28,19 +28,20 @@ extern "C" {
 #endif
 
 enum {
-	VERSIONFLAG_P_IS_PATCH_LEFT = 0x1,
-	VERSIONFLAG_P_IS_PATCH_RIGHT = 0x2,
+	VERSIONFLAG_P_IS_PATCH_LEFT = 0x1, // deprecated: use version_compare_flags2 and VERSIONFLAG_P_IS_PATCH
+	VERSIONFLAG_P_IS_PATCH_RIGHT = 0x2, // deprecated: use version_compare_flags2 and VERSIONFLAG_P_IS_PATCH
 	VERSIONFLAG_P_IS_PATCH = VERSIONFLAG_P_IS_PATCH_LEFT|VERSIONFLAG_P_IS_PATCH_RIGHT,
 
-	VERSIONFLAG_ANY_IS_PATCH_LEFT = 0x4,
-	VERSIONFLAG_ANY_IS_PATCH_RIGHT = 0x8,
+	VERSIONFLAG_ANY_IS_PATCH_LEFT = 0x4, // deprecated: use version_compare_flags2 and VERSIONFLAG_ANY_IS_PATCH
+	VERSIONFLAG_ANY_IS_PATCH_RIGHT = 0x8, // deprecated: use version_compare_flags2 and VERSIONFLAG_ANY_IS_PATCH
 	VERSIONFLAG_ANY_IS_PATCH = VERSIONFLAG_ANY_IS_PATCH_LEFT|VERSIONFLAG_ANY_IS_PATCH_RIGHT
 };
 
 typedef unsigned long version_signature_t;
 
 int version_compare_simple(const char* v1, const char* v2);
-int version_compare_flags(const char* v1, const char* v2, int flags);
+int version_compare_flags(const char* v1, const char* v2, int flags); // deprecated: use version_compare_flags2
+int version_compare_flags2(const char* v1, const char* v2, int v1_flags, int v2_flags);
 
 version_signature_t version_signature_simple(const char* v);
 

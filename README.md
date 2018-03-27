@@ -58,11 +58,12 @@ Thread safe, does not produce errors, does not allocate dynamic memory.
 ---
 
 ```
-int version_compare_flags(const char* v1, const char* v2, int flags);
+int version_compare_flags2(const char* v1, const char* v2, int v1_flags, int v2_flags);
 ```
 
 Compares version strings `v1` and `v2`, allowing to fine tune
-comparison behavior.
+comparison behavior by specifying additionla flags for either
+version.
 
 Available `flags` values:
 

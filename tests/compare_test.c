@@ -33,8 +33,8 @@ static char comparison_to_char(int comp) {
 	return '=';
 }
 
-static int version_test(const char* v1, const char* v2, int expected, int flags) {
-	int result = version_compare_flags(v1, v2, flags);
+static int version_test(const char* v1, const char* v2, int flags1, int flags2, int expected) {
+	int result = version_compare_flags2(v1, v2, flags1, flags2);
 
 	if (result != expected) {
 		fprintf(stderr, "[FAIL] \"%s\" %c \"%s\": got %c\n", v1, comparison_to_char(expected), v2, comparison_to_char(result));
@@ -45,15 +45,15 @@ static int version_test(const char* v1, const char* v2, int expected, int flags)
 	}
 }
 
-static int version_test_symmetrical_flags(const char* v1, const char* v2, int expected, int flags) {
+static int version_test_symmetrical_flags(const char* v1, const char* v2, int flags1, int flags2, int expected) {
 	if (expected == 0 && strcmp(v1, v2) == 0)
-		return version_test(v1, v2, 0, flags);
+		return version_test(v1, v2, flags1, flags2, 0);
 
-	return version_test(v1, v2, expected, flags) + version_test(v2, v1, -expected, flags);
+	return version_test(v1, v2, flags1, flags2, expected) + version_test(v2, v1, flags2, flags1, -expected);
 }
 
 static int version_test_symmetrical(const char* v1, const char* v2, int expected) {
-	return version_test_symmetrical_flags(v1, v2, expected, 0);
+	return version_test_symmetrical_flags(v1, v2, 0, 0, expected);
 }
 
 int main() {
@@ -235,74 +235,59 @@ int main() {
 	errors += version_test_symmetrical("1.0pl1", "1.1", -1);
 
 	fprintf(stderr, "\nTest group: p is patch flag\n");
-	errors += version_test_symmetrical_flags("1.0p1", "1.0", -1, 0);
-	errors += version_test_symmetrical_flags("1.0p1", "1.0patch1", -1, 0);
+	errors += version_test_symmetrical_flags("1.0p1", "1.0p1", 0, 0, 0);
+	errors += version_test_symmetrical_flags("1.0p1", "1.0p1", VERSIONFLAG_P_IS_PATCH, VERSIONFLAG_P_IS_PATCH, 0);
+	errors += version_test_symmetrical_flags("1.0p1", "1.0p1", VERSIONFLAG_P_IS_PATCH, 0, 1);
+	errors += version_test_symmetrical_flags("1.0p1", "1.0p1", 0, VERSIONFLAG_P_IS_PATCH, -1);
 
-	errors += version_test_symmetrical_flags("1.0p1", "1.0", 1, VERSIONFLAG_P_IS_PATCH);
-	errors += version_test_symmetrical_flags("1.0p1", "1.0patch1", 0, VERSIONFLAG_P_IS_PATCH);
+	errors += version_test_symmetrical_flags("1.0", "1.0p1", 0, 0, 1);
+	errors += version_test_symmetrical_flags("1.0", "1.0p1", VERSIONFLAG_P_IS_PATCH, 0, 1);
+	errors += version_test_symmetrical_flags("1.0", "1.0p1", 0, VERSIONFLAG_P_IS_PATCH, -1);
 
-	fprintf(stderr, "\nTest group: p is patch flag, specific to each argument\n");
-	errors += version_test("1.0p1", "1.0p1", 0, 0);
-	errors += version_test("1.0p1", "1.0p1", 0, VERSIONFLAG_P_IS_PATCH);
-	errors += version_test("1.0p1", "1.0p1", 1, VERSIONFLAG_P_IS_PATCH_LEFT);
-	errors += version_test("1.0p1", "1.0p1", -1, VERSIONFLAG_P_IS_PATCH_RIGHT);
+	errors += version_test_symmetrical_flags("1.0", "1.0.p1", 0, 0, 1);
+	errors += version_test_symmetrical_flags("1.0", "1.0.p1", VERSIONFLAG_P_IS_PATCH, 0, 1);
+	errors += version_test_symmetrical_flags("1.0", "1.0.p1", 0, VERSIONFLAG_P_IS_PATCH, -1);
 
-	errors += version_test("1.0p1", "1.0", -1, 0);
-	errors += version_test("1.0p1", "1.0", -1, VERSIONFLAG_P_IS_PATCH_RIGHT);
-	errors += version_test("1.0p1", "1.0", 1, VERSIONFLAG_P_IS_PATCH_LEFT);
-
-	errors += version_test("1.0", "1.0p1", 1, 0);
-	errors += version_test("1.0", "1.0p1", 1, VERSIONFLAG_P_IS_PATCH_LEFT);
-	errors += version_test("1.0", "1.0p1", -1, VERSIONFLAG_P_IS_PATCH_RIGHT);
-
-	errors += version_test("1.0", "1.0.p1", 1, 0);
-	errors += version_test("1.0", "1.0.p1", 1, VERSIONFLAG_P_IS_PATCH_LEFT);
-	errors += version_test("1.0", "1.0.p1", -1, VERSIONFLAG_P_IS_PATCH_RIGHT);
-
-	errors += version_test("1.0", "1.0.p.1", 1, 0);
-	errors += version_test("1.0", "1.0.p.1", 1, VERSIONFLAG_P_IS_PATCH_LEFT);
-	errors += version_test("1.0", "1.0.p.1", -1, VERSIONFLAG_P_IS_PATCH_RIGHT);
+	errors += version_test_symmetrical_flags("1.0", "1.0.p.1", 0, 0, 1);
+	errors += version_test_symmetrical_flags("1.0", "1.0.p.1", VERSIONFLAG_P_IS_PATCH, 0, 1);
+	errors += version_test_symmetrical_flags("1.0", "1.0.p.1", 0, VERSIONFLAG_P_IS_PATCH, -1);
 
 	/* this case is not affected */
-	errors += version_test("1.0", "1.0p.1", -1, 0);
-	errors += version_test("1.0", "1.0p.1", -1, VERSIONFLAG_P_IS_PATCH_LEFT);
-	errors += version_test("1.0", "1.0p.1", -1, VERSIONFLAG_P_IS_PATCH_RIGHT);
+	errors += version_test_symmetrical_flags("1.0", "1.0p.1", 0, 0, -1);
+	errors += version_test_symmetrical_flags("1.0", "1.0p.1", VERSIONFLAG_P_IS_PATCH, 0, -1);
+	errors += version_test_symmetrical_flags("1.0", "1.0p.1", 0, VERSIONFLAG_P_IS_PATCH, -1);
 
 	fprintf(stderr, "\nTest group: any is patch flag\n");
-	errors += version_test("1.0a1", "1.0a1", 0, 0);
-	errors += version_test("1.0a1", "1.0a1", 0, VERSIONFLAG_ANY_IS_PATCH);
-	errors += version_test("1.0a1", "1.0a1", 1, VERSIONFLAG_ANY_IS_PATCH_LEFT);
-	errors += version_test("1.0a1", "1.0a1", -1, VERSIONFLAG_ANY_IS_PATCH_RIGHT);
+	errors += version_test_symmetrical_flags("1.0a1", "1.0a1", 0, 0, 0);
+	errors += version_test_symmetrical_flags("1.0a1", "1.0a1", VERSIONFLAG_ANY_IS_PATCH, VERSIONFLAG_ANY_IS_PATCH, 0);
+	errors += version_test_symmetrical_flags("1.0a1", "1.0a1", VERSIONFLAG_ANY_IS_PATCH, 0, 1);
+	errors += version_test_symmetrical_flags("1.0a1", "1.0a1", 0, VERSIONFLAG_ANY_IS_PATCH, -1);
 
-	errors += version_test("1.0a1", "1.0", -1, 0);
-	errors += version_test("1.0a1", "1.0", -1, VERSIONFLAG_ANY_IS_PATCH_RIGHT);
-	errors += version_test("1.0a1", "1.0", 1, VERSIONFLAG_ANY_IS_PATCH_LEFT);
+	errors += version_test_symmetrical_flags("1.0", "1.0a1", 0, 0, 1);
+	errors += version_test_symmetrical_flags("1.0", "1.0a1", VERSIONFLAG_ANY_IS_PATCH, 0, 1);
+	errors += version_test_symmetrical_flags("1.0", "1.0a1", 0, VERSIONFLAG_ANY_IS_PATCH, -1);
 
-	errors += version_test("1.0", "1.0a1", 1, 0);
-	errors += version_test("1.0", "1.0a1", 1, VERSIONFLAG_ANY_IS_PATCH_LEFT);
-	errors += version_test("1.0", "1.0a1", -1, VERSIONFLAG_ANY_IS_PATCH_RIGHT);
+	errors += version_test_symmetrical_flags("1.0", "1.0.a1", 0, 0, 1);
+	errors += version_test_symmetrical_flags("1.0", "1.0.a1", VERSIONFLAG_ANY_IS_PATCH, 0, 1);
+	errors += version_test_symmetrical_flags("1.0", "1.0.a1", 0, VERSIONFLAG_ANY_IS_PATCH, -1);
 
-	errors += version_test("1.0", "1.0.a1", 1, 0);
-	errors += version_test("1.0", "1.0.a1", 1, VERSIONFLAG_ANY_IS_PATCH_LEFT);
-	errors += version_test("1.0", "1.0.a1", -1, VERSIONFLAG_ANY_IS_PATCH_RIGHT);
-
-	errors += version_test("1.0", "1.0.a.1", 1, 0);
-	errors += version_test("1.0", "1.0.a.1", 1, VERSIONFLAG_ANY_IS_PATCH_LEFT);
-	errors += version_test("1.0", "1.0.a.1", -1, VERSIONFLAG_ANY_IS_PATCH_RIGHT);
+	errors += version_test_symmetrical_flags("1.0", "1.0.a.1", 0, 0, 1);
+	errors += version_test_symmetrical_flags("1.0", "1.0.a.1", VERSIONFLAG_ANY_IS_PATCH, 0, 1);
+	errors += version_test_symmetrical_flags("1.0", "1.0.a.1", 0, VERSIONFLAG_ANY_IS_PATCH, -1);
 
 	/* this case is not affected */
-	errors += version_test("1.0", "1.0a.1", -1, 0);
-	errors += version_test("1.0", "1.0a.1", -1, VERSIONFLAG_ANY_IS_PATCH_LEFT);
-	errors += version_test("1.0", "1.0a.1", -1, VERSIONFLAG_ANY_IS_PATCH_RIGHT);
+	errors += version_test_symmetrical_flags("1.0", "1.0a.1", 0, 0, -1);
+	errors += version_test_symmetrical_flags("1.0", "1.0a.1", VERSIONFLAG_ANY_IS_PATCH, 0, -1);
+	errors += version_test_symmetrical_flags("1.0", "1.0a.1", 0, VERSIONFLAG_ANY_IS_PATCH, -1);
 
 	fprintf(stderr, "\nTest group: p/patch compatibility\n");
-	errors += version_test_symmetrical_flags("1.0p1", "1.0pre1", 0, 0);
-	errors += version_test_symmetrical_flags("1.0p1", "1.0patch1", -1, 0);
-	errors += version_test_symmetrical_flags("1.0p1", "1.0post1", -1, 0);
+	errors += version_test_symmetrical_flags("1.0p1", "1.0pre1", 0, 0, 0);
+	errors += version_test_symmetrical_flags("1.0p1", "1.0patch1", 0, 0, -1);
+	errors += version_test_symmetrical_flags("1.0p1", "1.0post1", 0, 0, -1);
 
-	errors += version_test_symmetrical_flags("1.0p1", "1.0pre1", 1, VERSIONFLAG_P_IS_PATCH);
-	errors += version_test_symmetrical_flags("1.0p1", "1.0patch1", 0, VERSIONFLAG_P_IS_PATCH);
-	errors += version_test_symmetrical_flags("1.0p1", "1.0post1", 0, VERSIONFLAG_P_IS_PATCH);
+	errors += version_test_symmetrical_flags("1.0p1", "1.0pre1", VERSIONFLAG_P_IS_PATCH, VERSIONFLAG_P_IS_PATCH, 1);
+	errors += version_test_symmetrical_flags("1.0p1", "1.0patch1", VERSIONFLAG_P_IS_PATCH, VERSIONFLAG_P_IS_PATCH, 0);
+	errors += version_test_symmetrical_flags("1.0p1", "1.0post1", VERSIONFLAG_P_IS_PATCH, VERSIONFLAG_P_IS_PATCH, 0);
 
 	fprintf(stderr, "\nTest group: prerelease words without numbers\n");
 	errors += version_test_symmetrical("1.0alpha", "1.0", -1);
