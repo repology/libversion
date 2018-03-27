@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.6.0 - 2018-03-27
+* Implemented `version_compare_flags2()` 4-argument function which allows
+  to specify flags for either compared version independently, without
+  the need to squish them into the single argument
+* Added shared library
+
 ## 2.5.0 - 2018-02-02
 * Implemented `VERSIONFLAG_ANY_IS_PATCH` flag which makes any alphabetic
   characters encountered in versions treated as post-release.
