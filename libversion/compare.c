@@ -187,22 +187,7 @@ static size_t get_next_version_component(const char** str, version_component_t* 
 	}
 }
 
-int version_compare_simple(const char* v1, const char* v2) {
-	return version_compare_flags(v1, v2, 0);
-}
-
-int version_compare_flags(const char* v1, const char* v2, int flags) {
-	const int v1_flags =
-		((flags & VERSIONFLAG_P_IS_PATCH_LEFT) ? VERSIONFLAG_P_IS_PATCH : 0) |
-		((flags & VERSIONFLAG_ANY_IS_PATCH_LEFT) ? VERSIONFLAG_ANY_IS_PATCH : 0);
-	const int v2_flags =
-		((flags & VERSIONFLAG_P_IS_PATCH_RIGHT) ? VERSIONFLAG_P_IS_PATCH : 0) |
-		((flags & VERSIONFLAG_ANY_IS_PATCH_RIGHT) ? VERSIONFLAG_ANY_IS_PATCH : 0);
-
-	return version_compare_flags2(v1, v2, v1_flags, v2_flags);
-}
-
-int version_compare_flags2(const char* v1, const char* v2, int v1_flags, int v2_flags) {
+int version_compare4(const char* v1, const char* v2, int v1_flags, int v2_flags) {
 	version_component_t v1_comps[6], v2_comps[6];
 	size_t v1_len = 0, v2_len = 0;
 	size_t shift, i;
@@ -233,4 +218,32 @@ int version_compare_flags2(const char* v1, const char* v2, int v1_flags, int v2_
 	}
 
 	return 0;
+}
+
+int version_compare2(const char* v1, const char* v2) {
+	return version_compare4(v1, v2, 0, 0);
+}
+
+int version_compare3(const char* v1, const char* v2, int flags) {
+	return version_compare4(v1, v2, flags, flags);
+}
+
+/* deprecated */
+int version_compare_simple(const char* v1, const char* v2) {
+	return version_compare2(v1, v2);
+}
+
+int version_compare_flags(const char* v1, const char* v2, int flags) {
+	const int v1_flags =
+		((flags & VERSIONFLAG_P_IS_PATCH_LEFT) ? VERSIONFLAG_P_IS_PATCH : 0) |
+		((flags & VERSIONFLAG_ANY_IS_PATCH_LEFT) ? VERSIONFLAG_ANY_IS_PATCH : 0);
+	const int v2_flags =
+		((flags & VERSIONFLAG_P_IS_PATCH_RIGHT) ? VERSIONFLAG_P_IS_PATCH : 0) |
+		((flags & VERSIONFLAG_ANY_IS_PATCH_RIGHT) ? VERSIONFLAG_ANY_IS_PATCH : 0);
+
+	return version_compare_flags2(v1, v2, v1_flags, v2_flags);
+}
+
+int version_compare_flags2(const char* v1, const char* v2, int v1_flags, int v2_flags) {
+	return version_compare4(v1, v2, v1_flags, v2_flags);
 }

@@ -36,17 +36,14 @@ A short list of version features libversion handles for you:
 See [doc/ALGORITHM.md](doc/ALGORITHM.md) for more elaborate description
 of inner logic.
 
-Additionally, libversion provides facility to extract signature of
-a version string, which may be used to compare version formats.
-That is, `0.1.2` and `54.0.3` have the same signatures, but `1.0`,
-`1.0alpha1`, `1.0a` and `1.0.0` all have different signatures.
-
 ## API
 
 ### Version comparison
 
 ```
-int version_compare_simple(const char* v1, const char* v2);
+int version_compare2(const char* v1, const char* v2);
+int version_compare3(const char* v1, const char* v2, int flags);
+int version_compare4(const char* v1, const char* v2, int v1_flags, int v2_flags);
 ```
 
 Compares version strings `v1` and `v2`.
@@ -55,37 +52,15 @@ Returns **-1** if `v1` is lower than `v2`, **0** if `v1` is equal to `v2` and **
 
 Thread safe, does not produce errors, does not allocate dynamic memory.
 
----
+3- and 4-argument forms allow to specify additional flags which affect
+either whole comparison, or each version argument.
 
-```
-int version_compare_flags2(const char* v1, const char* v2, int v1_flags, int v2_flags);
-```
-
-Compares version strings `v1` and `v2`, allowing to fine tune
-comparison behavior by specifying additionla flags for either
-version.
-
-Available `flags` values:
+Available `flags` values are:
 
 * `VERSIONFLAG_P_IS_PATCH` _p_ keyword is treated as _patch_ (post-release) instead of _pre_ (pre-release).
 * `VERSIONFLAG_ANY_IS_PATCH` any keyword is treated as post-release (useful for handling patchsets as in `1.2foopatchset3.barpatchset4`)
 
-If flags is **0**, acts exactly the same way as `version_compare_simple`.
-
-Returns **-1** if `v1` is lower than `v2`, **0** if `v1` is equal to `v2` and **1** if `v1` is higher than `v2`.
-
-Thread safe, does not produce errors, does not allocate dynamic memory.
-
-### Version signature generation
-
-```
-version_signature_t version_signature_simple(const char* v);
-```
-
-For a given version string, generates signature stored as unspecified
-scalar type, which may be then used to compare signatures.
-
-Thread safe, does not produce errors, does not allocate dynamic memory.
+If `flags` are zero, all three functions are equivalent.
 
 ## Example
 
@@ -95,32 +70,33 @@ Thread safe, does not produce errors, does not allocate dynamic memory.
 
 int main() {
 	/* 0.99 < 1.11 */
-	assert(version_compare_simple("0.99", "1.11") == -1);
+	assert(version_compare2("0.99", "1.11") == -1);
 
 	/* 1.0 == 1.0.0 */
-	assert(version_compare_simple("1.0", "1.0.0") == 0);
+	assert(version_compare2("1.0", "1.0.0") == 0);
 
 	/* 1.0alpha1 < 1.0.rc1 */
-	assert(version_compare_simple("1.0alpha1", "1.0.rc1") == -1);
+	assert(version_compare2("1.0alpha1", "1.0.rc1") == -1);
 
 	/* 1.0 > 1.0.rc1 */
-	assert(version_compare_simple("1.0", "1.0-rc1") == 1);
+	assert(version_compare2("1.0", "1.0-rc1") == 1);
 
 	/* 1.2.3alpha4 is the same as 1.2.3~a4 */
-	assert(version_compare_simple("1.2.3alpha4", "1.2.3~a4") == 0);
+	assert(version_compare2("1.2.3alpha4", "1.2.3~a4") == 0);
 
 	/* by default, `p' is treated as `pre'... */
-	assert(version_compare_simple("1.0p0", "1.0", 0) == -1);
-	assert(version_compare_flags("1.0p0", "1.0", 0) == -1);
+	assert(version_compare2("1.0p1", "1.0pre1") == 0);
+	assert(version_compare2("1.0p1", "1.0post1") == -1);
+	assert(version_compare2("1.0p1", "1.0patch1") == -1);
 
-	/* ...but this is tunable: here it's handled as `patch` */
-	assert(version_compare_flags("1.0p0", "1.0", VERSIONFLAG_P_IS_PATCH) == 1);
+	/* ...but this is tunable: here it's handled as `patch`... */
+	assert(version_compare2("1.0p1", "1.0pre1", VERSIONFLAG_P_IS_PATCH) == 1);
+	assert(version_compare2("1.0p1", "1.0post1", VERSIONFLAG_P_IS_PATCH) == 0);
+	assert(version_compare2("1.0p1", "1.0patch1", VERSIONFLAG_P_IS_PATCH) == 0);
 
-	/* versions with same signatures */
-	assert(version_signature_simple("0.9") == version_signature_simple("54.20170112"));
-
-	/* versions with different signatures */
-	assert(version_signature_simple("1.0") != version_signature_simple("1.alpha2"));
+	/* ...and can also be tuned argumentwise */
+	assert(version_compare2("1.0p1", "1.0p1", 0, VERSIONFLAG_P_IS_PATCH) == -1);
+	assert(version_compare2("1.0p1", "1.0p1", VERSIONFLAG_P_IS_PATCH, 0) == 1);
 }
 ```
 

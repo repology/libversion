@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.7.0 - 2018-10-15
+* API cleanup: all `version_compare*` methods are now replaced with
+  `version_compare2()`, `version_compare3()`, and `version_compare4()`
+  which are consistent and suggest the number of arguments.
+  `version_compare_simple()`, `version_compare_flags()`, and
+  `version_compare_flags2()` are thus deprecated and will be removed in
+  further releases.
+* Also deprecate `version_signature_simple()` which had no practical use.
+
 ## 2.6.0 - 2018-03-27
 * Implemented `version_compare_flags2()` 4-argument function which allows
   to specify flags for either compared version independently, without

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Dmitry Marakasov <amdmi3@amdmi3.ru>
+ * Copyright (c) 2017-2018 Dmitry Marakasov <amdmi3@amdmi3.ru>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,7 +49,7 @@ int main() {
 						buffer[4] = version_chars[i4];
 
 						for (isample = 0; isample < num_samples; isample++) {
-							res = version_compare_simple(buffer, samples[isample]);
+							res = version_compare2(buffer, samples[isample]);
 
 							printf("%s %c %s\n", buffer, (res == 0) ? '=' : (res < 0) ? '<' : '>', samples[isample]);
 						}

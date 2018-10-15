@@ -34,7 +34,7 @@ static char comparison_to_char(int comp) {
 }
 
 static int version_test(const char* v1, const char* v2, int flags1, int flags2, int expected) {
-	int result = version_compare_flags2(v1, v2, flags1, flags2);
+	int result = version_compare4(v1, v2, flags1, flags2);
 
 	if (result != expected) {
 		fprintf(stderr, "[FAIL] \"%s\" %c \"%s\": got %c\n", v1, comparison_to_char(expected), v2, comparison_to_char(result));
@@ -100,7 +100,7 @@ int main() {
 
 	fprintf(stderr, "\nTest group: too long numbers\n");
 	/* if it won't fit into 64bit there's nothing we can do, but at least it should not invert compariosn order */
-	result = version_compare_simple("99999999999999999999999999999999999998", "99999999999999999999999999999999999999");
+	result = version_compare2("99999999999999999999999999999999999998", "99999999999999999999999999999999999999");
 	if (result < 0) {
 		fprintf(stderr, "[ OK ] very long versions compared as normal ones\n");
 	} else if (result == 0) {
@@ -110,7 +110,7 @@ int main() {
 		errors += 1;
 	}
 
-	result = version_compare_simple("99999999999999999999999999999999999999", "99999999999999999999999999999999999998");
+	result = version_compare2("99999999999999999999999999999999999999", "99999999999999999999999999999999999998");
 	if (result < 0) {
 		fprintf(stderr, "[ OK ] very long versions compared as normal ones\n");
 	} else if (result == 0) {

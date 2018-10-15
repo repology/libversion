@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
 	argv += optind;
 
 	if (argc == 2) {
-		result = version_compare_flags2(argv[0], argv[1], flags, flags);
+		result = version_compare4(argv[0], argv[1], flags, flags);
 
 		if (result < 0)
 			printf("<\n");
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
 
 		return 0;
 	} else if (argc == 3) {
-		result = version_compare_flags2(argv[0], argv[2], flags, flags);
+		result = version_compare4(argv[0], argv[2], flags, flags);
 
 		if (streq(argv[1], "<") || streq(argv[1], "lt"))
 			return !(result < 0);
