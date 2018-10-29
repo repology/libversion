@@ -23,6 +23,15 @@
 #ifndef LIBVERSION_VERSION_H
 #define LIBVERSION_VERSION_H
 
+#include <libversion/config.h>
+
+#define LIBVERSION_VERSION_ATLEAST(x, y, z) \
+	( \
+		(LIBVERSION_VERSION_MAJOR > (x)) || \
+		(LIBVERSION_VERSION_MAJOR == (x) && LIBVERSION_VERSION_MINOR > (y)) || \
+		(LIBVERSION_VERSION_MAJOR == (x) && LIBVERSION_VERSION_MINOR == (y) && LIBVERSION_VERSION_PATCH >= (z)) \
+	)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
