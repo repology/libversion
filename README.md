@@ -89,14 +89,10 @@ int main() {
 	assert(version_compare2("1.0p1", "1.0post1") == -1);
 	assert(version_compare2("1.0p1", "1.0patch1") == -1);
 
-	/* ...but this is tunable: here it's handled as `patch`... */
-	assert(version_compare3("1.0p1", "1.0pre1", VERSIONFLAG_P_IS_PATCH) == 1);
-	assert(version_compare3("1.0p1", "1.0post1", VERSIONFLAG_P_IS_PATCH) == 0);
-	assert(version_compare3("1.0p1", "1.0patch1", VERSIONFLAG_P_IS_PATCH) == 0);
-
-	/* ...and can also be tuned argumentwise */
-	assert(version_compare4("1.0p1", "1.0p1", 0, VERSIONFLAG_P_IS_PATCH) == -1);
-	assert(version_compare4("1.0p1", "1.0p1", VERSIONFLAG_P_IS_PATCH, 0) == 1);
+	/* ...but this is tunable: here it's handled as `patch` */
+	assert(version_compare4("1.0p1", "1.0pre1", VERSIONFLAG_P_IS_PATCH, 0) == 1);
+	assert(version_compare4("1.0p1", "1.0post1", VERSIONFLAG_P_IS_PATCH, 0) == 0);
+	assert(version_compare4("1.0p1", "1.0patch1", VERSIONFLAG_P_IS_PATCH, 0) == 0);
 }
 ```
 

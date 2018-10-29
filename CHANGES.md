@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.7.1
+* Deprecated `version_compare3()` as well, as it would create ambiguities
+  for higher level languaga wrappers
+
 ## 2.7.0 - 2018-10-16
 * API cleanup: all `version_compare*` methods are now replaced with
   `version_compare2()`, `version_compare3()`, and `version_compare4()`
