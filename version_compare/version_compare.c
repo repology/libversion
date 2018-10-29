@@ -24,20 +24,26 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <libversion/config.h>
 #include <libversion/version.h>
 
-static void usage(const char* progname) {
-	fprintf(stderr, "Usage: %s [-p] version1 [op] version2\n", progname);
+static void print_version() {
+	fprintf(stderr, "libversion %s\n", LIBVERSION_VERSION);
+}
+
+static void print_usage(const char* progname) {
+	fprintf(stderr, "Usage: %s [-pa] version1 [op] version2\n", progname);
 	fprintf(stderr, "\n");
-	fprintf(stderr, " op        - if specified (supports <, <=, =, >=, >, lt, le, eq, ge, gt),\n");
-	fprintf(stderr, "             the utility would exit with zero (success) status code if the\n");
-	fprintf(stderr, "             given condition is satisfied.  Otherwise, the utility would\n");
-	fprintf(stderr, "             print <, =, or > to indicate how specified versions compare.\n");
+	fprintf(stderr, " op       - if specified (supports <, <=, =, >=, >, lt, le, eq, ge, gt),\n");
+	fprintf(stderr, "            the utility would exit with zero (success) status code if the\n");
+	fprintf(stderr, "            given condition is satisfied.  Otherwise, the utility would\n");
+	fprintf(stderr, "            print <, =, or > to indicate how specified versions compare.\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, " -p       - 'p' letter is treated as 'patch' instead of 'pre'\n");
 	fprintf(stderr, " -a       - any alphabetic characters are treated as post-release\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, " -h, -?   - print usage and exit\n");
+	fprintf(stderr, " -v       - print version and exit\n");
 }
 
 static int streq(const char* a, const char* b) {
@@ -48,7 +54,7 @@ int main(int argc, char** argv) {
 	int ch, result, flags = 0;
 	const char* progname = argv[0];
 
-	while ((ch = getopt(argc, argv, "pah")) != -1) {
+	while ((ch = getopt(argc, argv, "pahv")) != -1) {
 		switch (ch) {
 		case 'p':
 			flags |= VERSIONFLAG_P_IS_PATCH;
@@ -58,10 +64,13 @@ int main(int argc, char** argv) {
 			break;
 		case 'h':
 		case '?':
-			usage(progname);
+			print_usage(progname);
+			return 0;
+		case 'v':
+			print_version();
 			return 0;
 		default:
-			usage(progname);
+			print_usage(progname);
 			return 1;
 		}
 	}
@@ -95,6 +104,6 @@ int main(int argc, char** argv) {
 			return !(result > 0);
 	}
 
-	usage(progname);
+	print_usage(progname);
 	return 1;
 }
