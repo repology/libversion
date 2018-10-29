@@ -8,5 +8,6 @@ install_manifest.txt
 
 libversion/libversion.a
 libversion/libversion.pc
+libversion/config.h
 tests/libversion_test
 version_compare/version_compare
