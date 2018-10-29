@@ -42,7 +42,6 @@ of inner logic.
 
 ```
 int version_compare2(const char* v1, const char* v2);
-int version_compare3(const char* v1, const char* v2, int flags);
 int version_compare4(const char* v1, const char* v2, int v1_flags, int v2_flags);
 ```
 
@@ -52,15 +51,14 @@ Returns **-1** if `v1` is lower than `v2`, **0** if `v1` is equal to `v2` and **
 
 Thread safe, does not produce errors, does not allocate dynamic memory.
 
-3- and 4-argument forms allow to specify additional flags which affect
-either whole comparison, or each version argument.
-
-Available `flags` values are:
+4-argument form allows specifying flags for each comparison argument to
+tune comparison behavior is specific cases. Currently supported `flags`
+values are:
 
 * `VERSIONFLAG_P_IS_PATCH` _p_ keyword is treated as _patch_ (post-release) instead of _pre_ (pre-release).
 * `VERSIONFLAG_ANY_IS_PATCH` any keyword is treated as post-release (useful for handling patchsets as in `1.2foopatchset3.barpatchset4`)
 
-If `flags` are zero, all three functions are equivalent.
+If both `flags` are zero, `version_compare4` acts exactly the same as `version_compare2`.
 
 ## Example
 
