@@ -1,7 +1,7 @@
 # libversion
 
-<a href="https://repology.org/metapackage/libversion">
-	<img src="https://repology.org/badge/vertical-allrepos/libversion.svg" alt="Packaging status" align="right">
+<a href="https://repology.org/metapackage/libversion/versions">
+	<img src="https://repology.org/badge/vertical-allrepos/libversion.svg" alt="libversion packaging status" align="right">
 </a>
 
 [![Build Status](https://travis-ci.org/repology/libversion.svg?branch=master)](https://travis-ci.org/repology/libversion)
