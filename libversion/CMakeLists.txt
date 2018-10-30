@@ -24,9 +24,9 @@ SET_TARGET_PROPERTIES(version_static PROPERTIES
 CONFIGURE_FILE(libversion.pc.in libversion.pc @ONLY)
 
 INSTALL(FILES
-    ${LIBVERSION_HEADERS}
-    ${CMAKE_CURRENT_BINARY_DIR}/config.h
-    DESTINATION include/libversion
+	${LIBVERSION_HEADERS}
+	${CMAKE_CURRENT_BINARY_DIR}/config.h
+	DESTINATION include/libversion
 )
 INSTALL(TARGETS version version_static LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 
