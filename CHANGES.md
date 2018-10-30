@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.8.1
+* Fixed installation for out-of-source builds
+* Documentation updates
+
 ## 2.8.0
 * Deprecated `version_compare3()` as well, as it would create ambiguities
   for higher level language wrappers
