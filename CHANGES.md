@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.8.2
+* Fixed undefined behavior in string comparison
+
 ## 2.8.1
 * Fixed installation for out-of-source builds
 * Documentation updates
