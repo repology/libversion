@@ -225,11 +225,11 @@ int version_compare2(const char* v1, const char* v2) {
 	return version_compare4(v1, v2, 0, 0);
 }
 
+/* deprecated */
 int version_compare3(const char* v1, const char* v2, int flags) {
 	return version_compare4(v1, v2, flags, flags);
 }
 
-/* deprecated */
 int version_compare_simple(const char* v1, const char* v2) {
 	return version_compare2(v1, v2);
 }
