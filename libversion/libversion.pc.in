@@ -5,6 +5,6 @@ includedir=${prefix}/include
 
 Name: libversion
 Description: Version comparison library
-Version: @VERSION@
+Version: @LIBVERSION_VERSION@
 Libs: -L${libdir} -lversion
 Cflags: -I${includedir}
