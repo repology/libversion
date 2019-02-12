@@ -1,27 +1,27 @@
-PROJECT(libversion)
+project(libversion)
 
 # meta
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+cmake_minimum_required(VERSION 3.0)
 
-SET(VERSION_MAJOR 2)
-SET(VERSION_MINOR 8)
-SET(VERSION_PATCH 2)
+set(VERSION_MAJOR 2)
+set(VERSION_MINOR 8)
+set(VERSION_PATCH 2)
 
-SET(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
-SET(PKGCONFIGDIR lib/pkgconfig CACHE STRING "directory where to install pkg-config files")
-IF(CMAKE_SYSTEM_NAME MATCHES "FreeBSD" OR CMAKE_SYSTEM_NAME MATCHES "DragonFly")
+set(PKGCONFIGDIR lib/pkgconfig CACHE STRING "directory where to install pkg-config files")
+if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD" OR CMAKE_SYSTEM_NAME MATCHES "DragonFly")
 	SET(PKGCONFIGDIR libdata/pkgconfig)
-ENDIF(CMAKE_SYSTEM_NAME MATCHES "FreeBSD" OR CMAKE_SYSTEM_NAME MATCHES "DragonFly")
+endif()
 
-INCLUDE_DIRECTORIES(BEFORE ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
+include_directories(BEFORE ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
 
-ENABLE_TESTING()
+enable_testing()
 
 # subdirs
-ADD_SUBDIRECTORY(libversion)
-ADD_SUBDIRECTORY(tests)
+add_subdirectory(libversion)
+add_subdirectory(tests)
 
-IF(UNIX)
-	ADD_SUBDIRECTORY(version_compare)
-ENDIF(UNIX)
+if(UNIX)
+	add_subdirectory(version_compare)
+endif()

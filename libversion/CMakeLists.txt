@@ -1,33 +1,33 @@
-SET(LIBVERSION_SOURCES
+set(LIBVERSION_SOURCES
 	compare.c
 	signature.c
 )
 
-SET(LIBVERSION_HEADERS
+set(LIBVERSION_HEADERS
 	version.h
 )
 
-CONFIGURE_FILE(config.h.in config.h @ONLY)
+configure_file(config.h.in config.h @ONLY)
 
-ADD_LIBRARY(version SHARED ${LIBVERSION_SOURCES} ${LIBVERSION_HEADERS})
-SET_TARGET_PROPERTIES(version PROPERTIES
+add_library(version SHARED ${LIBVERSION_SOURCES} ${LIBVERSION_HEADERS})
+set_target_properties(version PROPERTIES
 	SOVERSION 0
 	VERSION 0.1.0
 )
 
-ADD_LIBRARY(version_static STATIC ${LIBVERSION_SOURCES} ${LIBVERSION_HEADERS})
-SET_TARGET_PROPERTIES(version_static PROPERTIES
+add_library(version_static STATIC ${LIBVERSION_SOURCES} ${LIBVERSION_HEADERS})
+set_target_properties(version_static PROPERTIES
 	POSITION_INDEPENDENT_CODE ON
 	OUTPUT_NAME version
 )
 
-CONFIGURE_FILE(libversion.pc.in libversion.pc @ONLY)
+configure_file(libversion.pc.in libversion.pc @ONLY)
 
-INSTALL(FILES
+install(FILES
 	${LIBVERSION_HEADERS}
 	${CMAKE_CURRENT_BINARY_DIR}/config.h
 	DESTINATION include/libversion
 )
-INSTALL(TARGETS version version_static LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+install(TARGETS version version_static LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/libversion.pc DESTINATION ${PKGCONFIGDIR})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libversion.pc DESTINATION ${PKGCONFIGDIR})

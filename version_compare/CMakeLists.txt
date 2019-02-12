@@ -1,4 +1,4 @@
-ADD_EXECUTABLE(version_compare version_compare.c)
-TARGET_LINK_LIBRARIES(version_compare version_static)
-SET_TARGET_PROPERTIES(version_compare PROPERTIES COMPILE_DEFINITIONS LIBVERSION_NO_DEPRECATED)
-INSTALL(TARGETS version_compare RUNTIME DESTINATION bin)
+add_executable(version_compare version_compare.c)
+target_link_libraries(version_compare version_static)
+set_target_properties(version_compare PROPERTIES COMPILE_DEFINITIONS LIBVERSION_NO_DEPRECATED)
+install(TARGETS version_compare RUNTIME DESTINATION bin)
