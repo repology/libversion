@@ -20,7 +20,7 @@ before_install:
   - export CFLAGS="$CFLAGS -Werror -Wall -Wextra -pedantic"
 script:
   - cmake . -DCMAKE_VERBOSE_MAKEFILE=yes -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Debug
-  - cmake --build
+  - cmake --build .
   - ctest -V
   - sudo make install
   - if [ -z "${COVERAGE}" ]; then ${CC} version_compare/version_compare.c ${CFLAGS} `pkg-config --libs --cflags libversion` -o test-installation; fi
