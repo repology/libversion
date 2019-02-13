@@ -4,11 +4,11 @@ dist: xenial
 matrix:
   include:
     - compiler: gcc
-      env: CFLAGS="--coverage" LDFLAGS"=--coverage" COVERAGE=yes
+      env: CFLAGS="--coverage" LDFLAGS"=--coverage" COVERAGE=yes EXTTESTS=yes
     - compiler: gcc
       env: CFLAGS="-m32"
     - compiler: clang
-      env: CFLAGS="-Weverything"
+      env: CFLAGS="-Weverything" EXTTESTS=yes
     - compiler: clang
       env: CFLAGS="-Weverything -m32"
     - compiler: clang
@@ -23,6 +23,17 @@ script:
   - cmake --build .
   - ctest -V
   - sudo make install
-  - if [ -z "${COVERAGE}" ]; then ${CC} version_compare/version_compare.c ${CFLAGS} `pkg-config --libs --cflags libversion` -o test-installation; fi
+  - |-
+    if [ -n "${EXTTESTS}" ]; then
+        for exttest in exttests/*; do
+            (
+                cd $exttest
+                if [ -e CMakeLists.txt ]; then
+                    cmake .
+                fi
+                make
+            )
+        done
+    fi
 after_success:
   - if [ -n "${COVERAGE}" ]; then coveralls -i libversion; fi
