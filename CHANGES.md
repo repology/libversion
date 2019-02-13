@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.9.0
+* Modernized CMake code, added support for CMake export mechanism, so
+  it's now super easy to use libversion from CMake
+* Added export header so shared library can now be used on Windows
+* Better handling of deprecated APIs
+
 ## 2.8.2
 * Fixed undefined behavior in string comparison
 
