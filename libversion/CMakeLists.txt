@@ -1,5 +1,6 @@
 include(GenerateExportHeader)
 
+# sources
 configure_file(config.h.in config.h @ONLY)
 
 set(LIBVERSION_SOURCES
@@ -11,6 +12,7 @@ set(LIBVERSION_HEADERS
 	version.h
 )
 
+# shared library
 add_library(libversion SHARED ${LIBVERSION_SOURCES} ${LIBVERSION_HEADERS})
 target_include_directories(libversion PUBLIC
 	$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
@@ -24,6 +26,7 @@ set_target_properties(libversion PROPERTIES
 )
 generate_export_header(libversion EXPORT_FILE_NAME export.h)
 
+# static library
 add_library(libversion_static STATIC ${LIBVERSION_SOURCES} ${LIBVERSION_HEADERS})
 add_dependencies(libversion_static libversion) # make sure export header is generated
 target_include_directories(libversion_static PUBLIC
@@ -39,8 +42,10 @@ set_target_properties(libversion_static PROPERTIES
 	OUTPUT_NAME version
 )
 
+# pkgconfig file
 configure_file(libversion.pc.in libversion.pc @ONLY)
 
+# installation
 install(FILES
 	${LIBVERSION_HEADERS}
 	${CMAKE_CURRENT_BINARY_DIR}/config.h
