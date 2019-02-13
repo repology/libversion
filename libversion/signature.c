@@ -20,10 +20,10 @@
  * THE SOFTWARE.
  */
 
+#include <libversion/version.h>
+
 #include <limits.h>
 #include <stdio.h>
-
-#include <libversion/version.h>
 
 typedef enum {
 	STATE_SEPARATOR = 0x0,
