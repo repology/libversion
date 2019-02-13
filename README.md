@@ -96,7 +96,9 @@ int main() {
 ```
 
 ```sh
-gcc `pkg-config --libs --cflags libversion` test.c
+gcc my_code.c `pkg-config --cflags --libs libversion`
+# or (for static linking)
+gcc my_code.c --static `pkg-config --static --cflags --libs libversion`
 ```
 
 Using libversion in CMake is very simple:
@@ -104,6 +106,8 @@ Using libversion in CMake is very simple:
 ```cmake
 find_package(libversion)
 target_link_libraries(my_target libversion::libversion)
+# or (for static linking)
+target_link_libraries(my_target libversion::libversion_static)
 ```
 
 ## Building
