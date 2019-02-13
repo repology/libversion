@@ -1,6 +1,5 @@
 add_executable(compare_test compare_test.c)
 target_link_libraries(compare_test libversion)
-set_target_properties(compare_test PROPERTIES COMPILE_DEFINITIONS LIBVERSION_NO_DEPRECATED)
 add_test(compare_test compare_test)
 
 add_executable(signature_test signature_test.c)
@@ -9,4 +8,3 @@ add_test(signature_test signature_test)
 
 add_executable(compare_fuzzer compare_fuzzer.c)
 target_link_libraries(compare_fuzzer libversion)
-set_target_properties(compare_fuzzer PROPERTIES COMPILE_DEFINITIONS LIBVERSION_NO_DEPRECATED)

@@ -20,6 +20,8 @@
  * THE SOFTWARE.
  */
 
+#define LIBVERSION_DEPRECATED /* testing deprecated APIs */
+
 #include <libversion/version.h>
 
 #include <stdio.h>

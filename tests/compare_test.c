@@ -20,6 +20,8 @@
  * THE SOFTWARE.
  */
 
+#define LIBVERSION_NO_DEPRECATED /* disable deprecated APIs */
+
 #include <libversion/version.h>
 
 #include <stdio.h>
