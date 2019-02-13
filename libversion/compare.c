@@ -242,7 +242,7 @@ int version_compare_flags(const char* v1, const char* v2, int flags) {
 		((flags & VERSIONFLAG_P_IS_PATCH_RIGHT) ? VERSIONFLAG_P_IS_PATCH : 0) |
 		((flags & VERSIONFLAG_ANY_IS_PATCH_RIGHT) ? VERSIONFLAG_ANY_IS_PATCH : 0);
 
-	return version_compare_flags2(v1, v2, v1_flags, v2_flags);
+	return version_compare4(v1, v2, v1_flags, v2_flags);
 }
 
 int version_compare_flags2(const char* v1, const char* v2, int v1_flags, int v2_flags) {
