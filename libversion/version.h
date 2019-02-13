@@ -38,13 +38,22 @@ extern "C" {
 #endif
 
 enum {
-	VERSIONFLAG_P_IS_PATCH_LEFT = 0x1, /* deprecated: use version_compare4() and VERSIONFLAG_P_IS_PATCH */
-	VERSIONFLAG_P_IS_PATCH_RIGHT = 0x2, /* deprecated: use version_compare4() and VERSIONFLAG_P_IS_PATCH */
-	VERSIONFLAG_P_IS_PATCH = VERSIONFLAG_P_IS_PATCH_LEFT|VERSIONFLAG_P_IS_PATCH_RIGHT,
+#ifndef LIBVERSION_NO_DEPRECATED
+	/* deprecated: use version_compare4() and VERSIONFLAG_P_IS_PATCH */
+	VERSIONFLAG_P_IS_PATCH_LEFT = 0x1,
 
-	VERSIONFLAG_ANY_IS_PATCH_LEFT = 0x4, /* deprecated: use version_compare4() and VERSIONFLAG_ANY_IS_PATCH */
-	VERSIONFLAG_ANY_IS_PATCH_RIGHT = 0x8, /* deprecated: use version_compare4() and VERSIONFLAG_ANY_IS_PATCH */
-	VERSIONFLAG_ANY_IS_PATCH = VERSIONFLAG_ANY_IS_PATCH_LEFT|VERSIONFLAG_ANY_IS_PATCH_RIGHT
+	/* deprecated: use version_compare4() and VERSIONFLAG_P_IS_PATCH */
+	VERSIONFLAG_P_IS_PATCH_RIGHT = 0x2,
+
+	/* deprecated: use version_compare4() and VERSIONFLAG_ANY_IS_PATCH */
+	VERSIONFLAG_ANY_IS_PATCH_LEFT = 0x4,
+
+	/* deprecated: use version_compare4() and VERSIONFLAG_ANY_IS_PATCH */
+	VERSIONFLAG_ANY_IS_PATCH_RIGHT = 0x8,
+#endif
+
+	VERSIONFLAG_P_IS_PATCH = 0x1 | 0x2,
+	VERSIONFLAG_ANY_IS_PATCH = 0x4 | 0x8,
 };
 
 extern LIBVERSION_EXPORT int version_compare2(const char* v1, const char* v2);
