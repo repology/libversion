@@ -47,7 +47,7 @@ int main() {
 	errors += version_compare_flags2("1.0p1", "1.0p1", VERSIONFLAG_P_IS_PATCH, VERSIONFLAG_P_IS_PATCH) != 0;
 
 	if (errors) {
-		fprintf(stderr, "Some tests failed!\n", errors);
+		fprintf(stderr, "Some tests failed!\n");
 		return 1;
 	}
 
