@@ -25,6 +25,11 @@ set_target_properties(libversion PROPERTIES
 	OUTPUT_NAME version
 )
 generate_export_header(libversion EXPORT_FILE_NAME export.h)
+if(WIN32)
+	# avoid clash with both c:/windows/system32/version.dll
+	# and static version.lib from the next target
+	set_target_properties(libversion PROPERTIES OUTPUT_NAME libversion)
+endif()
 
 # static library
 add_library(libversion_static STATIC ${LIBVERSION_SOURCES} ${LIBVERSION_HEADERS})

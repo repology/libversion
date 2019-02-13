@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   it's now super easy to use libversion from CMake
 * Added export header so shared library can now be used on Windows
 * Better handling of deprecated APIs
+* Fixed library name conflicts on Windows
 
 ## 2.8.2
 * Fixed undefined behavior in string comparison
