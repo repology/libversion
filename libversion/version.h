@@ -24,6 +24,7 @@
 #define LIBVERSION_VERSION_H
 
 #include <libversion/config.h>
+#include <libversion/export.h>
 
 #define LIBVERSION_VERSION_ATLEAST(x, y, z) \
 	( \
@@ -46,8 +47,8 @@ enum {
 	VERSIONFLAG_ANY_IS_PATCH = VERSIONFLAG_ANY_IS_PATCH_LEFT|VERSIONFLAG_ANY_IS_PATCH_RIGHT
 };
 
-int version_compare2(const char* v1, const char* v2);
-int version_compare4(const char* v1, const char* v2, int v1_flags, int v2_flags);
+LIBVERSION_EXPORT int version_compare2(const char* v1, const char* v2);
+LIBVERSION_EXPORT int version_compare4(const char* v1, const char* v2, int v1_flags, int v2_flags);
 
 #ifndef LIBVERSION_NO_DEPRECATED
 /* deprecated */
