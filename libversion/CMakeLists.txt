@@ -23,6 +23,7 @@ set_target_properties(libversion PROPERTIES
 	SOVERSION 0
 	VERSION 0.1.0
 	OUTPUT_NAME version
+	C_VISIBILITY_PRESET hidden
 )
 generate_export_header(libversion EXPORT_FILE_NAME export.h)
 if(WIN32)
