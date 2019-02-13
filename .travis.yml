@@ -27,11 +27,12 @@ script:
     if [ -n "${EXTTESTS}" ]; then
         for exttest in exttests/*; do
             (
+                echo "Running exttest $exttest..."
                 cd $exttest
                 if [ -e CMakeLists.txt ]; then
-                    cmake .
+                    cmake . >/dev/null 2>&1 || cmake .
                 fi
-                make
+                make >/dev/null 2>&1 || make
             )
         done
     fi
