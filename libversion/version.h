@@ -70,7 +70,7 @@ extern LIBVERSION_DEPRECATED_EXPORT version_signature_t version_signature_simple
 extern LIBVERSION_DEPRECATED_EXPORT int version_compare_simple(const char* v1, const char* v2);
 
 /* deprecated, use version_compare4 */
-extern LIBVERSION_DEPRECATED_EXPORT int version_compare_flags(const char* v1, const char* v2, int flags); /* deprecated: use version_compare_flags2() */
+extern LIBVERSION_DEPRECATED_EXPORT int version_compare_flags(const char* v1, const char* v2, int flags);
 
 /* deprecated, use version_compare4 */
 extern LIBVERSION_DEPRECATED_EXPORT int version_compare_flags2(const char* v1, const char* v2, int v1_flags, int v2_flags);
