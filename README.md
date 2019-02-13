@@ -99,6 +99,13 @@ int main() {
 gcc `pkg-config --libs --cflags libversion` test.c
 ```
 
+Using libversion in CMake is very simple:
+
+```cmake
+find_package(libversion)
+target_link_libraries(my_target libversion::libversion)
+```
+
 ## Building
 
 libversion uses [CMake](https://cmake.org/) build system.
