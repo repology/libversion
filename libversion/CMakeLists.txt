@@ -25,10 +25,14 @@ set_target_properties(libversion PROPERTIES
 generate_export_header(libversion EXPORT_FILE_NAME export.h)
 
 add_library(libversion_static STATIC ${LIBVERSION_SOURCES} ${LIBVERSION_HEADERS})
+add_dependencies(libversion_static libversion) # make sure export header is generated
 target_include_directories(libversion_static PUBLIC
 	$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
 	$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
 	$<INSTALL_INTERFACE:include>
+)
+target_compile_definitions(libversion_static PUBLIC
+	LIBVERSION_STATIC_DEFINE
 )
 set_target_properties(libversion_static PROPERTIES
 	POSITION_INDEPENDENT_CODE ON
