@@ -56,8 +56,8 @@ Thread safe, does not produce errors, does not allocate dynamic memory.
 tune comparison behavior is specific cases. Currently supported `flags`
 values are:
 
-* `VERSIONFLAG_P_IS_PATCH` _p_ keyword is treated as _patch_ (post-release) instead of _pre_ (pre-release).
-* `VERSIONFLAG_ANY_IS_PATCH` any keyword is treated as post-release (useful for handling patchsets as in `1.2foopatchset3.barpatchset4`)
+* `VERSIONFLAG_P_IS_PATCH` _p_ letter is treated as _patch_ (post-release) instead of _pre_ (pre-release).
+* `VERSIONFLAG_ANY_IS_PATCH` any letter sequence is treated as post-release (useful for handling patchsets as in `1.2foopatchset3.barpatchset4`)
 
 If both `flags` are zero, `version_compare4` acts exactly the same as `version_compare2`.
 
@@ -101,7 +101,8 @@ gcc my_code.c `pkg-config --cflags --libs libversion`
 gcc my_code.c --static `pkg-config --static --cflags --libs libversion`
 ```
 
-Using libversion in CMake is very simple:
+Using libversion in CMake is very simple (note that this handles
+include paths and compiler flags as well):
 
 ```cmake
 find_package(libversion)
@@ -114,13 +115,13 @@ target_link_libraries(my_target libversion::libversion_static)
 
 libversion uses [CMake](https://cmake.org/) build system.
 
-To build the library, run `cmake . && make`.
+To build the library, run `cmake . && cmake --build .`.
 
-To run test suite, run `make test` after building.
+To run test suite, run `ctest` after building.
 
 To install the library systemwide, run `make install`.
 
-The project installs library, headers, pkg-config file and a demo utility, `version_compare`, which may be used to compare versions from command line:
+The project installs library, headers, pkg-config file, CMake import files and a demo utility, `version_compare`, which may be used to compare versions from command line:
 
 ```
 $ ./version_compare
