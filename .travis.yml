@@ -4,7 +4,9 @@ dist: xenial
 matrix:
   include:
     - compiler: gcc
-      env: CFLAGS="--coverage" LDFLAGS"=--coverage" COVERAGE=yes EXTTESTS=yes
+      env: EXTTESTS=yes
+    - compiler: gcc
+      env: CFLAGS="--coverage" LDFLAGS"=--coverage" COVERAGE=yes
     - compiler: gcc
       env: CFLAGS="-m32"
     - compiler: clang
