@@ -8,3 +8,4 @@ Description: Version comparison library
 Version: @LIBVERSION_VERSION@
 Libs: -L${libdir} -lversion
 Cflags: -I${includedir}
+Cflags.private: -DLIBVERSION_STATIC_DEFINE
