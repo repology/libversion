@@ -236,6 +236,10 @@ int main() {
 	errors += version_test_symmetrical("1.0pl1", "1.0", 1);
 	errors += version_test_symmetrical("1.0pl1", "1.1", -1);
 
+	errors += version_test_symmetrical("1.0errata1", "0.9", 1);
+	errors += version_test_symmetrical("1.0errata1", "1.0", 1);
+	errors += version_test_symmetrical("1.0errata1", "1.1", -1);
+
 	fprintf(stderr, "\nTest group: p is patch flag\n");
 	errors += version_test_symmetrical_flags("1.0p1", "1.0p1", 0, 0, 0);
 	errors += version_test_symmetrical_flags("1.0p1", "1.0p1", VERSIONFLAG_P_IS_PATCH, VERSIONFLAG_P_IS_PATCH, 0);

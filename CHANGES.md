@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.9.1
+* Add support for `errata` keyword as post-release.
+
 ## 2.9.0
 * Modernized CMake code, added support for CMake export mechanism, so
   it's now super easy to use libversion from CMake
