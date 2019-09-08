@@ -98,7 +98,7 @@ int main() {
 
 	fprintf(stderr, "\nTest group: long numbers comparisons\n");
 	errors += version_test_symmetrical("20160101", "20160102", -1);
-	errors += version_test_symmetrical("9999999999999999", "10000000000000000", -1);
+	errors += version_test_symmetrical("999999999999999999", "1000000000000000000", -1);
 
 	fprintf(stderr, "\nTest group: too long numbers\n");
 	/* if it won't fit into 64bit there's nothing we can do, but at least it should not invert compariosn order */
