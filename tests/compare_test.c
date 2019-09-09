@@ -35,24 +35,35 @@ static char comparison_to_char(int comp) {
 	return '=';
 }
 
-static int version_test(const char* v1, const char* v2, int flags1, int flags2, int expected) {
+static int version_test(const char* v1, const char* v2, int flags1, int flags2, int expected, int fallback_to_eq) {
 	int result = version_compare4(v1, v2, flags1, flags2);
 
-	if (result != expected) {
-		fprintf(stderr, "[FAIL] \"%s\" %c \"%s\": got %c\n", v1, comparison_to_char(expected), v2, comparison_to_char(result));
-		return 1;
-	} else {
+	if (result == expected) {
 		fprintf(stderr, "[ OK ] \"%s\" %c \"%s\"\n", v1, comparison_to_char(expected), v2);
 		return 0;
+	} else if (fallback_to_eq && result == 0) {
+		fprintf(stderr, "[SKIP] \"%s\" %c \"%s\": got %c\n", v1, comparison_to_char(expected), v2, comparison_to_char(result));
+		return 0;
+	} else {
+		fprintf(stderr, "[FAIL] \"%s\" %c \"%s\": got %c\n", v1, comparison_to_char(expected), v2, comparison_to_char(result));
+		return 1;
 	}
 }
 
 static int version_test_symmetrical_flags(const char* v1, const char* v2, int flags1, int flags2, int expected) {
-	return version_test(v1, v2, flags1, flags2, expected) + version_test(v2, v1, flags2, flags1, -expected);
+	return version_test(v1, v2, flags1, flags2, expected, 0) + version_test(v2, v1, flags2, flags1, -expected, 0);
 }
 
 static int version_test_symmetrical(const char* v1, const char* v2, int expected) {
 	return version_test_symmetrical_flags(v1, v2, 0, 0, expected);
+}
+
+static int version_test_symmetrical_flags_lax(const char* v1, const char* v2, int flags1, int flags2, int expected) {
+	return version_test(v1, v2, flags1, flags2, expected, 1) + version_test(v2, v1, flags2, flags1, -expected, 1);
+}
+
+static int version_test_symmetrical_lax(const char* v1, const char* v2, int expected) {
+	return version_test_symmetrical_flags_lax(v1, v2, 0, 0, expected);
 }
 
 int main() {
@@ -97,27 +108,9 @@ int main() {
 	errors += version_test_symmetrical("20160101", "20160102", -1);
 	errors += version_test_symmetrical("999999999999999999", "1000000000000000000", -1);
 
-	fprintf(stderr, "\nTest group: too long numbers\n");
-	/* if it won't fit into 64bit there's nothing we can do, but at least it should not invert compariosn order */
-	result = version_compare2("99999999999999999999999999999999999998", "99999999999999999999999999999999999999");
-	if (result < 0) {
-		fprintf(stderr, "[ OK ] very long versions compared as normal ones\n");
-	} else if (result == 0) {
-		fprintf(stderr, "[SKIP] very long versions compared as equal\n");
-	} else {
-		fprintf(stderr, "[FAIL] very long versions compared incorrectly\n");
-		errors += 1;
-	}
 
-	result = version_compare2("99999999999999999999999999999999999999", "99999999999999999999999999999999999998");
-	if (result < 0) {
-		fprintf(stderr, "[ OK ] very long versions compared as normal ones\n");
-	} else if (result == 0) {
-		fprintf(stderr, "[SKIP] very long versions compared as equal\n");
-	} else {
-		fprintf(stderr, "[FAIL] very long versions compared incorrectly\n");
-		errors += 1;
-	}
+	fprintf(stderr, "\nTest group: too long numbers\n");
+	errors += version_test_symmetrical_lax("99999999999999999999999999999999999998", "99999999999999999999999999999999999999", -1);
 
 	fprintf(stderr, "\nTest group: letter addendum\n");
 	errors += version_test_symmetrical("1.0", "1.0a", -1);
