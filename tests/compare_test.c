@@ -48,9 +48,6 @@ static int version_test(const char* v1, const char* v2, int flags1, int flags2, 
 }
 
 static int version_test_symmetrical_flags(const char* v1, const char* v2, int flags1, int flags2, int expected) {
-	if (expected == 0 && strcmp(v1, v2) == 0)
-		return version_test(v1, v2, flags1, flags2, 0);
-
 	return version_test(v1, v2, flags1, flags2, expected) + version_test(v2, v1, flags2, flags1, -expected);
 }
 
