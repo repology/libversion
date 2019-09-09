@@ -197,6 +197,7 @@ int main() {
 	errors += version_test_symmetrical(".,:;~+-_", "0", 0);
 
 	fprintf(stderr, "\nTest group: empty string\n");
+	errors += version_test_symmetrical("", "", 0);
 	errors += version_test_symmetrical("", "0", 0);
 	errors += version_test_symmetrical("", "1", -1);
 
