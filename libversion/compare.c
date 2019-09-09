@@ -31,13 +31,13 @@
 
 #if defined(INT64_MAX)
 	typedef int64_t version_component_t;
-	#define VERSION_COMPONENT_MAX ((INT64_MAX - 9) / 10)
+	#define VERSION_COMPONENT_MAX INT64_MAX
 #elif defined(LLONG_MAX)
 	typedef long long version_component_t;
-	#define VERSION_COMPONENT_MAX ((LLONG_MAX - 9) / 10)
+	#define VERSION_COMPONENT_MAX LLONG_MAX
 #else
 	typedef long version_component_t;
-	#define VERSION_COMPONENT_MAX ((LONG_MAX - 9) / 10)
+	#define VERSION_COMPONENT_MAX LONG_MAX
 #endif
 
 static int is_version_char(char c) {
@@ -46,11 +46,16 @@ static int is_version_char(char c) {
 
 static version_component_t parse_number(const char** str) {
 	const char* cur = *str;
-	version_component_t number = 0;
+	version_component_t component = 0;
 	while (*cur >= '0' && *cur <= '9') {
-		number = number * 10 + (*cur - '0');
-		if (number > VERSION_COMPONENT_MAX)
-			number = VERSION_COMPONENT_MAX;
+		char number = *cur - '0';
+
+		if (component <= (VERSION_COMPONENT_MAX - number) / 10) {
+			component = component * 10 + number;
+		} else {
+			component = VERSION_COMPONENT_MAX;
+		}
+
 		cur++;
 	}
 
@@ -58,7 +63,7 @@ static version_component_t parse_number(const char** str) {
 		return -1;
 
 	*str = cur;
-	return number;
+	return component;
 }
 
 enum {
