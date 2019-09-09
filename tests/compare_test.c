@@ -68,7 +68,6 @@ static int version_test_symmetrical_lax(const char* v1, const char* v2, int expe
 
 int main() {
 	int errors = 0;
-	int result;
 
 	fprintf(stderr, "Test group: equality\n");
 	errors += version_test_symmetrical("0", "0", 0);
