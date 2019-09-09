@@ -57,7 +57,9 @@ tune comparison behavior is specific cases. Currently supported `flags`
 values are:
 
 * `VERSIONFLAG_P_IS_PATCH` _p_ letter is treated as _patch_ (post-release) instead of _pre_ (pre-release).
-* `VERSIONFLAG_ANY_IS_PATCH` any letter sequence is treated as post-release (useful for handling patchsets as in `1.2foopatchset3.barpatchset4`)
+* `VERSIONFLAG_ANY_IS_PATCH` any letter sequence is treated as post-release (useful for handling patchsets as in `1.2foopatchset3.barpatchset4`).
+* `VERSIONFLAG_RELEASE_LOWER_BOUND` derive lowest possible version with the given prefix. For example, lower bound for `1.0` is such an imaginary version `?` that `0.999` < `?` < `1.0alpha0`, regardless of how high
+* `VERSIONFLAG_RELEASE_UPPER_BOUND` derive highest possible version with the given prefix.
 
 If both `flags` are zero, `version_compare4` acts exactly the same as `version_compare2`.
 
@@ -92,6 +94,16 @@ int main() {
 	assert(version_compare4("1.0p1", "1.0pre1", VERSIONFLAG_P_IS_PATCH, 0) == 1);
 	assert(version_compare4("1.0p1", "1.0post1", VERSIONFLAG_P_IS_PATCH, 0) == 0);
 	assert(version_compare4("1.0p1", "1.0patch1", VERSIONFLAG_P_IS_PATCH, 0) == 0);
+
+	/* a way to check that the version belongs to a given release */
+	assert(
+		version_compare4("1.0alpha1", "1.0", 0, VERSIONFLAG_LOWER_BOUND) == 1) &&
+		version_compare4("1.0alpha1", "1.0", 0, VERSIONFLAG_UPPER_BOUND) == -1) &&
+		version_compare4("1.0.1", "1.0", 0, VERSIONFLAG_LOWER_BOUND) == 1) &&
+		version_compare4("1.0.1", "1.0", 0, VERSIONFLAG_UPPER_BOUND) == -1) &&
+		/* 1.0alpha1 and 1.0.1 belong to 1.0 release, e.g. they lie between
+		   (lowest possible version in 1.0) and (highest possible version in 1.0) */
+	);
 }
 ```
 

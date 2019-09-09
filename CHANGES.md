@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.10.0
+* Improve handling of long version numbers
+* Implement `VERSIONFLAG_LOWER_BOUND` and `VERSIONFLAG_UPPER_BOUND` flags
+
 ## 2.9.1
 * Add support for `errata` keyword as post-release.
 
