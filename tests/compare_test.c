@@ -349,6 +349,40 @@ int main() {
 	errors += version_test_symmetrical("1.0patch", "1.0", 1);
 	errors += version_test_symmetrical("1.0.patch", "1.0", 1);
 
+	fprintf(stderr, "\nTest group: release bounds\n");
+	errors += version_test_symmetrical_flags("0.99999", "1.0", 0, 0, -1);
+	errors += version_test_symmetrical_flags("1.0alpha", "1.0", 0, 0, -1);
+	errors += version_test_symmetrical_flags("1.0alpha0", "1.0", 0, 0, -1);
+	errors += version_test_symmetrical_flags("1.0", "1.0", 0, 0, 0);
+	errors += version_test_symmetrical_flags("1.0patch", "1.0", 0, 0, 1);
+	errors += version_test_symmetrical_flags("1.0patch0", "1.0", 0, 0, 1);
+	errors += version_test_symmetrical_flags("1.0.1", "1.0", 0, 0, 1);
+	errors += version_test_symmetrical_flags("1.1", "1.0", 0, 0, 1);
+
+	errors += version_test_symmetrical_flags("0.99999", "1.0", 0, VERSIONFLAG_RELEASE_LOWER_BOUND, -1);
+	errors += version_test_symmetrical_flags("1.0alpha", "1.0", 0, VERSIONFLAG_RELEASE_LOWER_BOUND, 1);
+	errors += version_test_symmetrical_flags("1.0alpha0", "1.0", 0, VERSIONFLAG_RELEASE_LOWER_BOUND, 1);
+	errors += version_test_symmetrical_flags("1.0", "1.0", 0, VERSIONFLAG_RELEASE_LOWER_BOUND, 1);
+	errors += version_test_symmetrical_flags("1.0patch", "1.0", 0, VERSIONFLAG_RELEASE_LOWER_BOUND, 1);
+	errors += version_test_symmetrical_flags("1.0patch0", "1.0", 0, VERSIONFLAG_RELEASE_LOWER_BOUND, 1);
+	errors += version_test_symmetrical_flags("1.0.1", "1.0", 0, VERSIONFLAG_RELEASE_LOWER_BOUND, 1);
+	errors += version_test_symmetrical_flags("1.1", "1.0", 0, VERSIONFLAG_RELEASE_LOWER_BOUND, 1);
+
+	errors += version_test_symmetrical_flags("0.99999", "1.0", 0, VERSIONFLAG_RELEASE_UPPER_BOUND, -1);
+	errors += version_test_symmetrical_flags("1.0alpha", "1.0", 0, VERSIONFLAG_RELEASE_UPPER_BOUND, -1);
+	errors += version_test_symmetrical_flags("1.0alpha0", "1.0", 0, VERSIONFLAG_RELEASE_UPPER_BOUND, -1);
+	errors += version_test_symmetrical_flags("1.0", "1.0", 0, VERSIONFLAG_RELEASE_UPPER_BOUND, -1);
+	errors += version_test_symmetrical_flags("1.0patch", "1.0", 0, VERSIONFLAG_RELEASE_UPPER_BOUND, -1);
+	errors += version_test_symmetrical_flags("1.0patch0", "1.0", 0, VERSIONFLAG_RELEASE_UPPER_BOUND, -1);
+	errors += version_test_symmetrical_flags("1.0.1", "1.0", 0, VERSIONFLAG_RELEASE_UPPER_BOUND, -1);
+	errors += version_test_symmetrical_flags("1.1", "1.0", 0, VERSIONFLAG_RELEASE_UPPER_BOUND, 1);
+
+	errors += version_test_symmetrical_flags("1.0", "1.0", VERSIONFLAG_RELEASE_LOWER_BOUND, VERSIONFLAG_RELEASE_LOWER_BOUND, 0);
+	errors += version_test_symmetrical_flags("1.0", "1.0", VERSIONFLAG_RELEASE_UPPER_BOUND, VERSIONFLAG_RELEASE_UPPER_BOUND, 0);
+	errors += version_test_symmetrical_flags("1.0", "1.0", VERSIONFLAG_RELEASE_LOWER_BOUND, VERSIONFLAG_RELEASE_UPPER_BOUND, -1);
+
+	errors += version_test_symmetrical_flags("1.0", "1.1", VERSIONFLAG_RELEASE_UPPER_BOUND, VERSIONFLAG_RELEASE_LOWER_BOUND, -1);
+
 	if (errors) {
 		fprintf(stderr, "\n%d test(s) failed!\n", errors);
 		return 1;
