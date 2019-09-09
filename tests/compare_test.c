@@ -343,6 +343,17 @@ int main() {
 
 	errors += version_test_symmetrical_flags("1.0", "1.1", VERSIONFLAG_UPPER_BOUND, VERSIONFLAG_LOWER_BOUND, -1);
 
+	fprintf(stderr, "\nTest group: uniform component splitting\n");
+	errors += version_test_symmetrical("1.0alpha1", "1.0alpha1", 0);
+	errors += version_test_symmetrical("1.0alpha1", "1.0.alpha1", 0);
+	errors += version_test_symmetrical("1.0alpha1", "1.0alpha.1", 0);
+	errors += version_test_symmetrical("1.0alpha1", "1.0.alpha.1", 0);
+
+	errors += version_test_symmetrical("1.0patch1", "1.0patch1", 0);
+	errors += version_test_symmetrical("1.0patch1", "1.0.patch1", 0);
+	errors += version_test_symmetrical("1.0patch1", "1.0patch.1", 0);
+	errors += version_test_symmetrical("1.0patch1", "1.0.patch.1", 0);
+
 	if (errors) {
 		fprintf(stderr, "\n%d test(s) failed!\n", errors);
 		return 1;
