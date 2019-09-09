@@ -39,13 +39,13 @@ static int version_test(const char* v1, const char* v2, int flags1, int flags2, 
 	int result = version_compare4(v1, v2, flags1, flags2);
 
 	if (result == expected) {
-		fprintf(stderr, "[ OK ] \"%s\" %c \"%s\"\n", v1, comparison_to_char(expected), v2);
+		fprintf(stderr, "[ OK ] \"%s\" (0x%x) %c \"%s\" (0x%x)\n", v1, flags1, comparison_to_char(expected), v2, flags2);
 		return 0;
 	} else if (fallback_to_eq && result == 0) {
-		fprintf(stderr, "[SKIP] \"%s\" %c \"%s\": got %c\n", v1, comparison_to_char(expected), v2, comparison_to_char(result));
+		fprintf(stderr, "[SKIP] \"%s\" (0x%x) %c \"%s\" (0x%x): got %c\n", v1, flags1, comparison_to_char(expected), v2, flags2, comparison_to_char(result));
 		return 0;
 	} else {
-		fprintf(stderr, "[FAIL] \"%s\" %c \"%s\": got %c\n", v1, comparison_to_char(expected), v2, comparison_to_char(result));
+		fprintf(stderr, "[FAIL] \"%s\" (0x%x) %c \"%s\" (0x%x): got %c\n", v1, flags1, comparison_to_char(expected), v2, flags2, comparison_to_char(result));
 		return 1;
 	}
 }
