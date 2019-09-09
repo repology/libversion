@@ -181,56 +181,69 @@ int main() {
 	/* this should not be treated as 1.0a-1 */
 	errors += version_test_symmetrical("1.0alpha-1", "0.9", 1);
 	errors += version_test_symmetrical("1.0alpha-1", "1.0", -1);
+	errors += version_test_symmetrical("1.0alpha-1", "1.0.1", -1);
 	errors += version_test_symmetrical("1.0alpha-1", "1.1", -1);
 
 	errors += version_test_symmetrical("1.0beta-1", "0.9", 1);
 	errors += version_test_symmetrical("1.0beta-1", "1.0", -1);
+	errors += version_test_symmetrical("1.0beta-1", "1.0.1", -1);
 	errors += version_test_symmetrical("1.0beta-1", "1.1", -1);
 
 	errors += version_test_symmetrical("1.0pre-1", "0.9", 1);
 	errors += version_test_symmetrical("1.0pre-1", "1.0", -1);
+	errors += version_test_symmetrical("1.0pre-1", "1.0.1", -1);
 	errors += version_test_symmetrical("1.0pre-1", "1.1", -1);
 
 	errors += version_test_symmetrical("1.0prerelease-1", "0.9", 1);
 	errors += version_test_symmetrical("1.0prerelease-1", "1.0", -1);
+	errors += version_test_symmetrical("1.0prerelease-1", "1.0.1", -1);
 	errors += version_test_symmetrical("1.0prerelease-1", "1.1", -1);
 
 	errors += version_test_symmetrical("1.0rc-1", "0.9", 1);
 	errors += version_test_symmetrical("1.0rc-1", "1.0", -1);
+	errors += version_test_symmetrical("1.0rc-1", "1.0.1", -1);
 	errors += version_test_symmetrical("1.0rc-1", "1.1", -1);
 
 	fprintf(stderr, "\nTest group: post-release keyword awareness\n");
 	/* this should not be treated as 1.0a-1 */
 	errors += version_test_symmetrical("1.0patch1", "0.9", 1);
 	errors += version_test_symmetrical("1.0patch1", "1.0", 1);
+	errors += version_test_symmetrical("1.0patch1", "1.0.1", -1);
 	errors += version_test_symmetrical("1.0patch1", "1.1", -1);
 
 	errors += version_test_symmetrical("1.0.patch1", "0.9", 1);
 	errors += version_test_symmetrical("1.0.patch1", "1.0", 1);
+	errors += version_test_symmetrical("1.0.patch1", "1.0.1", -1);
 	errors += version_test_symmetrical("1.0.patch1", "1.1", -1);
 
 	errors += version_test_symmetrical("1.0patch.1", "0.9", 1);
 	errors += version_test_symmetrical("1.0patch.1", "1.0", 1);
+	errors += version_test_symmetrical("1.0patch.1", "1.0.1", -1);
 	errors += version_test_symmetrical("1.0patch.1", "1.1", -1);
 
 	errors += version_test_symmetrical("1.0.patch.1", "0.9", 1);
 	errors += version_test_symmetrical("1.0.patch.1", "1.0", 1);
+	errors += version_test_symmetrical("1.0.patch.1", "1.0.1", -1);
 	errors += version_test_symmetrical("1.0.patch.1", "1.1", -1);
 
 	errors += version_test_symmetrical("1.0post1", "0.9", 1);
 	errors += version_test_symmetrical("1.0post1", "1.0", 1);
+	errors += version_test_symmetrical("1.0post1", "1.0.1", -1);
 	errors += version_test_symmetrical("1.0post1", "1.1", -1);
 
 	errors += version_test_symmetrical("1.0postanythinggoeshere1", "0.9", 1);
 	errors += version_test_symmetrical("1.0postanythinggoeshere1", "1.0", 1);
+	errors += version_test_symmetrical("1.0postanythinggoeshere1", "1.0.1", -1);
 	errors += version_test_symmetrical("1.0postanythinggoeshere1", "1.1", -1);
 
 	errors += version_test_symmetrical("1.0pl1", "0.9", 1);
 	errors += version_test_symmetrical("1.0pl1", "1.0", 1);
+	errors += version_test_symmetrical("1.0pl1", "1.0.1", -1);
 	errors += version_test_symmetrical("1.0pl1", "1.1", -1);
 
 	errors += version_test_symmetrical("1.0errata1", "0.9", 1);
 	errors += version_test_symmetrical("1.0errata1", "1.0", 1);
+	errors += version_test_symmetrical("1.0errata1", "1.0.1", -1);
 	errors += version_test_symmetrical("1.0errata1", "1.1", -1);
 
 	fprintf(stderr, "\nTest group: p is patch flag\n");
@@ -353,6 +366,12 @@ int main() {
 	errors += version_test_symmetrical("1.0patch1", "1.0.patch1", 0);
 	errors += version_test_symmetrical("1.0patch1", "1.0patch.1", 0);
 	errors += version_test_symmetrical("1.0patch1", "1.0.patch.1", 0);
+
+	/* controversial - TBD
+	fprintf(stderr, "\nTest group: letter vs. numeric component ordering\n");
+	errors += version_test_symmetrical("1.0", "1.0a", -1);
+	errors += version_test_symmetrical("1.0a", "1.0.1", -1);
+	*/
 
 	if (errors) {
 		fprintf(stderr, "\n%d test(s) failed!\n", errors);

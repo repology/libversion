@@ -79,6 +79,13 @@ const char* skip_number(const char* str) {
 	return cur;
 }
 
+const char* skip_zeroes(const char* str) {
+	const char* cur = str;
+	while (*cur == '0')
+		++cur;
+	return cur;
+}
+
 const char* skip_separator(const char* str) {
 	const char* cur = str;
 	while (my_isseparator(*cur))
@@ -90,8 +97,10 @@ const char* skip_separator(const char* str) {
 enum {
 	METAORDER_LOWER_BOUND = -1000,
 	METAORDER_PRE_RELEASE = -1,
-	METAORDER_DEFAULT = 0,
-	METAORDER_POST_RELEASE = 1,
+	METAORDER_ZERO = 0,
+	METAORDER_POST_RELEASE = 2,
+	METAORDER_NONZERO = 3,
+	METAORDER_LETTER_SUFFIX = 4,
 	METAORDER_UPPER_BOUND = 1000,
 };
 
@@ -213,8 +222,15 @@ static void parse_token_to_component(const char** str, component_t* component, i
 			component->metaorder = METAORDER_POST_RELEASE;
 
 	} else {
-		component->metaorder = METAORDER_DEFAULT;
+		component->end = *str = skip_zeroes(*str);
+		const char* zeroes_end = *str;
 		component->end = *str = skip_number(*str);
+
+		if (zeroes_end == *str) {
+			component->metaorder = METAORDER_ZERO;
+		} else {
+			component->metaorder = METAORDER_NONZERO;
+		}
 	}
 }
 
@@ -226,7 +242,7 @@ static void make_default_component(component_t* component, int flags) {
 	} else if (flags & VERSIONFLAG_UPPER_BOUND) {
 		component->metaorder = METAORDER_UPPER_BOUND;
 	} else {
-		component->metaorder = METAORDER_DEFAULT;
+		component->metaorder = METAORDER_ZERO;
 	}
 	component->start = zero;
 	component->end = zero + 1;
@@ -244,7 +260,7 @@ static size_t get_next_version_component(const char** str, component_t* componen
 
 	if (my_isalpha(**str) && (my_isseparator(*(*str + 1)) || *(*str + 1) == '\0')) {
 		++component;
-		component->metaorder = METAORDER_POST_RELEASE;
+		component->metaorder = METAORDER_LETTER_SUFFIX;
 		component->start = *str;
 		component->end = *str + 1;
 		++*str;
