@@ -84,40 +84,40 @@ as `version_compare2`.
 #include <libversion/version.h>
 
 int main() {
-	/* 0.99 < 1.11 */
-	assert(version_compare2("0.99", "1.11") == -1);
+    /* 0.99 < 1.11 */
+    assert(version_compare2("0.99", "1.11") == -1);
 
-	/* 1.0 == 1.0.0 */
-	assert(version_compare2("1.0", "1.0.0") == 0);
+    /* 1.0 == 1.0.0 */
+    assert(version_compare2("1.0", "1.0.0") == 0);
 
-	/* 1.0alpha1 < 1.0.rc1 */
-	assert(version_compare2("1.0alpha1", "1.0.rc1") == -1);
+    /* 1.0alpha1 < 1.0.rc1 */
+    assert(version_compare2("1.0alpha1", "1.0.rc1") == -1);
 
-	/* 1.0 > 1.0.rc1 */
-	assert(version_compare2("1.0", "1.0-rc1") == 1);
+    /* 1.0 > 1.0.rc1 */
+    assert(version_compare2("1.0", "1.0-rc1") == 1);
 
-	/* 1.2.3alpha4 is the same as 1.2.3~a4 */
-	assert(version_compare2("1.2.3alpha4", "1.2.3~a4") == 0);
+    /* 1.2.3alpha4 is the same as 1.2.3~a4 */
+    assert(version_compare2("1.2.3alpha4", "1.2.3~a4") == 0);
 
-	/* by default, `p' is treated as `pre'... */
-	assert(version_compare2("1.0p1", "1.0pre1") == 0);
-	assert(version_compare2("1.0p1", "1.0post1") == -1);
-	assert(version_compare2("1.0p1", "1.0patch1") == -1);
+    /* by default, `p' is treated as `pre'... */
+    assert(version_compare2("1.0p1", "1.0pre1") == 0);
+    assert(version_compare2("1.0p1", "1.0post1") == -1);
+    assert(version_compare2("1.0p1", "1.0patch1") == -1);
 
-	/* ...but this is tunable: here it's handled as `patch` */
-	assert(version_compare4("1.0p1", "1.0pre1", VERSIONFLAG_P_IS_PATCH, 0) == 1);
-	assert(version_compare4("1.0p1", "1.0post1", VERSIONFLAG_P_IS_PATCH, 0) == 0);
-	assert(version_compare4("1.0p1", "1.0patch1", VERSIONFLAG_P_IS_PATCH, 0) == 0);
+    /* ...but this is tunable: here it's handled as `patch` */
+    assert(version_compare4("1.0p1", "1.0pre1", VERSIONFLAG_P_IS_PATCH, 0) == 1);
+    assert(version_compare4("1.0p1", "1.0post1", VERSIONFLAG_P_IS_PATCH, 0) == 0);
+    assert(version_compare4("1.0p1", "1.0patch1", VERSIONFLAG_P_IS_PATCH, 0) == 0);
 
-	/* a way to check that the version belongs to a given release */
-	assert(
-		version_compare4("1.0alpha1", "1.0", 0, VERSIONFLAG_LOWER_BOUND) == 1) &&
-		version_compare4("1.0alpha1", "1.0", 0, VERSIONFLAG_UPPER_BOUND) == -1) &&
-		version_compare4("1.0.1", "1.0", 0, VERSIONFLAG_LOWER_BOUND) == 1) &&
-		version_compare4("1.0.1", "1.0", 0, VERSIONFLAG_UPPER_BOUND) == -1) &&
-		/* 1.0alpha1 and 1.0.1 belong to 1.0 release, e.g. they lie between
-		   (lowest possible version in 1.0) and (highest possible version in 1.0) */
-	);
+    /* a way to check that the version belongs to a given release */
+    assert(
+        version_compare4("1.0alpha1", "1.0", 0, VERSIONFLAG_LOWER_BOUND) == 1) &&
+        version_compare4("1.0alpha1", "1.0", 0, VERSIONFLAG_UPPER_BOUND) == -1) &&
+        version_compare4("1.0.1", "1.0", 0, VERSIONFLAG_LOWER_BOUND) == 1) &&
+        version_compare4("1.0.1", "1.0", 0, VERSIONFLAG_UPPER_BOUND) == -1) &&
+        /* 1.0alpha1 and 1.0.1 belong to 1.0 release, e.g. they lie between
+           (lowest possible version in 1.0) and (highest possible version in 1.0) */
+    );
 }
 ```
 
