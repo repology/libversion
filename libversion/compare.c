@@ -137,11 +137,11 @@ static size_t get_next_version_component(const char** str, version_component_t* 
 
 	/* EOL, generate filler component */
 	if (**str == '\0') {
-		if (flags & VERSIONFLAG_RELEASE_LOWER_BOUND) {
+		if (flags & VERSIONFLAG_LOWER_BOUND) {
 			*(target++) = -2;
 			*(target++) = -2;
 			*(target++) = -2;
-		} else if (flags & VERSIONFLAG_RELEASE_UPPER_BOUND) {
+		} else if (flags & VERSIONFLAG_UPPER_BOUND) {
 			*(target++) = VERSION_COMPONENT_MAX;
 			*(target++) = VERSION_COMPONENT_MAX;
 			*(target++) = VERSION_COMPONENT_MAX;
@@ -210,8 +210,8 @@ int version_compare4(const char* v1, const char* v2, int v1_flags, int v2_flags)
 	size_t v1_len = 0, v2_len = 0;
 	size_t shift, i;
 
-	int v1_extra_components = (v1_flags & (VERSIONFLAG_RELEASE_LOWER_BOUND|VERSIONFLAG_RELEASE_UPPER_BOUND)) ? 1 : 0;
-	int v2_extra_components = (v2_flags & (VERSIONFLAG_RELEASE_LOWER_BOUND|VERSIONFLAG_RELEASE_UPPER_BOUND)) ? 1 : 0;
+	int v1_extra_components = (v1_flags & (VERSIONFLAG_LOWER_BOUND|VERSIONFLAG_UPPER_BOUND)) ? 1 : 0;
+	int v2_extra_components = (v2_flags & (VERSIONFLAG_LOWER_BOUND|VERSIONFLAG_UPPER_BOUND)) ? 1 : 0;
 
 	int v1_exhausted, v2_exhausted;
 
