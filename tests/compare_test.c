@@ -144,15 +144,7 @@ int main() {
 	errors += version_test_symmetrical("", "1", -1);
 
 	fprintf(stderr, "\nTest group: prerelease sequence\n");
-	errors += version_test_symmetrical("1.0.alpha1", "1.0.alpha2", -1);
-	errors += version_test_symmetrical("1.0.alpha2", "1.0.beta1", -1);
-	errors += version_test_symmetrical("1.0.beta1", "1.0.beta2", -1);
-	errors += version_test_symmetrical("1.0.beta2", "1.0.rc1", -1);
-	errors += version_test_symmetrical("1.0.beta2", "1.0.pre1", -1);
-	errors += version_test_symmetrical("1.0.rc1", "1.0", -1);
-	errors += version_test_symmetrical("1.0.pre1", "1.0", -1);
 	/* XXX: is rc/pre ordering defined? */
-
 	errors += version_test_symmetrical("1.0alpha1", "1.0alpha2", -1);
 	errors += version_test_symmetrical("1.0alpha2", "1.0beta1", -1);
 	errors += version_test_symmetrical("1.0beta1", "1.0beta2", -1);
@@ -160,6 +152,30 @@ int main() {
 	errors += version_test_symmetrical("1.0beta2", "1.0pre1", -1);
 	errors += version_test_symmetrical("1.0rc1", "1.0", -1);
 	errors += version_test_symmetrical("1.0pre1", "1.0", -1);
+
+	errors += version_test_symmetrical("1.0.alpha1", "1.0.alpha2", -1);
+	errors += version_test_symmetrical("1.0.alpha2", "1.0.beta1", -1);
+	errors += version_test_symmetrical("1.0.beta1", "1.0.beta2", -1);
+	errors += version_test_symmetrical("1.0.beta2", "1.0.rc1", -1);
+	errors += version_test_symmetrical("1.0.beta2", "1.0.pre1", -1);
+	errors += version_test_symmetrical("1.0.rc1", "1.0", -1);
+	errors += version_test_symmetrical("1.0.pre1", "1.0", -1);
+
+	errors += version_test_symmetrical("1.0alpha.1", "1.0alpha.2", -1);
+	errors += version_test_symmetrical("1.0alpha.2", "1.0beta.1", -1);
+	errors += version_test_symmetrical("1.0beta.1", "1.0beta.2", -1);
+	errors += version_test_symmetrical("1.0beta.2", "1.0rc.1", -1);
+	errors += version_test_symmetrical("1.0beta.2", "1.0pre.1", -1);
+	errors += version_test_symmetrical("1.0rc.1", "1.0", -1);
+	errors += version_test_symmetrical("1.0pre.1", "1.0", -1);
+
+	errors += version_test_symmetrical("1.0.alpha.1", "1.0.alpha.2", -1);
+	errors += version_test_symmetrical("1.0.alpha.2", "1.0.beta.1", -1);
+	errors += version_test_symmetrical("1.0.beta.1", "1.0.beta.2", -1);
+	errors += version_test_symmetrical("1.0.beta.2", "1.0.rc.1", -1);
+	errors += version_test_symmetrical("1.0.beta.2", "1.0.pre.1", -1);
+	errors += version_test_symmetrical("1.0.rc.1", "1.0", -1);
+	errors += version_test_symmetrical("1.0.pre.1", "1.0", -1);
 
 	fprintf(stderr, "\nTest group: long word awareness\n");
 	/* this should not be treated as 1.0a-1 */
@@ -193,7 +209,6 @@ int main() {
 	errors += version_test_symmetrical("1.0.patch1", "1.0", 1);
 	errors += version_test_symmetrical("1.0.patch1", "1.1", -1);
 
-	/* XXX: 1.0.patch1 is not the same as 1.0patch.1 though; should it be? */
 	errors += version_test_symmetrical("1.0patch.1", "0.9", 1);
 	errors += version_test_symmetrical("1.0patch.1", "1.0", 1);
 	errors += version_test_symmetrical("1.0patch.1", "1.1", -1);
