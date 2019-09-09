@@ -123,6 +123,11 @@ target_link_libraries(my_target libversion::libversion)
 target_link_libraries(my_target libversion::libversion_static)
 ```
 
+## Limitations
+
+* Numeric version components are limited with the range of platform-specific long integer (64bits on most platforms). Comparison of greater numers will behave as if it was clamped to the supported range, e.g. `99999999999999999999999999999999999998` can be treated equal to `99999999999999999999999999999999999999` (but still higher than any number withit a supported range).
+* The way lower and upper bounds work with alpha suffixes is unspecified, e.g. it's not clear whether `1.0a` belongs to `[lower bound(1.0), upper bound(1.0)]`.
+
 ## Building
 
 libversion uses [CMake](https://cmake.org/) build system.
