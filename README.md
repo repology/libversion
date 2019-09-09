@@ -23,16 +23,20 @@ if they are written in different formats.
 A short list of version features libversion handles for you:
 
 * Simple versions, obviously: `0.9 < 1.0 < 1.1`
-* Missing components: `1.0 == 1.0.0`
+* Omitting insignificant components: `1.0 == 1.0.0`
 * Leading zeroes: `1.001 == 1.1`
 * Unusual separators: `1_2~3 == 1.2.3`
 * Letter suffixes: `1.2 < 1.2a < 1.2b < 1.3`
 * Alphanumeric prerelease components:
   * `1.0alpha1 == 1.0.alpha1 == 1.0a1 == 1.0.a1`
   * `1.0alpha1 < 1.0alpha2 < 1.0beta1 < 1.0rc1 < 1.0`
-* Awareness of prerelease keywords: while `1.0 < 1.0a-1` (_a_ treated as version addendum), but `1.0alpha-1 < 1.0` (_alpha_ is treated as prerelease marker)
-* Awareness of _patch_, _post_ and _pl_ keywords: while `1.0alpha1 < 1.0` (_alpha_ is pre-release), but `1.0 < 1.0patch1 < 1.1` (_patch_ is post-release)
-* Customizable handling of _p_ keyword (it may mean either _patch_ or _pre_, and since libversion cannot guess, this is controlled with an external flag)
+* Awareness of prerelease keywords: while `1.0 < 1.0a-1` (_a_ treated
+  as version addendum), but `1.0alpha-1 < 1.0` (_alpha_ is treated
+  as prerelease marker)
+* Awareness of _patch_, _post_ and _pl_ keywords: while `1.0alpha1 < 1.0`
+  (_alpha_ is pre-release), but `1.0 < 1.0patch1 < 1.1` (_patch_ is post-release)
+* Customizable handling of _p_ keyword (it may mean either _patch_ or _pre_,
+  and since libversion cannot guess, this is controlled with an external flag)
 
 See [doc/ALGORITHM.md](doc/ALGORITHM.md) for more elaborate description
 of inner logic.
@@ -50,18 +54,28 @@ Compares version strings `v1` and `v2`.
 
 Returns **-1** if `v1` is lower than `v2`, **0** if `v1` is equal to `v2` and **1** if `v1` is higher than `v2`.
 
-Thread safe, does not produce errors, does not allocate dynamic memory.
+Thread safe, does not produce errors, does not allocate dynamic memory,
+O(N) computational complexity, O(1) stack memory requirements.
 
-4-argument form allows specifying flags for each comparison argument to
+4-argument form allows specifying flags for each version argument to
 tune comparison behavior is specific cases. Currently supported `flags`
 values are:
 
-* `VERSIONFLAG_P_IS_PATCH` _p_ letter is treated as _patch_ (post-release) instead of _pre_ (pre-release).
-* `VERSIONFLAG_ANY_IS_PATCH` any letter sequence is treated as post-release (useful for handling patchsets as in `1.2foopatchset3.barpatchset4`).
-* `VERSIONFLAG_RELEASE_LOWER_BOUND` derive lowest possible version with the given prefix. For example, lower bound for `1.0` is such an imaginary version `?` that `0.999` < `?` < `1.0alpha0`, regardless of how high
-* `VERSIONFLAG_RELEASE_UPPER_BOUND` derive highest possible version with the given prefix.
+* `VERSIONFLAG_P_IS_PATCH` _p_ letter is treated as _patch_
+  (post-release) instead of _pre_ (pre-release).
+* `VERSIONFLAG_ANY_IS_PATCH` any letter sequence is treated as
+  post-release (useful for handling patchsets as in
+  `1.2foopatchset3.barpatchset4`).
+* `VERSIONFLAG_LOWER_BOUND` derive lowest possible version with
+  the given prefix. For example, lower bound for `1.0` is such
+  imaginary version `?` that it's higher than any release before
+  `1.0` and lower than any prerelease of `1.0`.
+  E.g. `0.999` < lower bound(`1.0`) < `1.0alpha0`.
+* `VERSIONFLAG_UPPER_BOUND` derive highest possible version with
+  the given prefix. Oppisite of `VERSIONFLAG_LOWER_BOUND`.
 
-If both `flags` are zero, `version_compare4` acts exactly the same as `version_compare2`.
+If both `flags` are zero, `version_compare4` acts exactly the same
+as `version_compare2`.
 
 ## Example
 
@@ -125,8 +139,15 @@ target_link_libraries(my_target libversion::libversion_static)
 
 ## Limitations
 
-* Numeric version components are limited with the range of platform-specific long integer (64bits on most platforms). Comparison of greater numers will behave as if it was clamped to the supported range, e.g. `99999999999999999999999999999999999998` can be treated equal to `99999999999999999999999999999999999999` (but still higher than any number withit a supported range).
-* The way lower and upper bounds work with alpha suffixes is unspecified, e.g. it's not clear whether `1.0a` belongs to `[lower bound(1.0), upper bound(1.0)]`.
+* Numeric version components are limited with the range of
+  platform-specific long integer (64bits on most platforms). Comparison
+  of greater numers will behave as if it was clamped to the supported
+  range, e.g. `99999999999999999999999999999999999998` can be treated
+  equal to `99999999999999999999999999999999999999` (but still higher
+  than any number withit a supported range).
+* The way lower and upper bounds work with letter suffixes is
+  unspecified, e.g. it's not clear whether `1.0a` belongs to [lower
+  bound(`1.0`), upper bound(`1.0`)].
 
 ## Building
 
@@ -138,7 +159,9 @@ To run test suite, run `ctest` after building.
 
 To install the library systemwide, run `make install`.
 
-The project installs library, headers, pkg-config file, CMake import files and a demo utility, `version_compare`, which may be used to compare versions from command line:
+The project installs library, headers, pkg-config file, CMake import
+files and a demo utility, `version_compare`, which may be used to
+compare versions from command line:
 
 ```
 $ ./version_compare
