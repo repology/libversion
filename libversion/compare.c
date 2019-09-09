@@ -40,6 +40,28 @@
 	#define VERSION_COMPONENT_MAX LONG_MAX
 #endif
 
+typedef struct {
+	version_component_t a;
+	version_component_t b;
+	version_component_t c;
+} unit_t;
+
+static int compare_units(const unit_t* u1, const unit_t* u2) {
+	if (u1->a < u2->a)
+		return -1;
+	if (u1->a > u2->a)
+		return 1;
+	if (u1->b < u2->b)
+		return -1;
+	if (u1->b > u2->b)
+		return 1;
+	if (u1->c < u2->c)
+		return -1;
+	if (u1->c > u2->c)
+		return 1;
+	return 0;
+}
+
 static int is_version_char(char c) {
 	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
@@ -126,7 +148,7 @@ static version_component_t parse_alpha(const char** str, int* outflags, int flag
 		return start;
 }
 
-static size_t get_next_version_component(const char** str, version_component_t* target, int flags) {
+static size_t get_next_version_component(const char** str, unit_t* target, int flags) {
 	const char* end;
 	version_component_t number, alpha, extranumber;
 	int alphaflags = 0;
@@ -138,19 +160,19 @@ static size_t get_next_version_component(const char** str, version_component_t* 
 	/* EOL, generate filler component */
 	if (**str == '\0') {
 		if (flags & VERSIONFLAG_LOWER_BOUND) {
-			*(target++) = -2;
-			*(target++) = -2;
-			*(target++) = -2;
+			target->a = -2;
+			target->b = -2;
+			target->c = -2;
 		} else if (flags & VERSIONFLAG_UPPER_BOUND) {
-			*(target++) = VERSION_COMPONENT_MAX;
-			*(target++) = VERSION_COMPONENT_MAX;
-			*(target++) = VERSION_COMPONENT_MAX;
+			target->a = VERSION_COMPONENT_MAX;
+			target->b = VERSION_COMPONENT_MAX;
+			target->c = VERSION_COMPONENT_MAX;
 		} else {
-			*(target++) = 0;
-			*(target++) = -1;
-			*(target++) = -1;
+			target->a = 0;
+			target->b = -1;
+			target->c = -1;
 		}
-		return 3;
+		return 1;
 	}
 
 	end = *str;
@@ -174,13 +196,14 @@ static size_t get_next_version_component(const char** str, version_component_t* 
 		 * `1a1' -> treat as [1  ].[ a1]
 		 * `1patch1' -> special case, treat as [1  ].[0p1]
 		 */
-		*(target++) = number;
-		*(target++) = -1;
-		*(target++) = -1;
-		*(target++) = (alphaflags == ALPHAFLAG_POSTRELEASE) ? 0 : -1;
-		*(target++) = alpha;
-		*(target++) = extranumber;
-		return 6;
+		target->a = number;
+		target->b = -1;
+		target->c = -1;
+		target++;
+		target->a = (alphaflags == ALPHAFLAG_POSTRELEASE) ? 0 : -1;
+		target->b = alpha;
+		target->c = extranumber;
+		return 2;
 	} else if (number != -1 && alpha != -1 && alphaflags) {
 		/*
 		 * when alpha part is known to mean prerelease,
@@ -188,25 +211,26 @@ static size_t get_next_version_component(const char** str, version_component_t* 
 		 *
 		 * `1alpha' is treated as [1  ].[ a ], not [1a ]
 		 */
-		*(target++) = number;
-		*(target++) = -1;
-		*(target++) = -1;
-		*(target++) = (alphaflags == ALPHAFLAG_POSTRELEASE) ? 0 : -1;
-		*(target++) = alpha;
-		*(target++) = -1;
-		return 6;
+		target->a = number;
+		target->b = -1;
+		target->c = -1;
+		target++;
+		target->a = (alphaflags == ALPHAFLAG_POSTRELEASE) ? 0 : -1;
+		target->b = alpha;
+		target->c = -1;
+		return 2;
 	} else {
 		if (number == -1 && alphaflags == ALPHAFLAG_POSTRELEASE)
 			number = 0;
-		*(target++) = number;
-		*(target++) = alpha;
-		*(target++) = extranumber;
-		return 3;
+		target->a = number;
+		target->b = alpha;
+		target->c = extranumber;
+		return 1;
 	}
 }
 
 int version_compare4(const char* v1, const char* v2, int v1_flags, int v2_flags) {
-	version_component_t v1_comps[6], v2_comps[6];
+	unit_t v1_units[2], v2_units[2];
 	size_t v1_len = 0, v2_len = 0;
 	size_t shift, i;
 
@@ -215,24 +239,25 @@ int version_compare4(const char* v1, const char* v2, int v1_flags, int v2_flags)
 
 	int v1_exhausted, v2_exhausted;
 
+	int res;
+
 	do {
 		if (v1_len == 0)
-			v1_len = get_next_version_component(&v1, v1_comps, v1_flags);
+			v1_len = get_next_version_component(&v1, v1_units, v1_flags);
 		if (v2_len == 0)
-			v2_len = get_next_version_component(&v2, v2_comps, v2_flags);
+			v2_len = get_next_version_component(&v2, v2_units, v2_flags);
 
 		shift = MY_MIN(v1_len, v2_len);
 		for (i = 0; i < shift; i++) {
-			if (v1_comps[i] < v2_comps[i])
-				return -1;
-			if (v1_comps[i] > v2_comps[i])
-				return 1;
+			res = compare_units(&v1_units[i], &v2_units[i]);
+			if (res != 0)
+				return res;
 		}
 
 		if (v1_len != v2_len) {
 			for (i = 0; i < shift; i++) {
-				v1_comps[i] = v1_comps[i+shift];
-				v2_comps[i] = v2_comps[i+shift];
+				v1_units[i] = v1_units[i+shift];
+				v2_units[i] = v2_units[i+shift];
 			}
 		}
 
