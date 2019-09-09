@@ -16,4 +16,5 @@ add_subdirectory(tests)
 
 if(UNIX)
 	add_subdirectory(version_compare)
+	add_subdirectory(version_sort)
 endif()
