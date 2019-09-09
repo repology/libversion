@@ -27,76 +27,32 @@
 #include <stddef.h>
 #include <string.h>
 
+/* helper functions */
 #define MY_MIN(a, b) ((a) < (b) ? (a) : (b))
 
-#if defined(INT64_MAX)
-	typedef int64_t version_component_t;
-	#define VERSION_COMPONENT_MAX INT64_MAX
-#elif defined(LLONG_MAX)
-	typedef long long version_component_t;
-	#define VERSION_COMPONENT_MAX LLONG_MAX
-#else
-	typedef long version_component_t;
-	#define VERSION_COMPONENT_MAX LONG_MAX
-#endif
-
-typedef struct {
-	version_component_t a;
-	version_component_t b;
-	version_component_t c;
-} unit_t;
-
-static int compare_units(const unit_t* u1, const unit_t* u2) {
-	if (u1->a < u2->a)
-		return -1;
-	if (u1->a > u2->a)
-		return 1;
-	if (u1->b < u2->b)
-		return -1;
-	if (u1->b > u2->b)
-		return 1;
-	if (u1->c < u2->c)
-		return -1;
-	if (u1->c > u2->c)
-		return 1;
-	return 0;
+static int my_isalpha(char c) {
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
-static int is_version_char(char c) {
-	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+static int my_isnumber(char c) {
+	return c >= '0' && c <= '9';
 }
 
-static version_component_t parse_number(const char** str) {
-	const char* cur = *str;
-	version_component_t component = 0;
-	while (*cur >= '0' && *cur <= '9') {
-		char number = *cur - '0';
-
-		if (component <= (VERSION_COMPONENT_MAX - number) / 10) {
-			component = component * 10 + number;
-		} else {
-			component = VERSION_COMPONENT_MAX;
-		}
-
-		cur++;
-	}
-
-	if (cur == *str)
-		return -1;
-
-	*str = cur;
-	return component;
+static int my_isseparator(char c) {
+	return !my_isnumber(c) && !my_isalpha(c) && c != '\0';
 }
 
-enum {
-	ALPHAFLAG_PRERELEASE = 1,
-	ALPHAFLAG_POSTRELEASE = 2
-};
+static char my_tolower(char c) {
+	if (c >= 'A' && c <= 'Z')
+		return c - 'A' + 'a';
+	else
+		return c;
+}
 
-static int mymemcasecmp(const char* a, const char* b, size_t len) {
+static int my_memcasecmp(const char* a, const char* b, size_t len) {
 	while (len != 0) {
-		unsigned char ua = (unsigned char)((*a >= 'A' && *a <= 'Z') ? (*a - 'A' + 'a') : (*a));
-		unsigned char ub = (unsigned char)((*b >= 'A' && *b <= 'Z') ? (*b - 'A' + 'a') : (*b));
+		unsigned char ua = my_tolower(*a);
+		unsigned char ub = my_tolower(*b);
 
 		if (ua != ub)
 			return ua - ub;
@@ -109,128 +65,197 @@ static int mymemcasecmp(const char* a, const char* b, size_t len) {
 	return 0;
 }
 
-static version_component_t parse_alpha(const char** str, int* outflags, int flags) {
-	char start = **str;
-
-	const char* cur = *str;
-
-	while ((*cur >= 'a' && *cur <= 'z') || (*cur >= 'A' && *cur <= 'Z'))
-		cur++;
-
-	*outflags = 0;
-
-	if (cur == *str)
-		return -1;
-	else if (cur - *str == 5 && mymemcasecmp(*str, "alpha", 5) == 0)
-		*outflags = ALPHAFLAG_PRERELEASE;
-	else if (cur - *str == 4 && mymemcasecmp(*str, "beta", 4) == 0)
-		*outflags = ALPHAFLAG_PRERELEASE;
-	else if (cur - *str == 2 && mymemcasecmp(*str, "rc", 2) == 0)
-		*outflags = ALPHAFLAG_PRERELEASE;
-	else if (cur - *str >= 3 && mymemcasecmp(*str, "pre", 3) == 0)
-		*outflags = ALPHAFLAG_PRERELEASE;
-	else if (cur - *str >= 4 && mymemcasecmp(*str, "post", 4) == 0)
-		*outflags = ALPHAFLAG_POSTRELEASE;
-	else if (cur - *str == 5 && mymemcasecmp(*str, "patch", 5) == 0)
-		*outflags = ALPHAFLAG_POSTRELEASE;
-	else if (cur - *str == 2 && mymemcasecmp(*str, "pl", 2) == 0)  /* patchlevel */
-		*outflags = ALPHAFLAG_POSTRELEASE;
-	else if (cur - *str == 6 && mymemcasecmp(*str, "errata", 2) == 0)
-		*outflags = ALPHAFLAG_POSTRELEASE;
-	else if (flags & VERSIONFLAG_P_IS_PATCH && cur - *str == 1 && (**str == 'p' || **str == 'P'))
-		*outflags = ALPHAFLAG_POSTRELEASE;
-
-	*str = cur;
-
-	if (start >= 'A' && start <= 'Z')
-		return start - 'A' + 'a';  /* lowercase */
-	else
-		return start;
+const char* skip_alpha(const char* str) {
+	const char* cur = str;
+	while (my_isalpha(*cur))
+		++cur;
+	return cur;
 }
 
-static size_t get_next_version_component(const char** str, unit_t* target, int flags) {
+const char* skip_number(const char* str) {
+	const char* cur = str;
+	while (my_isnumber(*cur))
+		++cur;
+	return cur;
+}
+
+const char* skip_separator(const char* str) {
+	const char* cur = str;
+	while (my_isseparator(*cur))
+		++cur;
+	return cur;
+}
+
+/* definitions */
+enum {
+	METAORDER_LOWER_BOUND = -1000,
+	METAORDER_PRE_RELEASE = -1,
+	METAORDER_DEFAULT = 0,
+	METAORDER_POST_RELEASE = 1,
+	METAORDER_UPPER_BOUND = 1000,
+};
+
+typedef struct {
+	int metaorder;
+	const char* start;
 	const char* end;
-	version_component_t number, alpha, extranumber;
-	int alphaflags = 0;
+} component_t;
 
-	/* skip separators */
-	while (**str != '\0' && !is_version_char(**str))
-		++*str;
+/* core logic */
+static int compare_components(const component_t* u1, const component_t* u2) {
+	/* metaorder has highest priority */
+	if (u1->metaorder < u2->metaorder) {
+		return -1;
+	}
+	if (u1->metaorder > u2->metaorder) {
+		return 1;
+	}
 
-	/* EOL, generate filler component */
-	if (**str == '\0') {
-		if (flags & VERSIONFLAG_LOWER_BOUND) {
-			target->a = -2;
-			target->b = -2;
-			target->c = -2;
-		} else if (flags & VERSIONFLAG_UPPER_BOUND) {
-			target->a = VERSION_COMPONENT_MAX;
-			target->b = VERSION_COMPONENT_MAX;
-			target->c = VERSION_COMPONENT_MAX;
-		} else {
-			target->a = 0;
-			target->b = -1;
-			target->c = -1;
+	/* empty strings come before everything */
+	int u1_is_empty = u1->start == u1->end;
+	int u2_is_empty = u2->start == u2->end;
+
+	if (u1_is_empty && u2_is_empty) {
+		return 0;
+	}
+	if (u1_is_empty) {
+		return -1;
+	}
+	if (u2_is_empty) {
+		return 1;
+	}
+
+	/* alpha come before numbers  */
+	int u1_is_alpha = my_isalpha(*u1->start);
+	int u2_is_alpha = my_isalpha(*u2->start);
+
+	if (u1_is_alpha && u2_is_alpha) {
+		if (my_tolower(*u1->start) < my_tolower(*u2->start)) {
+			return -1;
 		}
+		if (my_tolower(*u1->start) > my_tolower(*u2->start)) {
+			return 1;
+		}
+		return 0;
+	}
+	if (u1_is_alpha) {
+		return -1;
+	}
+	if (u2_is_alpha) {
 		return 1;
 	}
 
-	end = *str;
-	while (is_version_char(*end))
-		end++;
+	/* numeric comparison */
+	const char *p1 = u1->start;
+	const char *p2 = u2->start;
 
-	/* parse component from string [str; end) */
-	number = parse_number(str);
-	alpha = parse_alpha(str, &alphaflags, flags);
-	extranumber = parse_number(str);
+	/* skip leading zeroes */
+	while (*p1 == '0') {
+		++p1;
+	}
+	while (*p2 == '0') {
+		++p2;
+	}
 
-	/* skip remaining alphanumeric part */
-	while (is_version_char(**str))
-		++*str;
+	/* compare lengths */
+	if (u1->end - p1 < u2->end - p2) {
+		return -1;
+	}
+	if (u1->end - p1 > u2->end - p2) {
+		return 1;
+	}
 
-	if (flags & VERSIONFLAG_ANY_IS_PATCH)
-		alphaflags = ALPHAFLAG_POSTRELEASE;
+	/* numeric comparison itself */
+	while (p1 != u1->end) {
+		if (*p1 < *p2) {
+			return -1;
+		}
+		if (*p1 > *p2) {
+			return 1;
+		}
 
-	if (number != -1 && extranumber != -1) {
-		/*
-		 * `1a1' -> treat as [1  ].[ a1]
-		 * `1patch1' -> special case, treat as [1  ].[0p1]
-		 */
-		target->a = number;
-		target->b = -1;
-		target->c = -1;
-		target++;
-		target->a = (alphaflags == ALPHAFLAG_POSTRELEASE) ? 0 : -1;
-		target->b = alpha;
-		target->c = extranumber;
-		return 2;
-	} else if (number != -1 && alpha != -1 && alphaflags) {
-		/*
-		 * when alpha part is known to mean prerelease,
-		 * not a version addendum, unglue it from number
-		 *
-		 * `1alpha' is treated as [1  ].[ a ], not [1a ]
-		 */
-		target->a = number;
-		target->b = -1;
-		target->c = -1;
-		target++;
-		target->a = (alphaflags == ALPHAFLAG_POSTRELEASE) ? 0 : -1;
-		target->b = alpha;
-		target->c = -1;
-		return 2;
+		++p1;
+		++p2;
+	}
+
+	return 0;
+}
+
+static void parse_token_to_component(const char** str, component_t* component, int flags) {
+	component->start = *str;
+
+	if (my_isalpha(**str)) {
+		if (flags & VERSIONFLAG_ANY_IS_PATCH) {
+			component->metaorder = METAORDER_POST_RELEASE;
+		} else {
+			component->metaorder = METAORDER_PRE_RELEASE;
+		}
+
+		component->end = *str = skip_alpha(*str);
+
+		if (component->end - component->start == 5 && my_memcasecmp(component->start, "alpha", 5) == 0)
+			component->metaorder = METAORDER_PRE_RELEASE;
+		else if (component->end - component->start == 4 && my_memcasecmp(component->start, "beta", 4) == 0)
+			component->metaorder = METAORDER_PRE_RELEASE;
+		else if (component->end - component->start == 2 && my_memcasecmp(component->start, "rc", 2) == 0)
+			component->metaorder = METAORDER_PRE_RELEASE;
+		else if (component->end - component->start >= 3 && my_memcasecmp(component->start, "pre", 3) == 0)
+			component->metaorder = METAORDER_PRE_RELEASE;
+		else if (component->end - component->start >= 4 && my_memcasecmp(component->start, "post", 4) == 0)
+			component->metaorder = METAORDER_POST_RELEASE;
+		else if (component->end - component->start == 5 && my_memcasecmp(component->start, "patch", 5) == 0)
+			component->metaorder = METAORDER_POST_RELEASE;
+		else if (component->end - component->start == 2 && my_memcasecmp(component->start, "pl", 2) == 0)  /* patchlevel */
+			component->metaorder = METAORDER_POST_RELEASE;
+		else if (component->end - component->start == 6 && my_memcasecmp(component->start, "errata", 2) == 0)
+			component->metaorder = METAORDER_POST_RELEASE;
+		else if (flags & VERSIONFLAG_P_IS_PATCH && component->end - component->start == 1 && (*component->start == 'p' || *component->start == 'P'))
+			component->metaorder = METAORDER_POST_RELEASE;
+
 	} else {
-		if (number == -1 && alphaflags == ALPHAFLAG_POSTRELEASE)
-			number = 0;
-		target->a = number;
-		target->b = alpha;
-		target->c = extranumber;
+		component->metaorder = METAORDER_DEFAULT;
+		component->end = *str = skip_number(*str);
+	}
+}
+
+static void make_default_component(component_t* component, int flags) {
+	static const char* zero = "0";
+
+	if (flags & VERSIONFLAG_LOWER_BOUND) {
+		component->metaorder = METAORDER_LOWER_BOUND;
+	} else if (flags & VERSIONFLAG_UPPER_BOUND) {
+		component->metaorder = METAORDER_UPPER_BOUND;
+	} else {
+		component->metaorder = METAORDER_DEFAULT;
+	}
+	component->start = zero;
+	component->end = zero + 1;
+}
+
+static size_t get_next_version_component(const char** str, component_t* component, int flags) {
+	*str = skip_separator(*str);
+
+	if (**str == '\0') {
+		make_default_component(component, flags);
 		return 1;
 	}
+
+	parse_token_to_component(str, component, flags);
+
+	if (my_isalpha(**str) && (my_isseparator(*(*str + 1)) || *(*str + 1) == '\0')) {
+		++component;
+		component->metaorder = METAORDER_POST_RELEASE;
+		component->start = *str;
+		component->end = *str + 1;
+		++*str;
+		return 2;
+	}
+
+	return 1;
 }
 
 int version_compare4(const char* v1, const char* v2, int v1_flags, int v2_flags) {
-	unit_t v1_units[2], v2_units[2];
+	component_t v1_components[2], v2_components[2];
 	size_t v1_len = 0, v2_len = 0;
 	size_t shift, i;
 
@@ -243,21 +268,21 @@ int version_compare4(const char* v1, const char* v2, int v1_flags, int v2_flags)
 
 	do {
 		if (v1_len == 0)
-			v1_len = get_next_version_component(&v1, v1_units, v1_flags);
+			v1_len = get_next_version_component(&v1, v1_components, v1_flags);
 		if (v2_len == 0)
-			v2_len = get_next_version_component(&v2, v2_units, v2_flags);
+			v2_len = get_next_version_component(&v2, v2_components, v2_flags);
 
 		shift = MY_MIN(v1_len, v2_len);
 		for (i = 0; i < shift; i++) {
-			res = compare_units(&v1_units[i], &v2_units[i]);
+			res = compare_components(&v1_components[i], &v2_components[i]);
 			if (res != 0)
 				return res;
 		}
 
 		if (v1_len != v2_len) {
 			for (i = 0; i < shift; i++) {
-				v1_units[i] = v1_units[i+shift];
-				v2_units[i] = v2_units[i+shift];
+				v1_components[i] = v1_components[i+shift];
+				v2_components[i] = v2_components[i+shift];
 			}
 		}
 

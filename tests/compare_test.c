@@ -35,14 +35,11 @@ static char comparison_to_char(int comp) {
 	return '=';
 }
 
-static int version_test(const char* v1, const char* v2, int flags1, int flags2, int expected, int fallback_to_eq) {
+static int version_test(const char* v1, const char* v2, int flags1, int flags2, int expected) {
 	int result = version_compare4(v1, v2, flags1, flags2);
 
 	if (result == expected) {
 		fprintf(stderr, "[ OK ] \"%s\" (0x%x) %c \"%s\" (0x%x)\n", v1, flags1, comparison_to_char(expected), v2, flags2);
-		return 0;
-	} else if (fallback_to_eq && result == 0) {
-		fprintf(stderr, "[SKIP] \"%s\" (0x%x) %c \"%s\" (0x%x): got %c\n", v1, flags1, comparison_to_char(expected), v2, flags2, comparison_to_char(result));
 		return 0;
 	} else {
 		fprintf(stderr, "[FAIL] \"%s\" (0x%x) %c \"%s\" (0x%x): got %c\n", v1, flags1, comparison_to_char(expected), v2, flags2, comparison_to_char(result));
@@ -51,19 +48,11 @@ static int version_test(const char* v1, const char* v2, int flags1, int flags2, 
 }
 
 static int version_test_symmetrical_flags(const char* v1, const char* v2, int flags1, int flags2, int expected) {
-	return version_test(v1, v2, flags1, flags2, expected, 0) + version_test(v2, v1, flags2, flags1, -expected, 0);
+	return version_test(v1, v2, flags1, flags2, expected) + version_test(v2, v1, flags2, flags1, -expected);
 }
 
 static int version_test_symmetrical(const char* v1, const char* v2, int expected) {
 	return version_test_symmetrical_flags(v1, v2, 0, 0, expected);
-}
-
-static int version_test_symmetrical_flags_lax(const char* v1, const char* v2, int flags1, int flags2, int expected) {
-	return version_test(v1, v2, flags1, flags2, expected, 1) + version_test(v2, v1, flags2, flags1, -expected, 1);
-}
-
-static int version_test_symmetrical_lax(const char* v1, const char* v2, int expected) {
-	return version_test_symmetrical_flags_lax(v1, v2, 0, 0, expected);
 }
 
 int main() {
@@ -103,58 +92,12 @@ int main() {
 	errors += version_test_symmetrical("10.0.0", "100.0.0", -1);
 	errors += version_test_symmetrical("10.10000.10000", "11.0.0", -1);
 
-	fprintf(stderr, "\nTest group: long numbers comparisons\n");
+	fprintf(stderr, "\nTest group: long numbers\n");
 	errors += version_test_symmetrical("20160101", "20160102", -1);
 	errors += version_test_symmetrical("999999999999999999", "1000000000000000000", -1);
 
-	fprintf(stderr, "\nTest group: long numbers at 32bit boundary\n");
-	errors += version_test_symmetrical("2147483637", "2147483647", -1);
-	errors += version_test_symmetrical("2147483638", "2147483647", -1);
-	errors += version_test_symmetrical("2147483639", "2147483647", -1);
-	errors += version_test_symmetrical("2147483640", "2147483647", -1);
-	errors += version_test_symmetrical("2147483641", "2147483647", -1);
-	errors += version_test_symmetrical("2147483642", "2147483647", -1);
-	errors += version_test_symmetrical("2147483643", "2147483647", -1);
-	errors += version_test_symmetrical("2147483644", "2147483647", -1);
-	errors += version_test_symmetrical("2147483645", "2147483647", -1);
-	errors += version_test_symmetrical("2147483646", "2147483647", -1);
-	errors += version_test_symmetrical("2147483647", "2147483647", 0);
-	errors += version_test_symmetrical("2147483648", "2147483647", 1);
-	errors += version_test_symmetrical("2147483649", "2147483647", 1);
-	errors += version_test_symmetrical("2147483650", "2147483647", 1);
-	errors += version_test_symmetrical("2147483651", "2147483647", 1);
-	errors += version_test_symmetrical("2147483652", "2147483647", 1);
-	errors += version_test_symmetrical("2147483653", "2147483647", 1);
-	errors += version_test_symmetrical("2147483654", "2147483647", 1);
-	errors += version_test_symmetrical("2147483655", "2147483647", 1);
-	errors += version_test_symmetrical("2147483656", "2147483647", 1);
-	errors += version_test_symmetrical("2147483657", "2147483647", 1);
-
-	fprintf(stderr, "\nTest group: long numbers at 64bit boundary\n");
-	errors += version_test_symmetrical("9223372036854775797", "9223372036854775807", -1);
-	errors += version_test_symmetrical("9223372036854775798", "9223372036854775807", -1);
-	errors += version_test_symmetrical("9223372036854775799", "9223372036854775807", -1);
-	errors += version_test_symmetrical("9223372036854775800", "9223372036854775807", -1);
-	errors += version_test_symmetrical("9223372036854775801", "9223372036854775807", -1);
-	errors += version_test_symmetrical("9223372036854775802", "9223372036854775807", -1);
-	errors += version_test_symmetrical("9223372036854775803", "9223372036854775807", -1);
-	errors += version_test_symmetrical("9223372036854775804", "9223372036854775807", -1);
-	errors += version_test_symmetrical("9223372036854775805", "9223372036854775807", -1);
-	errors += version_test_symmetrical("9223372036854775806", "9223372036854775807", -1);
-	errors += version_test_symmetrical("9223372036854775807", "9223372036854775807", 0);
-	errors += version_test_symmetrical_lax("9223372036854775808", "9223372036854775807", 1);
-	errors += version_test_symmetrical_lax("9223372036854775809", "9223372036854775807", 1);
-	errors += version_test_symmetrical_lax("9223372036854775810", "9223372036854775807", 1);
-	errors += version_test_symmetrical_lax("9223372036854775811", "9223372036854775807", 1);
-	errors += version_test_symmetrical_lax("9223372036854775812", "9223372036854775807", 1);
-	errors += version_test_symmetrical_lax("9223372036854775813", "9223372036854775807", 1);
-	errors += version_test_symmetrical_lax("9223372036854775814", "9223372036854775807", 1);
-	errors += version_test_symmetrical_lax("9223372036854775815", "9223372036854775807", 1);
-	errors += version_test_symmetrical_lax("9223372036854775816", "9223372036854775807", 1);
-	errors += version_test_symmetrical_lax("9223372036854775817", "9223372036854775807", 1);
-
-	fprintf(stderr, "\nTest group: too long numbers\n");
-	errors += version_test_symmetrical_lax("99999999999999999999999999999999999998", "99999999999999999999999999999999999999", -1);
+	fprintf(stderr, "\nTest group: very long numbers\n");
+	errors += version_test_symmetrical("99999999999999999999999999999999999998", "99999999999999999999999999999999999999", -1);
 
 	fprintf(stderr, "\nTest group: letter addendum\n");
 	errors += version_test_symmetrical("1.0", "1.0a", -1);
@@ -365,6 +308,7 @@ int main() {
 	errors += version_test_symmetrical_flags("1.0", "1.0", 0, VERSIONFLAG_LOWER_BOUND, 1);
 	errors += version_test_symmetrical_flags("1.0patch", "1.0", 0, VERSIONFLAG_LOWER_BOUND, 1);
 	errors += version_test_symmetrical_flags("1.0patch0", "1.0", 0, VERSIONFLAG_LOWER_BOUND, 1);
+	errors += version_test_symmetrical_flags("1.0a", "1.0", 0, VERSIONFLAG_LOWER_BOUND, 1);
 	errors += version_test_symmetrical_flags("1.0.1", "1.0", 0, VERSIONFLAG_LOWER_BOUND, 1);
 	errors += version_test_symmetrical_flags("1.1", "1.0", 0, VERSIONFLAG_LOWER_BOUND, 1);
 
@@ -374,6 +318,7 @@ int main() {
 	errors += version_test_symmetrical_flags("1.0", "1.0", 0, VERSIONFLAG_UPPER_BOUND, -1);
 	errors += version_test_symmetrical_flags("1.0patch", "1.0", 0, VERSIONFLAG_UPPER_BOUND, -1);
 	errors += version_test_symmetrical_flags("1.0patch0", "1.0", 0, VERSIONFLAG_UPPER_BOUND, -1);
+	errors += version_test_symmetrical_flags("1.0a", "1.0", 0, VERSIONFLAG_UPPER_BOUND, -1);
 	errors += version_test_symmetrical_flags("1.0.1", "1.0", 0, VERSIONFLAG_UPPER_BOUND, -1);
 	errors += version_test_symmetrical_flags("1.1", "1.0", 0, VERSIONFLAG_UPPER_BOUND, 1);
 
