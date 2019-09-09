@@ -135,11 +135,21 @@ static size_t get_next_version_component(const char** str, version_component_t* 
 	while (**str != '\0' && !is_version_char(**str))
 		++*str;
 
-	/* EOL, generate empty component */
+	/* EOL, generate filler component */
 	if (**str == '\0') {
-		*(target++) = 0;
-		*(target++) = -1;
-		*(target++) = -1;
+		if (flags & VERSIONFLAG_RELEASE_LOWER_BOUND) {
+			*(target++) = -2;
+			*(target++) = -2;
+			*(target++) = -2;
+		} else if (flags & VERSIONFLAG_RELEASE_UPPER_BOUND) {
+			*(target++) = VERSION_COMPONENT_MAX;
+			*(target++) = VERSION_COMPONENT_MAX;
+			*(target++) = VERSION_COMPONENT_MAX;
+		} else {
+			*(target++) = 0;
+			*(target++) = -1;
+			*(target++) = -1;
+		}
 		return 3;
 	}
 
@@ -200,7 +210,12 @@ int version_compare4(const char* v1, const char* v2, int v1_flags, int v2_flags)
 	size_t v1_len = 0, v2_len = 0;
 	size_t shift, i;
 
-	while (*v1 != '\0' || *v2 != '\0' || v1_len || v2_len) {
+	int v1_extra_components = (v1_flags & (VERSIONFLAG_RELEASE_LOWER_BOUND|VERSIONFLAG_RELEASE_UPPER_BOUND)) ? 1 : 0;
+	int v2_extra_components = (v2_flags & (VERSIONFLAG_RELEASE_LOWER_BOUND|VERSIONFLAG_RELEASE_UPPER_BOUND)) ? 1 : 0;
+
+	int v1_exhausted, v2_exhausted;
+
+	do {
 		if (v1_len == 0)
 			v1_len = get_next_version_component(&v1, v1_comps, v1_flags);
 		if (v2_len == 0)
@@ -223,7 +238,19 @@ int version_compare4(const char* v1, const char* v2, int v1_flags, int v2_flags)
 
 		v1_len -= shift;
 		v2_len -= shift;
-	}
+
+		v1_exhausted = *v1 == '\0' && v1_len == 0;
+		v2_exhausted = *v2 == '\0' && v2_len == 0;
+
+		if (v1_exhausted && v1_extra_components > 0) {
+			v1_extra_components--;
+			v1_exhausted = 0;
+		}
+		if (v2_exhausted && v2_extra_components > 0) {
+			v2_extra_components--;
+			v2_exhausted = 0;
+		}
+	} while (!v1_exhausted || !v2_exhausted);
 
 	return 0;
 }
