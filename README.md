@@ -140,11 +140,11 @@ target_link_libraries(my_target libversion::libversion_static)
 ## Limitations
 
 * Numeric version components are limited with the range of
-  platform-specific long integer (64bits on most platforms). Comparison
-  of greater numers will behave as if it was clamped to the supported
-  range, e.g. `99999999999999999999999999999999999998` can be treated
-  equal to `99999999999999999999999999999999999999` (but still higher
-  than any number withit a supported range).
+  platform-specific long integer (`9223372036854775807` on most platforms).
+  Comparison of greater numbers will behave as if these were clamped
+  to the supported range, e.g. `99999999999999999999999999999999999998`
+  may be treated equal to `99999999999999999999999999999999999999`
+  (but still higher than any number within the supported range).
 * The way lower and upper bounds work with letter suffixes is
   unspecified, e.g. it's not clear whether `1.0a` belongs to [lower
   bound(`1.0`), upper bound(`1.0`)].
