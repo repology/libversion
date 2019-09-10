@@ -77,5 +77,12 @@ int compare_components(const component_t* u1, const component_t* u2) {
 		return 1;
 	}
 
-	return memcmp(u1->start, u2->start, u1->end - u1->start);
+	int res = memcmp(u1->start, u2->start, u1->end - u1->start);
+	if (res < 0) {
+		return -1;
+	}
+	if (res > 0) {
+		return 1;
+	}
+	return 0;
 }
