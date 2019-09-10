@@ -20,6 +20,7 @@ before_install:
   - sudo apt-get install -qq gcc-multilib
   - if [ -n "${COVERAGE}" ]; then pip install --user pyyaml cpp-coveralls; fi
   - export CFLAGS="$CFLAGS -Werror -Wall -Wextra -pedantic"
+  - export CXXFLAGS="$CFLAGS"
 script:
   - cmake . -DCMAKE_VERBOSE_MAKEFILE=yes -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Debug
   - cmake --build .
