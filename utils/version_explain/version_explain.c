@@ -56,7 +56,7 @@ static void print_usage(const char* progname) {
 }
 
 int main(int argc, char** argv) {
-	int ch, result, flags = 0;
+	int ch, flags = 0;
 	const char* progname = argv[0];
 
 	while ((ch = getopt(argc, argv, "pahv")) != -1) {
