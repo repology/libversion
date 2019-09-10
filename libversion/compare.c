@@ -154,53 +154,27 @@ static int compare_components(const component_t* u1, const component_t* u2) {
 		return 1;
 	}
 
-	/* numeric comparison */
-	const char *p1 = u1->start;
-	const char *p2 = u2->start;
-
-	/* skip leading zeroes */
-	while (*p1 == '0') {
-		++p1;
-	}
-	while (*p2 == '0') {
-		++p2;
-	}
-
-	/* compare lengths */
-	if (u1->end - p1 < u2->end - p2) {
+	/* numeric comparison (note that leading zeroes are already trimmed here) */
+	if (u1->end - u1->start < u2->end - u2->start) {
 		return -1;
 	}
-	if (u1->end - p1 > u2->end - p2) {
+	if (u1->end - u1->start > u2->end - u2->start) {
 		return 1;
 	}
 
-	/* numeric comparison itself */
-	while (p1 != u1->end) {
-		if (*p1 < *p2) {
-			return -1;
-		}
-		if (*p1 > *p2) {
-			return 1;
-		}
-
-		++p1;
-		++p2;
-	}
-
-	return 0;
+	return memcmp(u1->start, u2->start, u1->end - u1->start);
 }
 
 static void parse_token_to_component(const char** str, component_t* component, int flags) {
-	component->start = *str;
-
 	if (my_isalpha(**str)) {
+		component->start = *str;
+		component->end = *str = skip_alpha(*str);
+
 		if (flags & VERSIONFLAG_ANY_IS_PATCH) {
 			component->metaorder = METAORDER_POST_RELEASE;
 		} else {
 			component->metaorder = METAORDER_PRE_RELEASE;
 		}
-
-		component->end = *str = skip_alpha(*str);
 
 		if (component->end - component->start == 5 && my_memcasecmp(component->start, "alpha", 5) == 0)
 			component->metaorder = METAORDER_PRE_RELEASE;
@@ -222,11 +196,10 @@ static void parse_token_to_component(const char** str, component_t* component, i
 			component->metaorder = METAORDER_POST_RELEASE;
 
 	} else {
-		component->end = *str = skip_zeroes(*str);
-		const char* zeroes_end = *str;
+		component->start = *str = skip_zeroes(*str);
 		component->end = *str = skip_number(*str);
 
-		if (zeroes_end == *str) {
+		if (component->start == component->end) {
 			component->metaorder = METAORDER_ZERO;
 		} else {
 			component->metaorder = METAORDER_NONZERO;
@@ -235,7 +208,7 @@ static void parse_token_to_component(const char** str, component_t* component, i
 }
 
 static void make_default_component(component_t* component, int flags) {
-	static const char* zero = "0";
+	static const char* empty = "";
 
 	if (flags & VERSIONFLAG_LOWER_BOUND) {
 		component->metaorder = METAORDER_LOWER_BOUND;
@@ -244,8 +217,8 @@ static void make_default_component(component_t* component, int flags) {
 	} else {
 		component->metaorder = METAORDER_ZERO;
 	}
-	component->start = zero;
-	component->end = zero + 1;
+	component->start = empty;
+	component->end = empty;
 }
 
 static size_t get_next_version_component(const char** str, component_t* component, int flags) {
