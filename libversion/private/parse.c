@@ -25,36 +25,51 @@
 #include <libversion/private/string.h>
 #include <libversion/version.h>
 
+enum {
+	KEYWORD_UNKNOWN,
+	KEYWORD_PRE_RELEASE,
+	KEYWORD_POST_RELEASE,
+};
+
+static int classify_keyword(const char* start, const char* end, int flags) {
+	if (end - start == 5 && my_memcasecmp(start, "alpha", 5) == 0)
+		return KEYWORD_PRE_RELEASE;
+	else if (end - start == 4 && my_memcasecmp(start, "beta", 4) == 0)
+		return KEYWORD_PRE_RELEASE;
+	else if (end - start == 2 && my_memcasecmp(start, "rc", 2) == 0)
+		return KEYWORD_PRE_RELEASE;
+	else if (end - start >= 3 && my_memcasecmp(start, "pre", 3) == 0)
+		return KEYWORD_PRE_RELEASE;
+	else if (end - start >= 4 && my_memcasecmp(start, "post", 4) == 0)
+		return KEYWORD_POST_RELEASE;
+	else if (end - start >= 5 && my_memcasecmp(start, "patch", 5) == 0)
+		return KEYWORD_POST_RELEASE;
+	else if (end - start == 2 && my_memcasecmp(start, "pl", 2) == 0)  /* patchlevel */
+		return KEYWORD_POST_RELEASE;
+	else if (end - start == 6 && my_memcasecmp(start, "errata", 6) == 0)
+		return KEYWORD_POST_RELEASE;
+	else if (flags & VERSIONFLAG_P_IS_PATCH && end - start == 1 && (*start == 'p' || *start == 'P'))
+		return KEYWORD_POST_RELEASE;
+
+	return KEYWORD_UNKNOWN;
+}
+
 static void parse_token_to_component(const char** str, component_t* component, int flags) {
 	if (my_isalpha(**str)) {
 		component->start = *str;
 		component->end = *str = skip_alpha(*str);
 
-		if (flags & VERSIONFLAG_ANY_IS_PATCH) {
-			component->metaorder = METAORDER_POST_RELEASE;
-		} else {
+		switch (classify_keyword(component->start, component->end, flags)) {
+		case KEYWORD_UNKNOWN:
+			component->metaorder = (flags & VERSIONFLAG_ANY_IS_PATCH) ? METAORDER_POST_RELEASE : METAORDER_PRE_RELEASE;
+			break;
+		case KEYWORD_PRE_RELEASE:
 			component->metaorder = METAORDER_PRE_RELEASE;
+			break;
+		case KEYWORD_POST_RELEASE:
+			component->metaorder = METAORDER_POST_RELEASE;
+			break;
 		}
-
-		if (component->end - component->start == 5 && my_memcasecmp(component->start, "alpha", 5) == 0)
-			component->metaorder = METAORDER_PRE_RELEASE;
-		else if (component->end - component->start == 4 && my_memcasecmp(component->start, "beta", 4) == 0)
-			component->metaorder = METAORDER_PRE_RELEASE;
-		else if (component->end - component->start == 2 && my_memcasecmp(component->start, "rc", 2) == 0)
-			component->metaorder = METAORDER_PRE_RELEASE;
-		else if (component->end - component->start >= 3 && my_memcasecmp(component->start, "pre", 3) == 0)
-			component->metaorder = METAORDER_PRE_RELEASE;
-		else if (component->end - component->start >= 4 && my_memcasecmp(component->start, "post", 4) == 0)
-			component->metaorder = METAORDER_POST_RELEASE;
-		else if (component->end - component->start >= 5 && my_memcasecmp(component->start, "patch", 5) == 0)
-			component->metaorder = METAORDER_POST_RELEASE;
-		else if (component->end - component->start == 2 && my_memcasecmp(component->start, "pl", 2) == 0)  /* patchlevel */
-			component->metaorder = METAORDER_POST_RELEASE;
-		else if (component->end - component->start == 6 && my_memcasecmp(component->start, "errata", 6) == 0)
-			component->metaorder = METAORDER_POST_RELEASE;
-		else if (flags & VERSIONFLAG_P_IS_PATCH && component->end - component->start == 1 && (*component->start == 'p' || *component->start == 'P'))
-			component->metaorder = METAORDER_POST_RELEASE;
-
 	} else {
 		component->start = *str = skip_zeroes(*str);
 		component->end = *str = skip_number(*str);
@@ -91,13 +106,29 @@ size_t get_next_version_component(const char** str, component_t* component, int 
 
 	parse_token_to_component(str, component, flags);
 
-	if (my_isalpha(**str) && (my_isseparator(*(*str + 1)) || *(*str + 1) == '\0')) {
+	/* special case for letter suffix */
+	if (my_isalpha(**str)) {
 		++component;
-		component->metaorder = METAORDER_LETTER_SUFFIX;
+
 		component->start = *str;
-		component->end = *str + 1;
-		++*str;
-		return 2;
+		component->end = skip_alpha(*str);
+
+		if (!my_isnumber(*component->end)) {
+			switch (classify_keyword(component->start, component->end, flags)) {
+			case KEYWORD_UNKNOWN:
+				component->metaorder = METAORDER_LETTER_SUFFIX;
+				break;
+			case KEYWORD_PRE_RELEASE:
+				component->metaorder = METAORDER_PRE_RELEASE;
+				break;
+			case KEYWORD_POST_RELEASE:
+				component->metaorder = METAORDER_POST_RELEASE;
+				break;
+			}
+
+			*str = component->end;
+			return 2;
+		}
 	}
 
 	return 1;
