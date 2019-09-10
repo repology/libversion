@@ -5,6 +5,8 @@ configure_file(config.h.in config.h @ONLY)
 
 set(LIBVERSION_SOURCES
 	compare.c
+	private/compare.c
+	private/parse.c
 	signature.c
 )
 
@@ -12,8 +14,15 @@ set(LIBVERSION_HEADERS
 	version.h
 )
 
+set(LIBVERSION_PRIVATE_HEADERS
+	private/compare.h
+	private/component.h
+	private/parse.h
+	private/string.h
+)
+
 # shared library
-add_library(libversion SHARED ${LIBVERSION_SOURCES} ${LIBVERSION_HEADERS})
+add_library(libversion SHARED ${LIBVERSION_SOURCES} ${LIBVERSION_HEADERS} ${LIBVERSION_PRIVATE_HEADERS})
 target_include_directories(libversion PUBLIC
 	$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
 	$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
