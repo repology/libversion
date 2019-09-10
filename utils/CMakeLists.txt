@@ -1,0 +1,3 @@
+add_subdirectory(version_compare)
+add_subdirectory(version_sort)
+add_subdirectory(version_explain)

@@ -15,7 +15,5 @@ add_subdirectory(libversion)
 add_subdirectory(tests)
 
 if(UNIX)
-	add_subdirectory(version_compare)
-	add_subdirectory(version_sort)
-	add_subdirectory(version_explain)
+	add_subdirectory(utils)
 endif()
