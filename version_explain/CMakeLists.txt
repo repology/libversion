@@ -1,0 +1,3 @@
+add_executable(version_explain version_explain.c)
+target_link_libraries(version_explain libversion_object)
+set_target_properties(version_explain PROPERTIES COMPILE_DEFINITIONS LIBVERSION_NO_DEPRECATED)
