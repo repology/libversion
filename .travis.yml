@@ -10,9 +10,9 @@ matrix:
     - compiler: gcc
       env: CFLAGS="-m32"
     - compiler: clang
-      env: CFLAGS="-Weverything" EXTTESTS=yes
+      env: EXTTESTS=yes
     - compiler: clang
-      env: CFLAGS="-Weverything -m32"
+      env: CFLAGS="-m32"
     - compiler: clang
       env: CFLAGS="-fsanitize=address,undefined,integer -fno-omit-frame-pointer -fno-sanitize-recover=all" LDFLAGS="-fsanitize=address,undefined,integer"
 before_install:
