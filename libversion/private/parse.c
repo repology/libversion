@@ -50,7 +50,7 @@ static void parse_token_to_component(const char** str, component_t* component, i
 			component->metaorder = METAORDER_POST_RELEASE;
 		else if (component->end - component->start == 2 && my_memcasecmp(component->start, "pl", 2) == 0)  /* patchlevel */
 			component->metaorder = METAORDER_POST_RELEASE;
-		else if (component->end - component->start == 6 && my_memcasecmp(component->start, "errata", 2) == 0)
+		else if (component->end - component->start == 6 && my_memcasecmp(component->start, "errata", 6) == 0)
 			component->metaorder = METAORDER_POST_RELEASE;
 		else if (flags & VERSIONFLAG_P_IS_PATCH && component->end - component->start == 1 && (*component->start == 'p' || *component->start == 'P'))
 			component->metaorder = METAORDER_POST_RELEASE;
