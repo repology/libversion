@@ -64,6 +64,9 @@ target_include_directories(libversion_object PUBLIC
 	$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
 	$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
 )
+target_compile_definitions(libversion_object PUBLIC
+	LIBVERSION_STATIC_DEFINE
+)
 
 # pkgconfig file
 configure_file(libversion.pc.in libversion.pc @ONLY)

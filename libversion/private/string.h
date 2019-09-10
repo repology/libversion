@@ -25,26 +25,26 @@
 
 #include <stddef.h>
 
-static int my_isalpha(char c) {
+static inline int my_isalpha(char c) {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
-static int my_isnumber(char c) {
+static inline int my_isnumber(char c) {
 	return c >= '0' && c <= '9';
 }
 
-static int my_isseparator(char c) {
+static inline int my_isseparator(char c) {
 	return !my_isnumber(c) && !my_isalpha(c) && c != '\0';
 }
 
-static char my_tolower(char c) {
+static inline char my_tolower(char c) {
 	if (c >= 'A' && c <= 'Z')
 		return c - 'A' + 'a';
 	else
 		return c;
 }
 
-static int my_memcasecmp(const char* a, const char* b, size_t len) {
+static inline int my_memcasecmp(const char* a, const char* b, size_t len) {
 	while (len != 0) {
 		unsigned char ua = my_tolower(*a);
 		unsigned char ub = my_tolower(*b);
@@ -60,28 +60,28 @@ static int my_memcasecmp(const char* a, const char* b, size_t len) {
 	return 0;
 }
 
-static const char* skip_alpha(const char* str) {
+static inline const char* skip_alpha(const char* str) {
 	const char* cur = str;
 	while (my_isalpha(*cur))
 		++cur;
 	return cur;
 }
 
-static const char* skip_number(const char* str) {
+static inline const char* skip_number(const char* str) {
 	const char* cur = str;
 	while (my_isnumber(*cur))
 		++cur;
 	return cur;
 }
 
-static const char* skip_zeroes(const char* str) {
+static inline const char* skip_zeroes(const char* str) {
 	const char* cur = str;
 	while (*cur == '0')
 		++cur;
 	return cur;
 }
 
-static const char* skip_separator(const char* str) {
+static inline const char* skip_separator(const char* str) {
 	const char* cur = str;
 	while (my_isseparator(*cur))
 		++cur;
