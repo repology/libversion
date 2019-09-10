@@ -35,7 +35,7 @@ void version_explain(const char* v, int flags) {
     while (*v != '\0') {
         size_t len = get_next_version_component(&v, components, flags);
 
-        for (int i = 0; i < len; i++) {
+        for (size_t i = 0; i < len; i++) {
             fprintf(stderr, "%3d \"%.*s\"\n", components[i].metaorder, (int)(components[i].end - components[i].start), components[i].start);
         }
     }
