@@ -1,96 +1,140 @@
 # Repology version comparison algorithm
 
-1. Version is split into alphanumeric components, all other characters
-   are treated as separators. Empty components are ignored.
+## Core algorithm
 
-   * ```1.2.3a``` → ```1```, ```2```, ```3a```
-   * ```~1...2-3a~``` → ```1```, ```2```, ```3a```
+1. Version is split into separate all-alphabetic or all-numeric
+   components. All other characters are treated as separators.
+   Empty components are not generated.
 
-2. Each component is decomposed into one or more (currently no more
-   than two) triplets of ```{number, string, number}``` format. Each
-   part of such triple either holds some value parsed from version
-   or a placeholder value crafted for proper comparison. The set of
-   rules on how to convert a version component into a set of triples
-   is the core of this algorithm, but before explaining it, some
-   implementation details:
+   * `10.2alpha3..patch.4.` → `10`, `2`, `alpha`, `3`, `patch`, `4`
 
-   * Tuples are stored as three 64bit signed integers
-     * For numeric parts, 64 bits are needed to represent long numeric
-       version components such as 20160328234507 (real-world case).
-     * Numbers which do not fit into 64 bits are clamped to maximal
-       representable value
-   * Alphabetic parts are currently clamped to a single character
-     * This works correctly with both known cases where alphabetic
-       parts are used: either as an addendum to a number (```1.49c```)
-       which is single character naturally, or a prerelease keyword
-       (```alpha2```, ```beta3```, ...) which are thankfully already
-       ordered alphabetically and this does not change after clamping
-     * Alphabetic values are converted to lowercase.
-   * -1 is the default placeholder value.
+2. Components are assigned ranks by their value:
 
-   Now, basic rules on how we split component into tuples:
+   * **PRE_RELEASE** - known pre-release keyword (`alpha`, `beta`, `rc`).
+   * **ZERO** - numeric component equal to zero.
+   * **POST_RELEASE** - known post-release keyword (`patch`, `post`, `pl`).
+   * **NONZERO** - numeric component not equal to zero.
 
-   * We try to parse number, then alphabetic part, then another
-     number from a version component. Additional contents are
-     discarded (```1a2b3``` is treated as ```1a2```).
-   * We only allow a single numeric part in a triple, so component
-     with two numeric parts generates two triples.
-   * Summarizing, here are all possible variants of triple generation:
-     * ```2``` → ```{2, -1, -1}```
-     * ```2a``` → ```{2, 'a', -1}```
-     * ```a2``` → ```{-1, 'a', 2}```
-     * ```2a2``` → ```{2, -1, -1}, {-1, 'a', 2}```
+   * Unclassified alphabetic components are assigned **PRE_RELEASE**
+     rank (choice of this behavior explained below).
 
-   The result of this logic is that the comparison of tuples gives
-   correct results for both cases involving alphabetic parts:
+   A special case exists for alphabetic component which follows
+   numeric component, and is not followed by another numeric
+   component (`1.0a`, `1.0a.1`, but not `1.0a1`). Such alphabetic
+   component is assigned a different rank, **LETTER_SUFFIX**, which
+   follows **NONZERO** (choice of this behavior explained below).
 
-   * ```1.0 < 1.0a < 1.0b``` (addendum letter)
-   * ```1alpha1 == 1.alpha1 == 1a1 == 1.a1 < 1 == 1.0``` (prerelease version)
-   * As a side effect, ```1alpha1 == 1.alpha1``` which also handles some cases
-     of different formats of a same version, without giving false positives
+3. Versions are compared component-wise.
 
-   This base algorithm was later extended with more rules for specific cases:
+   * Ranks are compared first, and are ordered the same way as
+     introduced above (**PRE_RELEASE** < **ZERO** < **POST_RELEASE**
+     < **NONZERO** < **LETTER_SUFFIX**).
+   * Alphabetic components are compared by case insensitively comparing
+     their first letters (choice of this behavior explained below).
+   * Numeric components are compared numerically.
 
-   * Before cropping alphabetic part to a single character, it's checked to
-     be ```alpha```, ```beta```, ```pre```, ```prerelease```, ```rc``` or
-     ```patch```.
-     * If the check succeeds, we now have additional information that this is
-       definitely not a version addendum, so we always unglue this from
-       preceding number by generating additional triple. Compare:
-       * ```2.0 < 2.0a-3 = 2.0a.3```
-       * ```2.0alpha-3 = 2.0.a.3 < 2.0```
-     * ```patch``` is handled even more specially, as it's a
-       __post__-release keyword as opposed to pre-release. For it, tuple
-       with different placeholder numeric part is generated. Compare:
-       * ```1.0prerelease1 = 1.0.p1 < 1.0```
-       * ```1.0 < 1.0patch1 = 1.0.0p1```
+   Note that because of how ranks are assigned, there's no case
+   where alphabetic components are compared with numeric ones.
 
-3. To compare two versions, generate triples for both of them and compare
-   as simple integer lists. If one of lists is shorter, it's padded with
-   ```{0, -1, -1}``` triple, which is an equivalent to ```0``` version
-   component. Therefore, ```1``` is equal to ```1.0``` and ```1.0.0```.
+   * If one of version component sequences is exhausted during
+     comparison, it is padded with component equal to `0` (e.g.
+     rank **ZERO**).
 
-## Possible room for improvement
+## Example
 
-* :warning: extra alphabetic components are dropped (```1ab2cd3e```)
+Here's an example of internal representation of some versions,
+in ascending order, split into components, rank and value shown
+for each compoment, padding components included.
 
-  These are rare, and probably come from git commit hashes. We can't
-  compare them anyway.
+| Version     | C1    | C2    | C3        | C4    | Why greater the previous |
+|-------------|-------|-------|-----------|-------|--------------------------|
+| `1.0alpha1` | 3 `1` | 1 `0` | 0 `alpha` | 3 `1` |
+| `1.0beta1`  | 3 `1` | 1 `0` | 0 `beta`  | 3 `1` | Third component is alphabetically greater
+| `1.0`       | 3 `1` | 1 `0` | 1 `0`     | 1 `0` | **ZERO** rank > **PRE_RELEASE** rank
+| `1.0patch1` | 3 `1` | 1 `0` | 2 `patch` | 3 `1` | **POST_RELEASE** rank > **ZERO** rank
+| `1.0.1`     | 3 `1` | 1 `0` | 3 `1`     | 1 `0` | **NONZERO** rank > **POST_RELEASE** rank
+| `1.0a`      | 3 `1` | 1 `0` | 4 `a`     | 1 `0` | **LETTER_SUFFIX** rank > **NONZERO** rank
+| `1.0b`      | 3 `1` | 1 `0` | 4 `b`     | 1 `0` | Third component is alphabetically greater
+| `1.1`       | 3 `1` | 3 `1` | 1 `0`     | 1 `0` | **NONZERO** rank > **ZERO** rank
+| `1.2`       | 3 `1` | 3 `2` | 1 `0`     | 1 `0` | Second component is numerically greater
 
-* :warning: strings are clamped to a single character (```1aa == 1ab```)
+## Choices
 
-  As mentioned, it works well on practice. But if there are real
-  world cases where longer strings are used, these may be packed
-  into integers
+Some parts of the algorithm may be implemented differently, here
+are the options and explanation.
 
-* :warning: specific case ```0.21-alpha```
+### Treating unclassified alphabetic components
 
-  There is a prerelease keyword without numeric part. In some cases, it
-  may be dropped (e.g. whole ```0.``` branch is alpha), in other cases
-  it may be a version part.
+Unclassified alphabetic components may be treated as either pre-release
+and post-release:
 
-* :warning: are there more keywords?
+* `1.0custom1` < `1.0`
+* `1.0` < `1.0custom1`
 
-  Can ```rev```, ```git```, be handled in some sane way? What about
-  ```post```, ```dev```, ```final```, ```release```, ```prealpha```,
-  ```build```?
+We chose the former variant by default because:
+
+* In many cases is actually abbreviated prerelease suffix `a`/`b`/`r`
+  (for `alpha`/`beta`/`rc`), and we want `1.0a(lpha)1` < `1.0`.
+* In other cases it's some snapshot pattern like `1.0git20190911`, where
+  it's fundamentally not known if it's a snapshot pre- or post- 1.0. We
+  prefer to treat it lower than `1.0` to favor clean versions over
+  ambigious case and to prevent snapshots and many other kinds of
+  incorrect version patterns to be reported as the latest version.
+
+libversion provides a way to tweak this behavior with
+`VERSIONFLAG_P_IS_PATCH` and `VERSIONFLAG_ANY_IS_PATCH` flags.
+
+### Comparing alphabetic components by first letter
+
+Strings are compared by first letter, which implies `a` being equal
+to `alpha`. A benefit of this is that we handle a very common case
+of upstreams and maintainers abbreviating `alpha`, `beta` to just
+`a` and `b` by comparing abbreviated and full keywords as equal.
+On the downside, we're not able to distinguish e.g. `0.9.8za` and
+`0.9.8zb`, but the practice shows that cases like this are much
+less common.
+
+However, another option is to trim known suffixes to the first
+letter, and switch to full string comparison otherwise, which would
+give benefits of both approaches. This should be investigated.
+
+### Ordering of letter suffixes
+
+I'd say that intuitively `1.0` < `1.0a` < `1.0.1` because `a` seems
+to be tighter "variant" of `1.0` than the "next release" `1.0.1`, and
+it would also correspond to how general alphabetic parts are ordered
+(`a` < `1`), but we still stick to `1.0` < `1.0.1` < `1.0a` order, because
+in practice no valid cases were found to be broken by this, but a number
+of cases where incorrectly written versions (`1.0a` as `1.0.1`) were
+favored upon genuine ones appeared.
+
+In future this behavior may change, or a flag to tune it may be
+introduced.
+
+Technically it may be switched by changing order of **LETTER_SUFFIX**
+rank from after **NONZERO** to before.
+
+## Extensions
+
+There may be some extensions to this algorithm which do not affect
+core logic.
+
+### Upper/lower bounds
+
+Sometimes it's useful to check whether a given version logically
+belongs to a given release. It's not possible to check this with
+just comparison. For instance, `1.0alpha1` belongs to `1.0`, but
+it's compared less than `1.0`. You could compare with `0.9` but
+then again there's `0.99` which compares higher, but is still not
+`1.0`.
+
+The solution is to introduce two more ranks, *lower bound* which is
+lesser than any other rank, and *upper bound* which is greater than
+any other rank, and to tweak version padding algorithm to use these
+instead of `0` filler. This way for a given version a component sequence
+would be produced which always compares less than or greater than
+(correspondingly) any natural post-or pre-release version with the
+same prefix.
+
+This is implemented in libversion with `VERSIONFLAG_LOWER_BOUND`
+and `VERSIONFLAG_UPPER_BOUND` flags.
