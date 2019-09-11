@@ -106,7 +106,12 @@ size_t get_next_version_component(const char** str, component_t* component, int 
 
 	parse_token_to_component(str, component, flags);
 
-	/* special case for letter suffix */
+	/* Special case for letter suffix:
+	 * - We taste whether the next component is alpha not followed by a number,
+	 *   e.g 1a, 1a.1, but not 1a1
+	 * - We check whether it's known keyword (in which case it's treated normally)
+	 * - Otherwise, it's treated as letter suffix
+	 */
 	if (my_isalpha(**str)) {
 		++component;
 
