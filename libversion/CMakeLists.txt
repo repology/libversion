@@ -4,10 +4,9 @@ include(GenerateExportHeader)
 configure_file(config.h.in config.h @ONLY)
 
 set(LIBVERSION_SOURCES
-	compare.c
 	private/compare.c
 	private/parse.c
-	signature.c
+	compare.c
 )
 
 set(LIBVERSION_HEADERS

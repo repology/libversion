@@ -81,27 +81,3 @@ int version_compare4(const char* v1, const char* v2, int v1_flags, int v2_flags)
 int version_compare2(const char* v1, const char* v2) {
 	return version_compare4(v1, v2, 0, 0);
 }
-
-/* deprecated */
-int version_compare3(const char* v1, const char* v2, int flags) {
-	return version_compare4(v1, v2, flags, flags);
-}
-
-int version_compare_simple(const char* v1, const char* v2) {
-	return version_compare2(v1, v2);
-}
-
-int version_compare_flags(const char* v1, const char* v2, int flags) {
-	const int v1_flags =
-		((flags & VERSIONFLAG_P_IS_PATCH_LEFT) ? VERSIONFLAG_P_IS_PATCH : 0) |
-		((flags & VERSIONFLAG_ANY_IS_PATCH_LEFT) ? VERSIONFLAG_ANY_IS_PATCH : 0);
-	const int v2_flags =
-		((flags & VERSIONFLAG_P_IS_PATCH_RIGHT) ? VERSIONFLAG_P_IS_PATCH : 0) |
-		((flags & VERSIONFLAG_ANY_IS_PATCH_RIGHT) ? VERSIONFLAG_ANY_IS_PATCH : 0);
-
-	return version_compare4(v1, v2, v1_flags, v2_flags);
-}
-
-int version_compare_flags2(const char* v1, const char* v2, int v1_flags, int v2_flags) {
-	return version_compare4(v1, v2, v1_flags, v2_flags);
-}

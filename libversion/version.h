@@ -38,48 +38,14 @@ extern "C" {
 	)
 
 enum {
-#ifndef LIBVERSION_NO_DEPRECATED
-	/* deprecated: use version_compare4() and VERSIONFLAG_P_IS_PATCH */
-	VERSIONFLAG_P_IS_PATCH_LEFT = 0x1,
-
-	/* deprecated: use version_compare4() and VERSIONFLAG_P_IS_PATCH */
-	VERSIONFLAG_P_IS_PATCH_RIGHT = 0x2,
-
-	/* deprecated: use version_compare4() and VERSIONFLAG_ANY_IS_PATCH */
-	VERSIONFLAG_ANY_IS_PATCH_LEFT = 0x4,
-
-	/* deprecated: use version_compare4() and VERSIONFLAG_ANY_IS_PATCH */
-	VERSIONFLAG_ANY_IS_PATCH_RIGHT = 0x8,
-#endif
-
-	VERSIONFLAG_P_IS_PATCH = 0x1 | 0x2,
-	VERSIONFLAG_ANY_IS_PATCH = 0x4 | 0x8,
-	VERSIONFLAG_LOWER_BOUND = 0x10,
-	VERSIONFLAG_UPPER_BOUND = 0x20,
+	VERSIONFLAG_P_IS_PATCH = 0x1,
+	VERSIONFLAG_ANY_IS_PATCH = 0x2,
+	VERSIONFLAG_LOWER_BOUND = 0x4,
+	VERSIONFLAG_UPPER_BOUND = 0x8,
 };
 
 extern LIBVERSION_EXPORT int version_compare2(const char* v1, const char* v2);
 extern LIBVERSION_EXPORT int version_compare4(const char* v1, const char* v2, int v1_flags, int v2_flags);
-
-#ifndef LIBVERSION_NO_DEPRECATED
-/* deprecated */
-typedef unsigned long version_signature_t;
-
-/* deprecated */
-extern LIBVERSION_DEPRECATED_EXPORT version_signature_t version_signature_simple(const char* v);
-
-/* deprecated, use version_compare2 */
-extern LIBVERSION_DEPRECATED_EXPORT int version_compare_simple(const char* v1, const char* v2);
-
-/* deprecated, use version_compare4 */
-extern LIBVERSION_DEPRECATED_EXPORT int version_compare_flags(const char* v1, const char* v2, int flags);
-
-/* deprecated, use version_compare4 */
-extern LIBVERSION_DEPRECATED_EXPORT int version_compare_flags2(const char* v1, const char* v2, int v1_flags, int v2_flags);
-
-/* deprecated, use version_compare4 */
-extern LIBVERSION_DEPRECATED_EXPORT int version_compare3(const char* v1, const char* v2, int flags);
-#endif
 
 #ifdef __cplusplus
 }
