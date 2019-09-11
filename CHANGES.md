@@ -3,9 +3,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 2.10.0
-* Improve handling of long version numbers
+## 3.0.0
+* Core algorithm reworked and simplified, which brings many small improvements
+  * Numbers of arbitrary lengths are now compared correctly
+  * Versions are now split more uniformly, so now `1.0alpha1` == `1.0.alpha1` == `1.0alpha.1` == `1.0.alpha.1`
+  * Any number of alphabetic/numeric compoments are now allowed (`1a2b3c4` is no longer effectively trimmed to `1a2`)
 * Implement `VERSIONFLAG_LOWER_BOUND` and `VERSIONFLAG_UPPER_BOUND` flags
+* Added `version_sort` and `version_explain` (not installed) utilities,
+  useful for debugging
+* Removed deprecated `version_signature` API
 
 ## 2.9.1
 * Add support for `errata` keyword as post-release.
