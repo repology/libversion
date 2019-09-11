@@ -36,7 +36,13 @@ static char comparison_to_char(int comp) {
 }
 
 static int version_test(const char* v1, const char* v2, int flags1, int flags2, int expected) {
-	int result = version_compare4(v1, v2, flags1, flags2);
+	int result;
+
+	if (flags1 == 0 && flags2 == 0) {
+		result = version_compare2(v1, v2);
+	} else {
+		result = version_compare4(v1, v2, flags1, flags2);
+	}
 
 	if (result == expected) {
 		fprintf(stderr, "[ OK ] \"%s\" (0x%x) %c \"%s\" (0x%x)\n", v1, flags1, comparison_to_char(expected), v2, flags2);
