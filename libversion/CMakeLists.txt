@@ -57,7 +57,7 @@ set_target_properties(libversion_static PROPERTIES
 )
 
 # object library
-add_library(libversion_object OBJECT ${LIBVERSION_SOURCES} ${LIBVERSION_HEADERS})
+add_library(libversion_object OBJECT EXCLUDE_FROM_ALL ${LIBVERSION_SOURCES} ${LIBVERSION_HEADERS})
 add_dependencies(libversion_object libversion) # make sure export header is generated
 target_include_directories(libversion_object PUBLIC
 	$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
