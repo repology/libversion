@@ -12,8 +12,6 @@ matrix:
     - compiler: clang
       env: CFLAGS="-fsanitize=address,undefined,integer -fno-omit-frame-pointer -fno-sanitize-recover=all" LDFLAGS="-fsanitize=address,undefined,integer"
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq gcc-multilib
   - if [ -n "${COVERAGE}" ]; then pip install --user pyyaml cpp-coveralls; fi
   - export CFLAGS="$CFLAGS -Werror -Wall -Wextra -pedantic"
   - export CXXFLAGS="$CFLAGS"
