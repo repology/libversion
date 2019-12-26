@@ -362,6 +362,9 @@ int main() {
 
 	errors += version_test_symmetrical_flags("1.0", "1.1", VERSIONFLAG_UPPER_BOUND, VERSIONFLAG_LOWER_BOUND, -1);
 
+	errors += version_test_symmetrical_flags("0", "0.0", VERSIONFLAG_UPPER_BOUND, VERSIONFLAG_UPPER_BOUND, 1);
+	errors += version_test_symmetrical_flags("0", "0.0", VERSIONFLAG_LOWER_BOUND, VERSIONFLAG_LOWER_BOUND, -1);
+
 	fprintf(stderr, "\nTest group: uniform component splitting\n");
 	errors += version_test_symmetrical("1.0alpha1", "1.0alpha1", 0);
 	errors += version_test_symmetrical("1.0alpha1", "1.0.alpha1", 0);
