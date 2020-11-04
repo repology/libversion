@@ -4,7 +4,7 @@
 	<img src="https://repology.org/badge/vertical-allrepos/libversion.svg" alt="libversion packaging status" align="right">
 </a>
 
-[![Build Status](https://travis-ci.org/repology/libversion.svg?branch=master)](https://travis-ci.org/repology/libversion)
+![CI](https://github.com/repology/libversion/workflows/CI/badge.svg)
 [![Build status](https://ci.appveyor.com/api/projects/status/n78dvl22i70v379x/branch/master?svg=true)](https://ci.appveyor.com/project/AMDmi3/libversion/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/repology/libversion/badge.svg?branch=master)](https://coveralls.io/github/repology/libversion?branch=master)
 [![Github commits (since latest release)](https://img.shields.io/github/commits-since/repology/libversion/latest.svg)](https://github.com/repology/libversion)

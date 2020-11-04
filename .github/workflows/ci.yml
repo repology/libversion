@@ -1,0 +1,57 @@
+name: CI
+on: [ push, pull_request ]
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        include:
+          - { cc: gcc, cxx: g++, features: coverage }
+          - { cc: clang, cxx: clang++, features: asan }
+          - { cc: clang, cxx: clang++, features: exttests }
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up environment
+        run: |
+          echo 'CC=${{ matrix.cc }}' >> $GITHUB_ENV
+          echo 'CXX=${{ matrix.cxx }}' >> $GITHUB_ENV
+          echo 'CFLAGS=-Werror -Wall -Wextra -pedantic' >> $GITHUB_ENV
+          echo 'CXXFLAGS=-Werror -Wall -Wextra -pedantic' >> $GITHUB_ENV
+      - name: Set up asan
+        if: ${{ contains(matrix.features, 'asan') }}
+        run: |
+          echo "CFLAGS=$CFLAGS -fsanitize=address,undefined,integer -fno-omit-frame-pointer -fno-sanitize-recover=all" >> $GITHUB_ENV
+          echo "CXXFLAGS=$CXXFLAGS -fsanitize=address,undefined,integer -fno-omit-frame-pointer -fno-sanitize-recover=all" >> $GITHUB_ENV
+          echo "LDFLAGS=$LDFLAGS -fsanitize=address,undefined,integer" >> $GITHUB_ENV
+      - name: Set up coverage
+        if: ${{ contains(matrix.features, 'coverage') }}
+        run: |
+          echo "CFLAGS=$CFLAGS -coverage" >> $GITHUB_ENV
+          echo "CXXFLAGS=$CXXFLAGS -coverage" >> $GITHUB_ENV
+          echo "LDFLAGS=$LDFLAGS -coverage" >> $GITHUB_ENV
+      - name: Configure
+        run: cmake . -DCMAKE_VERBOSE_MAKEFILE=yes -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: cmake --build .
+      - name: Run tests
+        run: ctest -V
+      - name: Install
+        run: sudo make install
+      - name: Check for library usability for clients
+        if: ${{ contains(matrix.features, 'exttests') }}
+        run: |
+          for exttest in exttests/*; do
+            (
+              echo "Running exttest $exttest..."
+              cd $exttest
+              if [ -e CMakeLists.txt ]; then
+                cmake . >/dev/null 2>&1 || cmake .
+              fi
+              make >/dev/null 2>&1 || make
+            )
+          done
+      - name: Upload coverage
+        if: ${{ contains(matrix.features, 'coverage') }}
+        uses: codecov/codecov-action@v1
+        with:
+          fail_ci_if_error: true
