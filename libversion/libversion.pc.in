@@ -7,5 +7,5 @@ Name: libversion
 Description: Version comparison library
 Version: @libversion_VERSION@
 Libs: -L${libdir} -lversion
-Cflags: -I${includedir}
+Cflags: -I${includedir} @EXTRA_CFLAGS@
 Cflags.private: -DLIBVERSION_STATIC_DEFINE

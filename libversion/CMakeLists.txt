@@ -68,6 +68,9 @@ target_compile_definitions(libversion_object PUBLIC
 )
 
 # pkgconfig file
+if(WIN32)
+	set(EXTRA_CFLAGS "-DLIBVERSION_STATIC_DEFINE")
+endif()
 configure_file(libversion.pc.in libversion.pc @ONLY)
 
 # installation
