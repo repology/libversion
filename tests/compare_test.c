@@ -258,6 +258,9 @@ int main() {
 	errors += version_test_symmetrical_flags("1.0p1", "1.0p1", VERSIONFLAG_P_IS_PATCH, 0, 1);
 	errors += version_test_symmetrical_flags("1.0p1", "1.0p1", 0, VERSIONFLAG_P_IS_PATCH, -1);
 
+	errors += version_test_symmetrical_flags("1.0p1", "1.0P1", 0, 0, 0);
+	errors += version_test_symmetrical_flags("1.0p1", "1.0P1", VERSIONFLAG_P_IS_PATCH, VERSIONFLAG_P_IS_PATCH, 0);
+
 	errors += version_test_symmetrical_flags("1.0", "1.0p1", 0, 0, 1);
 	errors += version_test_symmetrical_flags("1.0", "1.0p1", VERSIONFLAG_P_IS_PATCH, 0, 1);
 	errors += version_test_symmetrical_flags("1.0", "1.0p1", 0, VERSIONFLAG_P_IS_PATCH, -1);
