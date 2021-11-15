@@ -58,7 +58,7 @@ Thread safe, does not produce errors, does not allocate dynamic memory,
 O(N) computational complexity, O(1) stack memory requirements.
 
 4-argument form allows specifying flags for each version argument to
-tune comparison behavior is specific cases. Currently supported `flags`
+tune comparison behavior in specific cases. Currently supported `flags`
 values are:
 
 * `VERSIONFLAG_P_IS_PATCH` _p_ letter is treated as _patch_
