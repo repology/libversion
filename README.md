@@ -72,7 +72,7 @@ values are:
   `1.0` and lower than any prerelease of `1.0`.
   E.g. `0.999` < lower bound(`1.0`) < `1.0alpha0`.
 * `VERSIONFLAG_UPPER_BOUND` derive highest possible version with
-  the given prefix. Oppisite of `VERSIONFLAG_LOWER_BOUND`.
+  the given prefix. Opposite of `VERSIONFLAG_LOWER_BOUND`.
 
 If both `flags` are zero, `version_compare4` acts exactly the same
 as `version_compare2`.
