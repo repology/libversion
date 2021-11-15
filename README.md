@@ -58,7 +58,7 @@ Thread safe, does not produce errors, does not allocate dynamic memory,
 O(N) computational complexity, O(1) stack memory requirements.
 
 4-argument form allows specifying flags for each version argument to
-tune comparison behavior is specific cases. Currently supported `flags`
+tune comparison behavior in specific cases. Currently supported `flags`
 values are:
 
 * `VERSIONFLAG_P_IS_PATCH` _p_ letter is treated as _patch_
@@ -72,7 +72,7 @@ values are:
   `1.0` and lower than any prerelease of `1.0`.
   E.g. `0.999` < lower bound(`1.0`) < `1.0alpha0`.
 * `VERSIONFLAG_UPPER_BOUND` derive highest possible version with
-  the given prefix. Oppisite of `VERSIONFLAG_LOWER_BOUND`.
+  the given prefix. Opposite of `VERSIONFLAG_LOWER_BOUND`.
 
 If both `flags` are zero, `version_compare4` acts exactly the same
 as `version_compare2`.
