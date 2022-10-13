@@ -77,8 +77,8 @@ install(FILES
 	${CMAKE_CURRENT_BINARY_DIR}/export.h
 	DESTINATION include/libversion
 )
-install(TARGETS libversion libversion_static EXPORT libversion LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+install(TARGETS libversion libversion_static EXPORT libversion LIBRARY ARCHIVE)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libversion.pc DESTINATION ${PKGCONFIGDIR})
 
-install(EXPORT libversion NAMESPACE libversion:: DESTINATION lib/cmake/libversion FILE libversionConfig.cmake)
+install(EXPORT libversion NAMESPACE libversion:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libversion FILE libversionConfig.cmake)
