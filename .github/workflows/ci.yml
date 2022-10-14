@@ -52,6 +52,7 @@ jobs:
           done
       - name: Upload coverage
         if: ${{ contains(matrix.features, 'coverage') }}
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
+          gcov: true
