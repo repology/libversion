@@ -5,10 +5,12 @@ project(libversion VERSION 3.0.1)
 
 include(GNUInstallDirs)
 
-set(PKGCONFIGDIR ${CMAKE_INSTALL_LIBDIR}/pkgconfig CACHE STRING "directory where to install pkg-config files")
 if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD" OR CMAKE_SYSTEM_NAME MATCHES "DragonFly")
-	SET(PKGCONFIGDIR libdata/pkgconfig)
+	set(CMAKE_INSTALL_PKGCONFIGDIR libdata/pkgconfig CACHE PATH "pkg-config files (libdata/pkgconfig)")
+else()
+	set(CMAKE_INSTALL_PKGCONFIGDIR ${CMAKE_INSTALL_LIBDIR}/pkgconfig CACHE PATH "pkg-config files (LIBDIR/pkgconfig)")
 endif()
+mark_as_advanced(CMAKE_INSTALL_PKGCONFIGDIR)
 
 # subdirs
 enable_testing()
