@@ -42,6 +42,7 @@ enum {
 	VERSIONFLAG_ANY_IS_PATCH = 0x2,
 	VERSIONFLAG_LOWER_BOUND = 0x4,
 	VERSIONFLAG_UPPER_BOUND = 0x8,
+	VERSIONFLAG_TILDA = 0x10,
 };
 
 extern LIBVERSION_EXPORT int version_compare2(const char* v1, const char* v2);

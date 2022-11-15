@@ -27,7 +27,7 @@
 #include <stdio.h>
 
 int main() {
-	const char version_chars[] = { '0', '1', 'p', 'R', 'e', '.', '-' };
+	const char version_chars[] = { '0', '1', 'p', 'R', 'e', '.', '-', '~' };
 	const size_t num_version_chars = sizeof(version_chars)/sizeof(version_chars[0]);
 
 	const char* samples[] = { "0", "1", "a", "r", "z", "1alpha1", "1patch1" };

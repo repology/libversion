@@ -97,14 +97,22 @@ static void make_default_component(component_t* component, int flags) {
 }
 
 size_t get_next_version_component(const char** str, component_t* component, int flags) {
-	*str = skip_separator(*str);
+	int pessimization_amount = 0;
+
+	if (flags & VERSIONFLAG_TILDA) {
+		*str = skip_separator_count_tildas(*str, &pessimization_amount);
+	} else {
+		*str = skip_separator(*str);
+	}
 
 	if (**str == '\0') {
 		make_default_component(component, flags);
+		component->metaorder -= METAORDER_COUNT * pessimization_amount;
 		return 1;
 	}
 
 	parse_token_to_component(str, component, flags);
+	component->metaorder -= METAORDER_COUNT * pessimization_amount;
 
 	/* Special case for letter suffix:
 	 * - We taste whether the next component is alpha not followed by a number,

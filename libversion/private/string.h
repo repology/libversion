@@ -88,4 +88,15 @@ static inline const char* skip_separator(const char* str) {
 	return cur;
 }
 
+static inline const char* skip_separator_count_tildas(const char* str, int* num_tildas) {
+	const char* cur = str;
+	while (my_isseparator(*cur)) {
+		if (*cur == '~') {
+			++*num_tildas;
+		}
+		++cur;
+	}
+	return cur;
+}
+
 #endif /* LIBVERSION_PRIVATE_STRING_H */

@@ -134,7 +134,7 @@ int main() {
 	errors += version_test_symmetrical("b", "beta", 0);
 	errors += version_test_symmetrical("p", "prerelease", 0);
 
-	fprintf(stderr, "\nTest group: unusial component separators\n");
+	fprintf(stderr, "\nTest group: component separators\n");
 	errors += version_test_symmetrical("1.0.alpha.2", "1_0_alpha_2", 0);
 	errors += version_test_symmetrical("1.0.alpha.2", "1-0-alpha-2", 0);
 	errors += version_test_symmetrical("1.0.alpha.2", "1,0:alpha~2", 0);
@@ -378,6 +378,13 @@ int main() {
 	errors += version_test_symmetrical("1.0patch1", "1.0.patch1", 0);
 	errors += version_test_symmetrical("1.0patch1", "1.0patch.1", 0);
 	errors += version_test_symmetrical("1.0patch1", "1.0.patch.1", 0);
+
+	fprintf(stderr, "\nTest group: tilda\n");
+	errors += version_test_symmetrical_flags("", "~", VERSIONFLAG_TILDA, VERSIONFLAG_TILDA, 1);
+	errors += version_test_symmetrical_flags("0", "~0", VERSIONFLAG_TILDA, VERSIONFLAG_TILDA, 1);
+	errors += version_test_symmetrical_flags("1.0", "1~0", VERSIONFLAG_TILDA, VERSIONFLAG_TILDA, 1);
+	errors += version_test_symmetrical_flags("1.0", "1.0~0", VERSIONFLAG_TILDA, VERSIONFLAG_TILDA, 1);
+	errors += version_test_symmetrical_flags("1.0~0", "1.0~~0", VERSIONFLAG_TILDA, VERSIONFLAG_TILDA, 1);
 
 	/* controversial - TBD
 	fprintf(stderr, "\nTest group: letter vs. numeric component ordering\n");
