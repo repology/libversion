@@ -25,7 +25,7 @@ add_library(libversion SHARED ${LIBVERSION_SOURCES} ${LIBVERSION_HEADERS} ${LIBV
 target_include_directories(libversion PUBLIC
 	$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
 	$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
-	$<INSTALL_INTERFACE:include>
+	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 set_target_properties(libversion PROPERTIES
 	SOVERSION 1
@@ -46,7 +46,7 @@ add_dependencies(libversion_static libversion) # make sure export header is gene
 target_include_directories(libversion_static PUBLIC
 	$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
 	$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
-	$<INSTALL_INTERFACE:include>
+	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_compile_definitions(libversion_static PUBLIC
 	LIBVERSION_STATIC_DEFINE
@@ -68,6 +68,18 @@ target_compile_definitions(libversion_object PUBLIC
 )
 
 # pkgconfig file
+if(IS_ABSOLUTE "${CMAKE_INSTALL_LIBDIR}")
+	set(libdir_for_pc_file "${CMAKE_INSTALL_LIBDIR}")
+else()
+	set(libdir_for_pc_file "\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}")
+endif()
+
+if(IS_ABSOLUTE "${CMAKE_INSTALL_INCLUDEDIR}")
+	set(includedir_for_pc_file "${CMAKE_INSTALL_INCLUDEDIR}")
+else()
+	set(includedir_for_pc_file "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
+endif()
+
 configure_file(libversion.pc.in libversion.pc @ONLY)
 
 # installation
