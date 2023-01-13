@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 # meta
-project(libversion VERSION 3.0.2)
+project(libversion VERSION 3.0.3)
 
 include(GNUInstallDirs)
 enable_testing()
