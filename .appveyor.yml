@@ -1,8 +1,0 @@
-version: '{branch}.{build}'
-clone_depth: 1
-build_script:
-  - set CFLAGS=/WX
-  - set PATH=%APPVEYOR_BUILD_FOLDER%\libversion\Debug;%PATH%
-  - cmake .
-  - cmake --build .
-  - ctest -V
