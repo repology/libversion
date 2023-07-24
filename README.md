@@ -157,6 +157,11 @@ $ ./version_compare 0.99 1.0
 <
 ```
 
+## Bindings
+
+* Python: [py-libversion](https://github.com/repology/py-libversion) by @AMDmi3
+* Go: [golibversion](https://github.com/saenai255/golibversion) by @saenai255
+
 ## Author
 
 * [Dmitry Marakasov](https://github.com/AMDmi3) <amdmi3@amdmi3.ru>
