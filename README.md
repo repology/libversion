@@ -110,10 +110,10 @@ int main() {
 
     /* a way to check that the version belongs to a given release */
     assert(
-        version_compare4("1.0alpha1", "1.0", 0, VERSIONFLAG_LOWER_BOUND) == 1) &&
-        version_compare4("1.0alpha1", "1.0", 0, VERSIONFLAG_UPPER_BOUND) == -1) &&
-        version_compare4("1.0.1", "1.0", 0, VERSIONFLAG_LOWER_BOUND) == 1) &&
-        version_compare4("1.0.1", "1.0", 0, VERSIONFLAG_UPPER_BOUND) == -1) &&
+        (version_compare4("1.0alpha1", "1.0", 0, VERSIONFLAG_LOWER_BOUND) == 1) &&
+        (version_compare4("1.0alpha1", "1.0", 0, VERSIONFLAG_UPPER_BOUND) == -1) &&
+        (version_compare4("1.0.1", "1.0", 0, VERSIONFLAG_LOWER_BOUND) == 1) &&
+        (version_compare4("1.0.1", "1.0", 0, VERSIONFLAG_UPPER_BOUND) == -1) &&
         /* 1.0alpha1 and 1.0.1 belong to 1.0 release, e.g. they lie between
            (lowest possible version in 1.0) and (highest possible version in 1.0) */
     );
