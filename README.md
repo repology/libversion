@@ -170,4 +170,4 @@ $ ./version_compare 0.99 1.0
 
 ## License
 
-[MIT](COPYING)
+* [MIT](COPYING)
