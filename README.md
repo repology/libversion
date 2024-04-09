@@ -157,10 +157,12 @@ $ ./version_compare 0.99 1.0
 <
 ```
 
-## Bindings
+## Bindings and compatible implementations
 
 * Python: [py-libversion](https://github.com/repology/py-libversion) by @AMDmi3
 * Go: [golibversion](https://github.com/saenai255/golibversion) by @saenai255
+* Rust: [libversion-rs](https://github.com/repology/libversion-rs) by @AMDmi3 (not really a binding, but pure Rust implementation)
+* Ruby: [ruby-libversion](https://github.com/Zopolis4/ruby-libversion) by @Zopolis4
 
 ## Author
 
