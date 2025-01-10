@@ -6,7 +6,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - { cc: gcc, cxx: g++, features: coverage }
+          - { cc: gcc, cxx: g++ }
           - { cc: clang, cxx: clang++, features: asan }
           - { cc: clang, cxx: clang++, features: exttests }
     steps:
@@ -23,12 +23,6 @@ jobs:
           echo "CFLAGS=$CFLAGS -fsanitize=address,undefined,integer -fno-omit-frame-pointer -fno-sanitize-recover=all" >> $GITHUB_ENV
           echo "CXXFLAGS=$CXXFLAGS -fsanitize=address,undefined,integer -fno-omit-frame-pointer -fno-sanitize-recover=all" >> $GITHUB_ENV
           echo "LDFLAGS=$LDFLAGS -fsanitize=address,undefined,integer" >> $GITHUB_ENV
-      - name: Set up coverage
-        if: ${{ contains(matrix.features, 'coverage') }}
-        run: |
-          echo "CFLAGS=$CFLAGS -coverage" >> $GITHUB_ENV
-          echo "CXXFLAGS=$CXXFLAGS -coverage" >> $GITHUB_ENV
-          echo "LDFLAGS=$LDFLAGS -coverage" >> $GITHUB_ENV
       - name: Configure
         run: cmake . -DCMAKE_VERBOSE_MAKEFILE=yes -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Debug
       - name: Build
@@ -50,10 +44,3 @@ jobs:
               make >/dev/null 2>&1 || make
             )
           done
-      - name: Upload coverage
-        if: ${{ contains(matrix.features, 'coverage') }}
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: true
-          gcov: true

@@ -5,7 +5,6 @@
 </a>
 
 ![CI](https://github.com/repology/libversion/workflows/CI/badge.svg)
-[![codecov](https://codecov.io/gh/repology/libversion/graph/badge.svg?token=1MOTiX9DbW)](https://codecov.io/gh/repology/libversion)
 [![Github commits (since latest release)](https://img.shields.io/github/commits-since/repology/libversion/latest.svg)](https://github.com/repology/libversion)
 
 Advanced version string comparison library.
