@@ -10,7 +10,7 @@ jobs:
           - { cc: clang, cxx: clang++, features: asan }
           - { cc: clang, cxx: clang++, features: exttests }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up environment
         run: |
           echo 'CC=${{ matrix.cc }}' >> $GITHUB_ENV
