@@ -10,7 +10,7 @@
 
 2. Components are assigned ranks by their value:
 
-   * **PRE_RELEASE** - known pre-release keyword (`alpha`, `beta`, `rc`).
+   * **PRE_RELEASE** - known pre-release keyword (`alpha`, `beta`, `pre`, `rc`).
    * **ZERO** - numeric component equal to zero.
    * **POST_RELEASE** - known post-release keyword (`patch`, `post`, `pl`).
    * **NONZERO** - numeric component not equal to zero.
@@ -20,9 +20,10 @@
 
    A special case exists for alphabetic component which follows
    numeric component, and is not followed by another numeric
-   component (`1.0a`, `1.0a.1`, but not `1.0a1`). Such alphabetic
-   component is assigned a different rank, **LETTER_SUFFIX**, which
-   follows **NONZERO** (choice of this behavior explained below).
+   component after a delimiter (`1.0a`, `1.0a.1`, but not `1.0a1`
+   because of lack of delimiter). Such alphabetic component is
+   assigned a different rank, **LETTER_SUFFIX**, which follows
+   **NONZERO** (choice of this behavior explained below).
 
 3. Versions are compared component-wise.
 
