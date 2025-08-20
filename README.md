@@ -163,6 +163,7 @@ $ ./version_compare 0.99 1.0
 * Rust: [libversion-rs](https://github.com/repology/libversion-rs) by @AMDmi3 (not really a binding, but pure Rust implementation)
 * Ruby: [ruby-libversion](https://github.com/Zopolis4/ruby-libversion) by @Zopolis4
 * Perl: [Version::libversion::XS](https://github.com/giterlizzi/perl-Version-libversion-XS) by @giterlizzi
+* Raku: [Version::Repology](https://raku.land/zef:lizmat/Version::Repology) by @lizmat (a pure Raku implementation)
 
 ## Author
 
