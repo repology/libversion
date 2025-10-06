@@ -6,13 +6,18 @@ on:
     - cron: "0 0 1 * *"
 jobs:
   build:
-    runs-on: ubuntu-22.04
     strategy:
       matrix:
         include:
-          - { cc: gcc, cxx: g++ }
-          - { cc: clang, cxx: clang++, features: asan }
-          - { cc: clang, cxx: clang++, features: exttests }
+          - { os: ubuntu-22.04, cc: gcc, cxx: g++ }
+          - { os: ubuntu-22.04, cc: clang, cxx: clang++, features: asan }
+          - { os: ubuntu-22.04, cc: clang, cxx: clang++, features: exttests }
+          - { os: ubuntu-latest, cc: gcc, cxx: g++ }
+          - { os: ubuntu-latest, cc: clang, cxx: clang++, features: asan }
+          - { os: ubuntu-latest, cc: clang, cxx: clang++, features: exttests }
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.os }} ${{ matrix.cc }} ${{ matrix.features }}
     steps:
       - uses: actions/checkout@v5
       - name: Set up environment
