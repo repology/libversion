@@ -61,7 +61,7 @@ static int version_test_symmetrical(const char* v1, const char* v2, int expected
 	return version_test_symmetrical_flags(v1, v2, 0, 0, expected);
 }
 
-int main() {
+int main(void) {
 	int errors = 0;
 
 	fprintf(stderr, "Test group: equality\n");

@@ -26,7 +26,7 @@
 
 #include <stdio.h>
 
-int main() {
+int main(void) {
 	const char version_chars[] = { '0', '1', 'p', 'R', 'e', '.', '-' };
 	const size_t num_version_chars = sizeof(version_chars)/sizeof(version_chars[0]);
 

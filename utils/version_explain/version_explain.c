@@ -41,7 +41,7 @@ void version_explain(const char* v, int flags) {
     }
 }
 
-static void print_version() {
+static void print_version(void) {
 	fprintf(stderr, "libversion %s\n", LIBVERSION_VERSION);
 }
 

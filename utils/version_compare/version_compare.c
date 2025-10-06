@@ -27,7 +27,7 @@
 #include <libversion/config.h>
 #include <libversion/version.h>
 
-static void print_version() {
+static void print_version(void) {
 	fprintf(stderr, "libversion %s\n", LIBVERSION_VERSION);
 }
 
