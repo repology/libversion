@@ -6,6 +6,6 @@ includedir=@includedir_for_pc_file@
 Name: libversion
 Description: Version comparison library
 Version: @libversion_VERSION@
-Libs: -L${libdir} -lversion
+Libs: -L${libdir} -l@LIBVERSION_STATIC_OUTPUT_NAME@
 Cflags: -I${includedir}
 Cflags.private: -DLIBVERSION_STATIC_DEFINE

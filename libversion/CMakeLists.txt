@@ -35,8 +35,7 @@ set_target_properties(libversion PROPERTIES
 )
 generate_export_header(libversion EXPORT_FILE_NAME export.h)
 if(WIN32)
-	# avoid clash with both c:/windows/system32/version.dll
-	# and static version.lib from the next target
+	# avoid clash with both c:/windows/system32/version.dll and version.lib from the Windows SDK
 	set_target_properties(libversion PROPERTIES OUTPUT_NAME libversion)
 endif()
 
@@ -51,9 +50,17 @@ target_include_directories(libversion_static PUBLIC
 target_compile_definitions(libversion_static PUBLIC
 	LIBVERSION_STATIC_DEFINE
 )
+
+if(WIN32)
+	# avoid clash with version.lib from the Windows SDK and the dynamic target above
+	set(LIBVERSION_STATIC_OUTPUT_NAME libversion_static)
+else()
+	set(LIBVERSION_STATIC_OUTPUT_NAME version)
+endif()
+
 set_target_properties(libversion_static PROPERTIES
 	POSITION_INDEPENDENT_CODE ON
-	OUTPUT_NAME version
+	OUTPUT_NAME "${LIBVERSION_STATIC_OUTPUT_NAME}"
 )
 
 # object library
