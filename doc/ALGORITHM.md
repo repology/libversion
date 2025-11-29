@@ -12,7 +12,7 @@
 
    * **PRE_RELEASE** - known pre-release keyword (`alpha`, `beta`, `pre`, `rc`).
    * **ZERO** - numeric component equal to zero.
-   * **POST_RELEASE** - known post-release keyword (`patch`, `post`, `pl`).
+   * **POST_RELEASE** - known post-release keyword (`errata`, `patch`, `post`, `pl`).
    * **NONZERO** - numeric component not equal to zero.
 
    * Unclassified alphabetic components are assigned **PRE_RELEASE**
