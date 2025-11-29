@@ -21,8 +21,10 @@
    A special case exists for alphabetic component which follows
    numeric component, and is not followed by another numeric
    component after a delimiter (`1.0a`, `1.0a.1`, but not `1.0a1`
-   because of lack of delimiter). Such alphabetic component is
-   assigned a different rank, **LETTER_SUFFIX**, which follows
+   because of lack of delimiter). In other words, if the previous
+   component is numeric, the current component is alphabetic,
+   and the next component is not numeric. Such alphabetic component
+   is assigned a different rank, **LETTER_SUFFIX**, which follows
    **NONZERO** (choice of this behavior explained below).
 
 3. Versions are compared component-wise.
