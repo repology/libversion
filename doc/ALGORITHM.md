@@ -137,7 +137,8 @@ any other rank, and to tweak version padding algorithm to use these
 instead of `0` filler. This way for a given version a component sequence
 would be produced which always compares less than or greater than
 (correspondingly) any natural post-or pre-release version with the
-same prefix.
+same prefix. Note that if a bound is requested, at least one unit
+of padding will be added, even if the versions are the same length.
 
 This is implemented in libversion with `VERSIONFLAG_LOWER_BOUND`
 and `VERSIONFLAG_UPPER_BOUND` flags.
